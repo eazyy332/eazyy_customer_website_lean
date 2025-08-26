@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# Logs
+logs
+*.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Screenshots and large assets
+.screenshots/
+screenshots_*/
+images_devlopment/
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+
+# Archive files
+*.zip
+*.tar.gz
+
+# Server output
+server.out

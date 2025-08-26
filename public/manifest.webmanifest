@@ -1,0 +1,15 @@
+{
+  "name": "eazyy",
+  "short_name": "eazyy",
+  "description": "Laundry pickup and delivery in 24–48h",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#2675f5",
+  "background_color": "#ffffff",
+  "icons": [
+    { "src": "/favicon.ico", "sizes": "48x48 64x64 128x128", "type": "image/x-icon" }
+  ]
+}
+
+
