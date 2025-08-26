@@ -1,7 +1,11 @@
+import dotenv from 'dotenv';
 import { defineConfig, Plugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { createServer } from "./server";
+
+// Load environment variables before importing server modules
+dotenv.config({ path: '.env.local', override: true });
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
