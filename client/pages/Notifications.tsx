@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import AuthGuard from "@/components/AuthGuard";
 
 interface Notification {
   id: string;
@@ -215,9 +216,10 @@ export default function Notifications() {
   const unreadCount = notifications.filter((notif) => !notif.isRead).length;
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="hidden">
+    <AuthGuard redirectMessage="Please sign in to view your notifications">
+      <div className="min-h-screen bg-white">
+        {/* Header */}
+        <header className="hidden">
         <nav className="flex items-center justify-between">
           <div className="flex items-center space-x-8">
             <Link
@@ -270,8 +272,8 @@ export default function Notifications() {
         </nav>
       </header>
 
-      {/* Main Content */}
-      <main className="px-4 lg:px-16 py-8">
+        {/* Main Content */}
+        <main className="px-4 lg:px-16 py-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="flex items-center justify-between mb-8">
@@ -520,6 +522,7 @@ export default function Notifications() {
           </div>
         </div>
       </main>
-    </div>
+      </div>
+    </AuthGuard>
   );
 }

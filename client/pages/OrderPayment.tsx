@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import AuthGuard from "@/components/AuthGuard";
 
 interface PaymentMethod {
   id: string;
@@ -164,32 +165,33 @@ export default function OrderPayment() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="hidden">
-        <nav className="flex items-center justify-between">
-          <div className="flex items-center space-x-8">
-            <Link to="/" className="text-black hover:text-primary transition-colors">Home</Link>
-            <Link to="/services" className="text-black hover:text-primary transition-colors">Services</Link>
-            <Link to="/about" className="text-black hover:text-primary transition-colors">About us</Link>
-            <Link to="/contact" className="text-black hover:text-primary transition-colors">Contact</Link>
-          </div>
-          <div className="absolute left-1/2 transform -translate-x-1/2">
-            <img 
-              src="https://cdn.builder.io/api/v1/image/assets%2F0ba0452a2d1340e7b84136d8ed253a1b%2Fb6e642e462f04f14827396626baf4d5e?format=webp&width=800" 
-              alt="eazyy logo" 
-              className="h-8 w-auto"
-            />
-          </div>
-          <div className="flex items-center space-x-6">
-            <Link to="/help" className="text-black hover:text-primary transition-colors">Help</Link>
-            <div className="text-black">EN</div>
-          </div>
-        </nav>
-      </header>
+    <AuthGuard redirectMessage="Please sign in to complete your order">
+      <div className="min-h-screen bg-white">
+        {/* Header */}
+        <header className="hidden">
+          <nav className="flex items-center justify-between">
+            <div className="flex items-center space-x-8">
+              <Link to="/" className="text-black hover:text-primary transition-colors">Home</Link>
+              <Link to="/services" className="text-black hover:text-primary transition-colors">Services</Link>
+              <Link to="/about" className="text-black hover:text-primary transition-colors">About us</Link>
+              <Link to="/contact" className="text-black hover:text-primary transition-colors">Contact</Link>
+            </div>
+            <div className="absolute left-1/2 transform -translate-x-1/2">
+              <img 
+                src="https://cdn.builder.io/api/v1/image/assets%2F0ba0452a2d1340e7b84136d8ed253a1b%2Fb6e642e462f04f14827396626baf4d5e?format=webp&width=800" 
+                alt="eazyy logo" 
+                className="h-8 w-auto"
+              />
+            </div>
+            <div className="flex items-center space-x-6">
+              <Link to="/help" className="text-black hover:text-primary transition-colors">Help</Link>
+              <div className="text-black">EN</div>
+            </div>
+          </nav>
+        </header>
 
-      {/* Main Content */}
-      <main className="px-4 lg:px-16 py-12">
+        {/* Main Content */}
+        <main className="px-4 lg:px-16 py-12">
         <div className="max-w-4xl mx-auto">
           {/* Progress Bar */}
           <div className="mb-8">
@@ -465,6 +467,7 @@ export default function OrderPayment() {
           </div>
         </div>
       </main>
-    </div>
+      </div>
+    </AuthGuard>
   );
 }

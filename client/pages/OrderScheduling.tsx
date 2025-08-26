@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 interface ScheduleData {
   pickupDate: string;
@@ -11,6 +13,8 @@ interface ScheduleData {
 
 export default function OrderScheduling() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const { selectedServices, totalPrice, sourceQuoteId } = location.state || {
     selectedServices: [],
     totalPrice: 0,
@@ -71,6 +75,30 @@ export default function OrderScheduling() {
 
   const handleScheduleChange = (field: keyof ScheduleData, value: string) => {
     setSchedule((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleContinue = () => {
+    if (!isAuthenticated) {
+      // Store order data in localStorage before redirecting to login
+      localStorage.setItem('pendingOrder', JSON.stringify({
+        selectedServices: services,
+        totalPrice: calculatedTotalPrice,
+        schedule,
+        sourceQuoteId,
+        returnTo: '/order/address'
+      }));
+      navigate('/login');
+      return;
+    }
+    
+    navigate('/order/address', {
+      state: {
+        selectedServices: services,
+        totalPrice: calculatedTotalPrice,
+        schedule,
+        sourceQuoteId,
+      }
+    });
   };
 
   const formatDateOption = (date: Date) => {
@@ -477,14 +505,8 @@ export default function OrderScheduling() {
             </Link>
 
             {canProceed ? (
-              <Link
-                to="/order/address"
-                state={{
-                  selectedServices: services,
-                  totalPrice: calculatedTotalPrice,
-                  schedule,
-                  sourceQuoteId,
-                }}
+              <button
+                onClick={handleContinue}
                 className="inline-flex items-center px-8 py-3 bg-primary text-white rounded-xl font-medium hover:bg-blue-700 transition-all shadow-sm"
               >
                 Continue to Address
@@ -501,7 +523,7 @@ export default function OrderScheduling() {
                     d="M9 5l7 7-7 7"
                   />
                 </svg>
-              </Link>
+              </button>
             ) : (
               <div className="text-sm text-gray-500 text-center">
                 Complete scheduling to continue

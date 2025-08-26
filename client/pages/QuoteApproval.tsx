@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import AuthGuard from "@/components/AuthGuard";
 
 interface QuoteItem {
   id: string;
@@ -140,9 +141,10 @@ export default function QuoteApproval() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="hidden">
+    <AuthGuard redirectMessage="Please sign in to review your custom quote">
+      <div className="min-h-screen bg-white">
+        {/* Header */}
+        <header className="hidden">
         <nav className="flex items-center justify-between">
           <div className="flex items-center space-x-8">
             <Link
@@ -195,8 +197,8 @@ export default function QuoteApproval() {
         </nav>
       </header>
 
-      {/* Main Content */}
-      <main className="px-4 lg:px-16 py-8">
+        {/* Main Content */}
+        <main className="px-4 lg:px-16 py-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="mb-8">
@@ -484,6 +486,7 @@ export default function QuoteApproval() {
           </div>
         </div>
       </main>
-    </div>
+      </div>
+    </AuthGuard>
   );
 }

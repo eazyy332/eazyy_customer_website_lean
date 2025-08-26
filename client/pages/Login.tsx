@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -10,6 +11,29 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSignUp, setIsSignUp] = useState(false);
+
+  // Check for pending order and redirect after login
+  useEffect(() => {
+    const checkAuthAndRedirect = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        // User is already logged in, check for pending order
+        const pendingOrder = localStorage.getItem('pendingOrder');
+        if (pendingOrder) {
+          try {
+            const orderData = JSON.parse(pendingOrder);
+            localStorage.removeItem('pendingOrder');
+            navigate(orderData.returnTo || '/order/address', { state: orderData });
+            return;
+          } catch {
+            // Invalid data, just go to home
+          }
+        }
+        navigate('/');
+      }
+    };
+    checkAuthAndRedirect();
+  }, [navigate]);
 
   // Test Supabase connection on component mount
   React.useEffect(() => {
@@ -49,7 +73,20 @@ export default function Login() {
       setError(null);
       const { error: err } = await supabase.auth.signInWithPassword({ email, password });
       if (err) throw err;
-      navigate("/");
+      
+      // Check for pending order after successful login
+      const pendingOrder = localStorage.getItem('pendingOrder');
+      if (pendingOrder) {
+        try {
+          const orderData = JSON.parse(pendingOrder);
+          localStorage.removeItem('pendingOrder');
+          navigate(orderData.returnTo || '/order/address', { state: orderData });
+          return;
+        } catch {
+          // Invalid data, just go to home
+        }
+      }
+      navigate('/');
     } catch (err: any) {
       setError(err?.message || "Login failed");
     } finally {
@@ -88,7 +125,19 @@ export default function Login() {
         setError("Check your email for a confirmation link!");
       } else if (data?.session) {
         // Auto-confirmed, redirect to home
-        navigate("/");
+        // Check for pending order after successful signup
+        const pendingOrder = localStorage.getItem('pendingOrder');
+        if (pendingOrder) {
+          try {
+            const orderData = JSON.parse(pendingOrder);
+            localStorage.removeItem('pendingOrder');
+            navigate(orderData.returnTo || '/order/address', { state: orderData });
+            return;
+          } catch {
+            // Invalid data, just go to home
+          }
+        }
+        navigate('/');
       }
     } catch (err: any) {
       console.error('Signup failed:', err);

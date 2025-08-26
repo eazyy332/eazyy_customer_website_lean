@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import GooglePlacesAutocomplete from "../components/GooglePlacesAutocomplete";
+import AuthGuard from "@/components/AuthGuard";
 
 interface AddressData {
   fullName: string;
@@ -170,9 +171,10 @@ export default function OrderAddress() {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="hidden">
+    <AuthGuard redirectMessage="Please sign in to continue with your order">
+      <div className="min-h-screen bg-white">
+        {/* Header */}
+        <header className="hidden">
         <nav className="flex items-center justify-between">
           <div className="flex items-center space-x-8">
             <Link to="/" className="text-black hover:text-primary transition-colors">Home</Link>
@@ -194,8 +196,8 @@ export default function OrderAddress() {
         </nav>
       </header>
 
-      {/* Main Content */}
-      <main className="px-4 lg:px-16 py-12">
+        {/* Main Content */}
+        <main className="px-4 lg:px-16 py-12">
         <div className="max-w-4xl mx-auto">
           {/* Progress Bar */}
           <div className="mb-8">
@@ -475,6 +477,7 @@ export default function OrderAddress() {
           </div>
         </div>
       </main>
-    </div>
+      </div>
+    </AuthGuard>
   );
 }

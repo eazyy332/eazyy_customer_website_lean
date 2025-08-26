@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import AuthGuard from "@/components/AuthGuard";
 
 type OrderStatus = 'confirmed' | 'pickup_scheduled' | 'picked_up' | 'in_processing' | 'ready_for_delivery' | 'out_for_delivery' | 'delivered';
 
@@ -91,9 +92,10 @@ export default function OrderConfirmation() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="hidden">
+    <AuthGuard redirectMessage="Please sign in to view your order confirmation">
+      <div className="min-h-screen bg-white">
+        {/* Header */}
+        <header className="hidden">
         <nav className="flex items-center justify-between">
           <div className="flex items-center space-x-8">
             <Link to="/" className="text-black hover:text-primary transition-colors">Home</Link>
@@ -116,8 +118,8 @@ export default function OrderConfirmation() {
         </nav>
       </header>
 
-      {/* Main Content */}
-      <main className="px-4 lg:px-16 py-12">
+        {/* Main Content */}
+        <main className="px-4 lg:px-16 py-12">
         <div className="max-w-4xl mx-auto">
           {/* Success Message */}
           <div className="text-center mb-12">
@@ -347,6 +349,7 @@ export default function OrderConfirmation() {
           </div>
         </div>
       </main>
-    </div>
+      </div>
+    </AuthGuard>
   );
 }

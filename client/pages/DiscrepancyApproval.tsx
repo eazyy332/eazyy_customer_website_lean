@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import AuthGuard from "@/components/AuthGuard";
 
 interface DbDiscrepancyItem {
   id: string;
@@ -125,9 +126,10 @@ export default function DiscrepancyApproval() {
   const getItemDecision = (itemId: string) => itemDecisions[itemId] || 'pending';
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="hidden">
+    <AuthGuard redirectMessage="Please sign in to review order discrepancies">
+      <div className="min-h-screen bg-white">
+        {/* Header */}
+        <header className="hidden">
         <nav className="flex items-center justify-between">
           <div className="flex items-center space-x-8">
             <Link
@@ -180,8 +182,8 @@ export default function DiscrepancyApproval() {
         </nav>
       </header>
 
-      {/* Main Content */}
-      <main className="px-4 lg:px-16 py-8">
+        {/* Main Content */}
+        <main className="px-4 lg:px-16 py-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="mb-8">
@@ -190,7 +192,7 @@ export default function DiscrepancyApproval() {
                 My Orders
               </Link>
               <span>›</span>
-              <span>Order {discrepancyOrder.orderNumber}</span>
+              <span>Order {orderNumber}</span>
               <span>›</span>
               <span className="text-black font-medium">Discrepancy Review</span>
             </div>
@@ -229,7 +231,7 @@ export default function DiscrepancyApproval() {
             <h1 className="text-3xl lg:text-4xl font-medium text-black mb-2">
               Discrepancy Review
             </h1>
-            <p className="text-gray-600">Order {orderId} • {items.length} items found</p>
+            <p className="text-gray-600">Order {orderNumber} • {items.length} items found</p>
           </div>
 
           {/* Items Review */}
@@ -392,11 +394,7 @@ export default function DiscrepancyApproval() {
                 <div className="flex justify-between">
                   <span>Declined items:</span>
                   <span className="font-medium">
-                    {
-                      discrepancyOrder.items.filter(
-                        (item) => getItemDecision(item.id) === "declined",
-                      ).length
-                    }
+                    {items.filter((item) => getItemDecision(item.id) === "declined").length}
                   </span>
                 </div>
                 <div className="border-t border-gray-200 pt-2 mt-2">
@@ -447,6 +445,7 @@ export default function DiscrepancyApproval() {
           )}
         </div>
       </main>
-    </div>
+      </div>
+    </AuthGuard>
   );
 }

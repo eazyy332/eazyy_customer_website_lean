@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { Package, Calendar, MapPin, Clock, User, CreditCard, Truck, CheckCircle, AlertCircle } from 'lucide-react';
+import AuthGuard from "@/components/AuthGuard";
 
 interface OrderItem {
   id: string;
@@ -127,9 +128,10 @@ export default function OrderDetail() {
   const StatusIcon = statusInfo.icon;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+    <AuthGuard redirectMessage="Please sign in to view order details">
+      <div className="min-h-screen bg-gray-50">
+        {/* Header */}
+        <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-6">
             <div className="flex items-center justify-between">
@@ -344,6 +346,7 @@ export default function OrderDetail() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </AuthGuard>
   );
 }
