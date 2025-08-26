@@ -66,13 +66,13 @@ export default function OrderAddress() {
         setError(null);
         const { data, error } = await supabase
           .from('user_addresses')
-          .select('id, label, full_address, is_default')
+          .select('id, name, street, house_number, additional_info, city, postal_code, is_default')
           .order('is_default', { ascending: false });
         if (error) throw error;
         const mapped: SavedAddress[] = (data || []).map((a: any) => ({
           id: a.id,
-          name: a.label || 'Saved',
-          fullAddress: a.full_address,
+          name: a.name || 'Saved Address',
+          fullAddress: `${a.house_number} ${a.street}, ${a.additional_info ? a.additional_info + ', ' : ''}${a.city} ${a.postal_code}`.trim(),
           isDefault: !!a.is_default
         }));
         if (isMounted) setSavedAddresses(mapped);
