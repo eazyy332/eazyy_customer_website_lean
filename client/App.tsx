@@ -40,6 +40,8 @@ const OrderDetail = lazy(() => import("./pages/OrderDetail"));
 const Messages = lazy(() => import("./pages/Messages"));
 const Login = lazy(() => import("./pages/Login"));
 const Cart = lazy(() => import("./pages/Cart"));
+const Business = lazy(() => import("./pages/Business"));
+const Company = lazy(() => import("./pages/Company"));
 
 const queryClient = new QueryClient();
 
@@ -104,10 +106,13 @@ function App() {
                   <Route path="/account" element={<Login />} />
                   <Route path="/messages" element={<Messages />} />
 
+                  {/* Business and Company Pages */}
+                  <Route path="/business" element={<Business />} />
+                  <Route path="/company" element={<Company />} />
+
                   {/* Legacy Routes */}
                   <Route path="/personal" element={<Services />} />
-                  <Route path="/business" element={<Services />} />
-                  <Route path="/company" element={<About />} />
+                  <Route path="/personal" element={<Services />} />
                   <Route path="/complaints" element={<Help />} />
                   <Route path="/cookie-policy" element={<Privacy />} />
                   <Route path="/website-terms" element={<Privacy />} />
