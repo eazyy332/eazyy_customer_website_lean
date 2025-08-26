@@ -74,7 +74,10 @@ Create a `.env.local` file with:
 ```env
 VITE_SUPABASE_URL=your_supabase_url
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 ```
+
+**Note**: The `SUPABASE_SERVICE_ROLE_KEY` is required for server-side operations. You can find this key in your Supabase project settings under 'API Keys' (it's the `service_role` key).
 
 ## 📁 Project Structure
 
