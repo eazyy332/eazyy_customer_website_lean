@@ -15,10 +15,17 @@ export default function Login() {
   React.useEffect(() => {
     const testConnection = async () => {
       try {
+        // Skip connection test if Supabase isn't properly configured
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+        if (!supabaseUrl || supabaseUrl.includes('your_supabase_url_here')) {
+          console.log('Supabase not configured yet. Please connect Supabase.');
+          return;
+        }
+        
         const { data, error } = await supabase.from('orders').select('id').limit(1);
         console.log('Supabase connection test:', { data, error });
       } catch (err) {
-        console.error('Supabase connection failed:', err);
+        console.log('Supabase connection test skipped or failed:', err);
       }
     };
     testConnection();
