@@ -1,28 +1,47 @@
-import dotenv from 'dotenv';
 import { createClient } from "@supabase/supabase-js";
-
-// Load environment variables from .env.local with override
-dotenv.config({ path: '.env.local', override: true });
 
 const supabaseUrl = (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL) as
   | string
   | undefined;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string | undefined;
 
-if (!supabaseUrl) {
-  throw new Error("SUPABASE_URL (or VITE_SUPABASE_URL) is required in env");
+if (!supabaseUrl || supabaseUrl.includes('your_supabase_url_here')) {
+  console.warn('Supabase URL not configured. Please click "Connect to Supabase" in the top right.');
+  // Create a mock client that won't crash the server
+  const mockClient = {
+    from: () => ({
+      select: () => Promise.resolve({ data: [], error: { message: 'Supabase not configured' } }),
+      insert: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }),
+      update: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }),
+      delete: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }),
+    }),
+  };
+  const supabaseAdmin = mockClient as any;
+  export { supabaseAdmin };
+  return;
 }
 
 let supabaseAdmin;
 
-if (!supabaseServiceKey) {
+if (!supabaseServiceKey || supabaseServiceKey.includes('your_supabase_service_role_key_here')) {
   console.warn('SUPABASE_SERVICE_ROLE_KEY not found - server-side operations will be limited')
   // Create a client with anon key as fallback for development
-  const anonKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY
-  if (!anonKey) {
-    throw new Error('Either SUPABASE_SERVICE_ROLE_KEY or SUPABASE_ANON_KEY is required')
+  const anonKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+  if (!anonKey || anonKey.includes('your_supabase_anon_key_here')) {
+    console.warn('No valid Supabase keys found. Please configure Supabase.');
+    // Create a mock client
+    const mockClient = {
+      from: () => ({
+        select: () => Promise.resolve({ data: [], error: { message: 'Supabase not configured' } }),
+        insert: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }),
+        update: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }),
+        delete: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }),
+      }),
+    };
+    supabaseAdmin = mockClient as any;
+  } else {
+    supabaseAdmin = createClient(supabaseUrl, anonKey);
   }
-  supabaseAdmin = createClient(supabaseUrl, anonKey)
 } else {
   // Temporary startup diagnostics
   console.log("Supabase URL:", String(supabaseUrl));
