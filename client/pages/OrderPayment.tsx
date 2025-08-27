@@ -132,17 +132,38 @@ export default function OrderPayment() {
 
     setIsProcessing(true);
     try {
+      // Prepare the order data in the format expected by the API
+      const orderData = {
+        items: selectedServices.map(service => ({
+          id: service.id,
+          name: service.name,
+          price: service.price,
+          quantity: service.quantity
+        })),
+        totals: {
+          subtotal: totalPrice,
+          tax: 0,
+          shippingFee: 0,
+          total: totalPrice
+        },
+        contact: {
+          name: address?.fullName || address?.name || 'Customer',
+          email: address?.email || 'customer@example.com',
+          phone: address?.phoneNumber || address?.phone || null
+        },
+        address: typeof address === 'string' ? address : (
+          address?.fullAddress || 
+          `${address?.streetAddress || ''} ${address?.apartment || ''}, ${address?.city || ''} ${address?.postalCode || ''}`.trim()
+        ),
+        pickupDate: schedule?.pickupDate || null,
+        deliveryDate: schedule?.deliveryDate || null,
+        sourceQuoteId
+      };
+
       const res = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          selectedServices,
-          totalPrice,
-          schedule,
-          address,
-          paymentMethod: paymentMethods.find(pm => pm.id === selectedPaymentMethod) || null,
-          sourceQuoteId,
-        }),
+        body: JSON.stringify(orderData),
       });
       const data = await res.json();
       if (!res.ok || !data.ok) throw new Error(data.error || 'Failed to create order');
