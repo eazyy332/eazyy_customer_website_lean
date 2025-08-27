@@ -34,9 +34,7 @@ export default function GooglePlacesAutocomplete({
     // Load Google Places API script
     const apiKey = import.meta.env.VITE_GOOGLE_PLACES_API_KEY;
     
-    console.log('Google Places API Key:', apiKey ? 'Present' : 'Missing');
-    
-    if (!apiKey || apiKey === 'your_google_places_api_key_here') {
+    if (!apiKey) {
       console.warn('Google Places API key not configured. Using fallback input.');
       setIsLoaded(true);
       return;
@@ -48,19 +46,8 @@ export default function GooglePlacesAutocomplete({
       script.async = true;
       script.defer = true;
       script.onload = () => {
-        // Wait a bit for Google Maps to fully initialize
-        setTimeout(() => {
-          if (window.google && window.google.maps && window.google.maps.places) {
-            setIsLoaded(true);
-            initializeAutocomplete();
-          } else {
-            // Retry after a longer delay
-            setTimeout(() => {
-              setIsLoaded(true);
-              initializeAutocomplete();
-            }, 500);
-          }
-        }, 100);
+        setIsLoaded(true);
+        initializeAutocomplete();
       };
       script.onerror = () => {
         console.error('Failed to load Google Places API');
@@ -80,8 +67,12 @@ export default function GooglePlacesAutocomplete({
   }, []);
 
   const initializeAutocomplete = () => {
-    if (!inputRef.current || !window.google || !window.google.maps || !window.google.maps.places) {
-      console.warn('Google Maps Places API not fully loaded yet');
+    if (!inputRef.current) {
+      return;
+    }
+
+    if (!window.google?.maps?.places) {
+      console.warn('Google Maps Places API not available');
       return;
     }
 
@@ -94,41 +85,22 @@ export default function GooglePlacesAutocomplete({
 
       autocompleteRef.current = new google.maps.places.Autocomplete(inputRef.current, options);
 
-    autocompleteRef.current.addListener('place_changed', () => {
-      const place = autocompleteRef.current?.getPlace();
-      if (place && place.geometry) {
-        onPlaceSelect(place);
-        
-        // Extract address components
-        const addressComponents = place.address_components || [];
-        const streetNumber = addressComponents.find(component => 
-          component.types.includes('street_number')
-        )?.long_name || '';
-        const route = addressComponents.find(component => 
-          component.types.includes('route')
-        )?.long_name || '';
-        const city = addressComponents.find(component => 
-          component.types.includes('locality')
-        )?.long_name || '';
-        const postalCode = addressComponents.find(component => 
-          component.types.includes('postal_code')
-        )?.long_name || '';
-        const country = addressComponents.find(component => 
-          component.types.includes('country')
-        )?.long_name || '';
-
-        // Update the input with formatted address
-        onChange(place.formatted_address || value);
-      }
-    });
+      autocompleteRef.current.addListener('place_changed', () => {
+        const place = autocompleteRef.current?.getPlace();
+        if (place && place.geometry) {
+          onPlaceSelect(place);
+          
+          // Update the input with formatted address
+          onChange(place.formatted_address || value);
+        }
+      });
     } catch (error) {
       console.error('Error initializing Google Places Autocomplete:', error);
-      setIsLoaded(true);
     }
   };
 
   // Fallback to regular input if Google Places API is not available
-  if (!isLoaded || !import.meta.env.VITE_GOOGLE_PLACES_API_KEY || import.meta.env.VITE_GOOGLE_PLACES_API_KEY === 'your_google_places_api_key_here') {
+  if (!isLoaded || !import.meta.env.VITE_GOOGLE_PLACES_API_KEY) {
     return (
       <div>
         {label && (
@@ -164,13 +136,7 @@ export default function GooglePlacesAutocomplete({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className={`w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors ${className}`}
-        disabled={!isLoaded}
       />
-      {!isLoaded && (
-        <div className="mt-2 text-sm text-gray-500">
-          Loading address suggestions...
-        </div>
-      )}
     </div>
   );
 }
