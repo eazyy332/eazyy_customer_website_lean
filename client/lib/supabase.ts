@@ -9,15 +9,40 @@ const createMockClient = () => ({
     getSession: () => Promise.resolve({ data: { session: null }, error: null }),
     getUser: () => Promise.resolve({ data: { user: null }, error: null }),
     onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
-    signInWithPassword: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }),
-    signUp: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }),
+    signInWithPassword: () => Promise.resolve({ 
+      data: { user: null, session: null }, 
+      error: { message: 'Supabase not configured. Please connect to Supabase to enable authentication.' } 
+    }),
+    signUp: () => Promise.resolve({ 
+      data: { user: null, session: null }, 
+      error: { message: 'Supabase not configured. Please connect to Supabase to enable authentication.' } 
+    }),
     signOut: () => Promise.resolve({ error: null }),
   },
   from: () => ({
-    select: () => Promise.resolve({ data: [], error: { message: 'Supabase not configured' } }),
-    insert: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }),
-    update: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }),
-    delete: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }),
+    select: () => ({
+      eq: function() { return this; },
+      order: function() { return this; },
+      limit: function() { return this; },
+      single: function() { return Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }); },
+      maybeSingle: function() { return Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }); },
+      then: function(resolve) { return resolve({ data: [], error: { message: 'Supabase not configured' } }); }
+    }),
+    insert: () => ({
+      select: function() { return this; },
+      single: function() { return Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }); },
+      then: function(resolve) { return resolve({ data: null, error: { message: 'Supabase not configured' } }); }
+    }),
+    update: () => ({
+      eq: function() { return this; },
+      select: function() { return this; },
+      single: function() { return Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }); },
+      then: function(resolve) { return resolve({ data: null, error: { message: 'Supabase not configured' } }); }
+    }),
+    delete: () => ({
+      eq: function() { return this; },
+      then: function(resolve) { return resolve({ data: null, error: { message: 'Supabase not configured' } }); }
+    }),
     eq: function() { return this; },
     order: function() { return this; },
     limit: function() { return this; },
@@ -35,8 +60,8 @@ const createMockClient = () => ({
 // Check if Supabase is properly configured
 const isConfigured = supabaseUrl && 
   supabaseAnonKey && 
-  !supabaseUrl.includes('your_supabase_url_here') && 
-  !supabaseAnonKey.includes('your_supabase_anon_key_here') &&
+  supabaseUrl !== 'your_supabase_url_here' && 
+  supabaseAnonKey !== 'your_supabase_anon_key_here' &&
   supabaseUrl.startsWith('https://') &&
   supabaseUrl.includes('.supabase.co');
 

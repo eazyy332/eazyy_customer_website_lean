@@ -39,28 +39,10 @@ export default function Login() {
   React.useEffect(() => {
     const testConnection = async () => {
       try {
-        // Only test connection if Supabase is properly configured
-        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-        const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-        
-        if (!supabaseUrl || 
-            !supabaseKey || 
-            supabaseUrl.includes('your_supabase_url_here') ||
-            !supabaseUrl.startsWith('https://') ||
-            supabaseKey.includes('your_supabase_anon_key_here')) {
-          console.log('Supabase not configured yet. Please connect Supabase using the button in the top right.');
-          return;
-        }
-        
-        // Test with a simple query that should work
-        const { data, error } = await supabase.from('orders').select('id').limit(1);
-        if (error) {
-          console.log('Supabase connection test failed:', error.message);
-        } else {
-          console.log('Supabase connection test successful');
-        }
+        // Skip connection test - handled by mock client
+        console.log('Supabase client initialized');
       } catch (err) {
-        console.log('Supabase connection test skipped - not configured yet');
+        console.log('Supabase initialization error:', err);
       }
     };
     testConnection();
