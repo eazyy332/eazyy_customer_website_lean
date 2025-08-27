@@ -7,7 +7,7 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string | und
 
 let supabaseAdmin;
 
-if (!supabaseUrl || supabaseUrl.includes('your_supabase_url_here')) {
+if (!supabaseUrl || supabaseUrl.includes('your-project-ref') || !supabaseUrl.startsWith('https://')) {
   console.warn('Supabase URL not configured. Please click "Connect to Supabase" in the top right.');
   // Create a mock client that won't crash the server
   const mockClient = {
@@ -22,11 +22,11 @@ if (!supabaseUrl || supabaseUrl.includes('your_supabase_url_here')) {
 } else {
   let supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string | undefined;
 
-  if (!supabaseServiceKey || supabaseServiceKey.includes('your_supabase_service_role_key_here')) {
+  if (!supabaseServiceKey || supabaseServiceKey.includes('example-service-role-key')) {
     console.warn('SUPABASE_SERVICE_ROLE_KEY not found - server-side operations will be limited')
     // Create a client with anon key as fallback for development
     const anonKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
-    if (!anonKey || anonKey.includes('your_supabase_anon_key_here')) {
+    if (!anonKey || anonKey.includes('example-anon-key')) {
       console.warn('No valid Supabase keys found. Please configure Supabase.');
       // Create a mock client
       const mockClient = {

@@ -35,8 +35,10 @@ const createMockClient = () => ({
 // Check if Supabase is properly configured
 const isConfigured = supabaseUrl && 
   supabaseAnonKey && 
-  !supabaseUrl.includes('your_supabase_url_here') && 
-  !supabaseAnonKey.includes('your_supabase_anon_key_here');
+  !supabaseUrl.includes('your-project-ref') && 
+  !supabaseAnonKey.includes('example-anon-key') &&
+  supabaseUrl.startsWith('https://') &&
+  supabaseUrl.includes('.supabase.co');
 
 export const supabase = isConfigured 
   ? createClient(supabaseUrl, supabaseAnonKey, {

@@ -45,9 +45,9 @@ export default function Login() {
         
         if (!supabaseUrl || 
             !supabaseKey || 
-            supabaseUrl.includes('your_supabase_url_here') ||
-            supabaseUrl.includes('your-proje') ||
-            supabaseKey.includes('your_supabase_anon_key_here')) {
+            supabaseUrl.includes('your-project-ref') ||
+            !supabaseUrl.startsWith('https://') ||
+            supabaseKey.includes('example-anon-key')) {
           console.log('Supabase not configured yet. Please connect Supabase using the button in the top right.');
           return;
         }

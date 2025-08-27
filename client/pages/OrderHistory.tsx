@@ -45,7 +45,7 @@ export default function OrderHistory() {
         
         // Check if Supabase is properly configured
         const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-        if (!supabaseUrl || supabaseUrl.includes('your_supabase_url_here') || supabaseUrl.includes('your-proje')) {
+        if (!supabaseUrl || supabaseUrl.includes('your-project-ref') || !supabaseUrl.startsWith('https://')) {
           if (isMounted) {
             setError('Supabase not configured. Please connect to Supabase to view your orders.');
             setLoading(false);

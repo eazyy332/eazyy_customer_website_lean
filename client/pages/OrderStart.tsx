@@ -13,7 +13,7 @@ export default function OrderStart() {
       try {
         // Check if Supabase is properly configured
         const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-        if (!supabaseUrl || supabaseUrl.includes('your_supabase_url_here') || supabaseUrl.includes('your-proje')) {
+        if (!supabaseUrl || supabaseUrl.includes('your-project-ref') || !supabaseUrl.startsWith('https://')) {
           setError('Supabase not configured. Please click "Connect to Supabase" in the top right.');
           setLoading(false);
           return;
