@@ -1,9 +1,4 @@
 import { createClient } from "@supabase/supabase-js";
-import dotenv from "dotenv";
-
-// Load .env first, then override with .env.local so local secrets win over repo defaults
-dotenv.config();
-dotenv.config({ path: ".env.local", override: true });
 
 const supabaseUrl = (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL) as
   | string
