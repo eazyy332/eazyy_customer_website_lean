@@ -1,4 +1,8 @@
+import dotenv from 'dotenv';
 import { createClient } from "@supabase/supabase-js";
+
+// Load environment variables from .env.local with override
+dotenv.config({ path: '.env.local', override: true });
 
 const supabaseUrl = (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL) as
   | string
