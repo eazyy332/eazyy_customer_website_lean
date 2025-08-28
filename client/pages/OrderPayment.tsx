@@ -167,19 +167,23 @@ export default function OrderPayment() {
         sourceQuoteId
       };
 
+      console.log('Sending order data:', orderData);
+      
       const res = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderData),
       });
+      
+      console.log('Order API response status:', res.status);
+      
       const data = await res.json();
+      console.log('Order API response data:', data);
+      
       if (!res.ok || !data.ok) {
         const errorMessage = data.error || 'Failed to create order';
-        if (errorMessage.includes('Supabase not configured')) {
-          alert('Database not configured. Please connect to Supabase to create orders.');
-        } else {
-          alert(`Order creation failed: ${errorMessage}`);
-        }
+        console.error('Order creation failed:', errorMessage);
+        alert(`Order creation failed: ${errorMessage}`);
         return;
       }
 

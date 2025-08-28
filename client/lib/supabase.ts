@@ -19,36 +19,42 @@ const createMockClient = () => ({
     }),
     signOut: () => Promise.resolve({ error: null }),
   },
-  from: () => ({
-    select: () => ({
+  from: (table: string) => {
+    const mockQuery = {
+      select: function(columns?: string) { return this; },
       eq: function() { return this; },
       order: function() { return this; },
       limit: function() { return this; },
       single: function() { return Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }); },
       maybeSingle: function() { return Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }); },
-      then: function(resolve) { return resolve({ data: [], error: { message: 'Supabase not configured' } }); }
-    }),
-    insert: () => ({
+      then: function(resolve: any) { return resolve({ data: [], error: { message: 'Supabase not configured' } }); }
+    };
+    
+    const mockInsert = {
       select: function() { return this; },
       single: function() { return Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }); },
-      then: function(resolve) { return resolve({ data: null, error: { message: 'Supabase not configured' } }); }
-    }),
-    update: () => ({
+      then: function(resolve: any) { return resolve({ data: null, error: { message: 'Supabase not configured' } }); }
+    };
+    
+    const mockUpdate = {
       eq: function() { return this; },
       select: function() { return this; },
       single: function() { return Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }); },
-      then: function(resolve) { return resolve({ data: null, error: { message: 'Supabase not configured' } }); }
-    }),
-    delete: () => ({
+      then: function(resolve: any) { return resolve({ data: null, error: { message: 'Supabase not configured' } }); }
+    };
+    
+    const mockDelete = {
       eq: function() { return this; },
-      then: function(resolve) { return resolve({ data: null, error: { message: 'Supabase not configured' } }); }
-    }),
-    eq: function() { return this; },
-    order: function() { return this; },
-    limit: function() { return this; },
-    single: function() { return this; },
-    maybeSingle: function() { return this; },
-  }),
+      then: function(resolve: any) { return resolve({ data: null, error: { message: 'Supabase not configured' } }); }
+    };
+
+    return {
+      ...mockQuery,
+      insert: () => mockInsert,
+      update: () => mockUpdate,
+      delete: () => mockDelete,
+    };
+  },
   storage: {
     from: () => ({
       upload: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }),
@@ -73,4 +79,3 @@ export const supabase = isConfigured
       },
     })
   : createMockClient() as any;
-

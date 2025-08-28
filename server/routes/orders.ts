@@ -13,17 +13,20 @@ type OrderItemInput = {
 export async function createOrder(req: Request, res: Response) {
   try {
     // Check if Supabase is properly configured
-    const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const supabaseUrl = (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL) as string | undefined;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string | undefined;
     
-    if (!supabaseUrl || supabaseUrl.includes('your_supabase_url_here') || !supabaseUrl.startsWith('https://')) {
+    if (!supabaseUrl || 
+        supabaseUrl === 'your_supabase_url_here' || 
+        !supabaseUrl.startsWith('https://') ||
+        !supabaseUrl.includes('.supabase.co')) {
       return res.status(503).json({ 
         ok: false, 
         error: "Supabase not configured. Please connect to Supabase to enable order creation." 
       });
     }
     
-    if (!supabaseKey || supabaseKey.includes('your_supabase_service_role_key_here')) {
+    if (!supabaseKey || supabaseKey === 'your_supabase_service_role_key_here') {
       return res.status(503).json({ 
         ok: false, 
         error: "Supabase service role key not configured. Please connect to Supabase to enable order creation." 
