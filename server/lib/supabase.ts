@@ -3,11 +3,23 @@ import { createClient } from "@supabase/supabase-js";
 const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || '';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
+console.log('Supabase configuration check:', {
+  hasUrl: !!supabaseUrl,
+  hasKey: !!supabaseServiceKey,
+  urlValid: supabaseUrl.startsWith('https://'),
+  urlPreview: supabaseUrl ? supabaseUrl.substring(0, 30) + '...' : 'missing'
+});
+
 // Create a placeholder client if environment variables are not available
 // This allows the dev server to start even before Supabase is connected
 let supabaseAdmin: any;
 
-if (supabaseUrl && supabaseServiceKey && supabaseUrl.startsWith('https://')) {
+if (supabaseUrl && 
+    supabaseServiceKey && 
+    supabaseUrl.startsWith('https://') && 
+    !supabaseUrl.includes('your_supabase_url_here') &&
+    !supabaseServiceKey.includes('your_supabase_service_role_key_here')) {
+  console.log('Creating real Supabase client');
   supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
     auth: {
       autoRefreshToken: false,
@@ -15,6 +27,7 @@ if (supabaseUrl && supabaseServiceKey && supabaseUrl.startsWith('https://')) {
     }
   });
 } else {
+  console.log('Using mock Supabase client - configuration invalid or missing');
   // Placeholder client that returns errors for all operations with proper method chaining
   const mockResponse = { data: null, error: { message: 'Supabase not configured' } };
   const createChainableObject = () => ({
