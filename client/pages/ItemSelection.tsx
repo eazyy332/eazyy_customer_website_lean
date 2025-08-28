@@ -427,6 +427,35 @@ export default function ItemSelection() {
             ))}
           </div>
 
+          {/* Mobile Service Switcher */}
+          <div className="mt-4 md:hidden">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-medium text-gray-600">Switch Service:</span>
+              <span className="text-xs text-gray-500">Swipe to see all</span>
+            </div>
+            <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+              {[
+                { key: 'eazzy-bag', src: iconBag, alt: 'eazyy bag', name: 'eazyy Bag' },
+                { key: 'dry-cleaning', src: iconDry, alt: 'dry cleaning', name: 'Dry Clean' },
+                { key: 'wash-iron', src: iconWashIron, alt: 'wash & iron', name: 'Wash & Iron' },
+                { key: 'repairs', src: iconRepair, alt: 'repairs', name: 'Repairs' },
+              ].map((item) => (
+                <button
+                  key={item.key}
+                  onClick={() => navigate(`/order/items/${item.key}`)}
+                  className={`flex-shrink-0 flex flex-col items-center gap-2 p-3 rounded-xl border transition-colors ${
+                    category === item.key 
+                      ? 'bg-primary/10 border-primary text-primary' 
+                      : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'
+                  }`}
+                >
+                  <img src={item.src} alt="" className="w-8 h-8 object-contain" />
+                  <span className="text-xs font-medium whitespace-nowrap">{item.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Items grid */}
           <div className="mt-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-10">
             {filteredItems.map((item: any) => {
