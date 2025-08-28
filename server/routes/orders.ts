@@ -44,37 +44,6 @@ export async function createOrder(req: Request, res: Response) {
       return res.status(400).json({ ok: false, error: "No items provided" });
     }
 
-    // Check if Supabase is properly configured
-    const supabaseUrl = (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL) as string | undefined;
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string | undefined;
-    
-    console.log('Environment variables check:', {
-      SUPABASE_URL: process.env.SUPABASE_URL,
-      VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL,
-      SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY ? '[PRESENT]' : '[MISSING]',
-      hasUrl: !!supabaseUrl,
-      hasKey: !!supabaseServiceKey
-    });
-
-    // For now, let's bypass the Supabase check and create mock orders
-    // This allows the application to work while Supabase is being configured
-    const isSupabaseConfigured = false; // Temporarily disabled
-
-    if (!isSupabaseConfigured) {
-      console.log('Creating mock order (Supabase configuration bypassed)');
-      
-      // Generate a realistic mock order
-      const mockOrderNumber = `EZ-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
-      
-      console.log('Mock order created:', mockOrderNumber);
-      
-      return res.json({ 
-        ok: true, 
-        orderId: `mock-${Date.now()}`,
-        orderNumber: mockOrderNumber
-      });
-    }
-
     // Calculate totals
     const subtotal = totals?.subtotal ?? items.reduce((s, it) => s + it.price * it.quantity, 0);
     const tax = totals?.tax ?? 0;
