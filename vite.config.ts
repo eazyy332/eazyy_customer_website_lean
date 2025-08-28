@@ -8,9 +8,6 @@ import { loadEnv } from "vite";
 // Load environment variables before importing server modules
 dotenv.config({ path: '.env.local', override: true });
 
-// Load environment variables from .env.local
-dotenv.config({ path: '.env.local' });
-
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   // Load env file based on `mode` in the current working directory.
