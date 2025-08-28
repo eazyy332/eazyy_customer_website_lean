@@ -12,11 +12,24 @@ type OrderItemInput = {
 
 export async function createOrder(req: Request, res: Response) {
   try {
-    // Pre-check: ensure Supabase admin client can read
-    const precheck = await supabaseAdmin.from('orders').select('id').limit(1);
-    if (precheck.error) {
-      console.error('precheck select error:', precheck.error);
+    // Check if Supabase is properly configured
+    const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    
+    if (!supabaseUrl || supabaseUrl.includes('your_supabase_url_here') || !supabaseUrl.startsWith('https://')) {
+      return res.status(503).json({ 
+        ok: false, 
+        error: "Supabase not configured. Please connect to Supabase to enable order creation." 
+      });
     }
+    
+    if (!supabaseKey || supabaseKey.includes('your_supabase_service_role_key_here')) {
+      return res.status(503).json({ 
+        ok: false, 
+        error: "Supabase service role key not configured. Please connect to Supabase to enable order creation." 
+      });
+    }
+
     const {
       items,
       totals,

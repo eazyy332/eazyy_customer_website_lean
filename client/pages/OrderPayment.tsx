@@ -130,6 +130,13 @@ export default function OrderPayment() {
   const handlePayment = async () => {
     if (!isFormValid()) return;
 
+    // Check if Supabase is configured before attempting order creation
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    if (!supabaseUrl || supabaseUrl.includes('your_supabase_url_here') || !supabaseUrl.startsWith('https://')) {
+      alert('Supabase not configured. Please connect to Supabase to enable order creation.');
+      return;
+    }
+
     setIsProcessing(true);
     try {
       // Prepare the order data in the format expected by the API
@@ -166,7 +173,15 @@ export default function OrderPayment() {
         body: JSON.stringify(orderData),
       });
       const data = await res.json();
-      if (!res.ok || !data.ok) throw new Error(data.error || 'Failed to create order');
+      if (!res.ok || !data.ok) {
+        const errorMessage = data.error || 'Failed to create order';
+        if (errorMessage.includes('Supabase not configured')) {
+          alert('Database not configured. Please connect to Supabase to create orders.');
+        } else {
+          alert(`Order creation failed: ${errorMessage}`);
+        }
+        return;
+      }
 
       navigate('/order/confirmation', {
         state: {
