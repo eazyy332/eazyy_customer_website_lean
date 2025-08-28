@@ -71,7 +71,7 @@ export async function createOrder(req: Request, res: Response) {
       return `EZ-${timestamp}-${random}`;
     };
 
-    // Get current user ID from auth context if available
+    // Get current user ID from auth context
     let userId = null;
     try {
       // Try to get user from auth header if present
@@ -81,26 +81,23 @@ export async function createOrder(req: Request, res: Response) {
         const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
         if (!error && user) {
           userId = user.id;
+          console.log('Found authenticated user:', user.id, user.email);
+        } else {
+          console.log('Auth token validation failed:', error?.message);
         }
+      } else {
+        console.log('No authorization header found');
       }
     } catch (e) {
       console.log('Could not get user from auth header:', e);
     }
 
-    // If no user from auth, try to find any existing user for demo purposes
+    // Require authentication for order creation
     if (!userId) {
-      try {
-        const { data: existingUser } = await supabaseAdmin
-          .from('profiles')
-          .select('id')
-          .limit(1)
-          .maybeSingle();
-        if (existingUser) {
-          userId = existingUser.id;
-        }
-      } catch (e) {
-        console.log('Could not find existing user:', e);
-      }
+      return res.status(401).json({ 
+        ok: false, 
+        error: 'Authentication required. Please sign in to place an order.' 
+      });
     }
 
     // Build customer name from contact info

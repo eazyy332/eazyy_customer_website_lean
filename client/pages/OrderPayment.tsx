@@ -136,6 +136,11 @@ export default function OrderPayment() {
       // Get auth token for server-side user identification
       const { data: { session } } = await supabase.auth.getSession();
       const authToken = session?.access_token;
+      
+      if (!authToken) {
+        alert('Please sign in to complete your order.');
+        return;
+      }
 
       // Prepare the order data in the format expected by the API
       const orderData = {
@@ -152,8 +157,8 @@ export default function OrderPayment() {
           total: totalPrice
         },
         contact: {
-          firstName: address?.firstName || address?.fullName?.split(' ')[0] || 'Customer',
-          lastName: address?.lastName || address?.fullName?.split(' ').slice(1).join(' ') || '',
+          firstName: address?.firstName || '',
+          lastName: address?.lastName || '',
           email: address?.email || 'customer@example.com',
           phone: address?.phoneNumber || address?.phone || null
         },
