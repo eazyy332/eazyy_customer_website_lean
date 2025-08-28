@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import AuthGuard from "@/components/AuthGuard";
+import { supabase } from "@/lib/supabase";
 
 interface PaymentMethod {
   id: string;
