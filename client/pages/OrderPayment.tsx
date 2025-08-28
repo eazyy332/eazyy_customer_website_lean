@@ -183,10 +183,18 @@ export default function OrderPayment() {
       if (!res.ok || !data.ok) {
         const errorMessage = data.error || 'Failed to create order';
         console.error('Order creation failed:', errorMessage);
-        alert(`Order creation failed: ${errorMessage}`);
+        
+        if (errorMessage.includes('Supabase not configured')) {
+          alert('Database not configured. Please connect to Supabase to enable order creation.');
+        } else {
+          alert(`Order creation failed: ${errorMessage}`);
+        }
         return;
       }
 
+      // Clear cart after successful order
+      localStorage.removeItem('eazzy-cart');
+      
       navigate('/order/confirmation', {
         state: {
           orderId: data.orderId,
