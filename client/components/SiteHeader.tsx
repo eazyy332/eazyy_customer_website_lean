@@ -62,14 +62,30 @@ export default function SiteHeader() {
             <MenuIcon name="cart" />
           </Link>
           {email ? (
-            <div className="relative group">
-              <button className="p-1.5 rounded hover:bg-gray-100 flex items-center gap-2" aria-haspopup="menu" aria-expanded="false">
+            <div className="relative">
+              <button 
+                className="p-1.5 rounded hover:bg-gray-100 flex items-center gap-2" 
+                onClick={() => {
+                  const dropdown = document.getElementById('account-dropdown');
+                  if (dropdown) {
+                    dropdown.classList.toggle('hidden');
+                  }
+                }}
+              >
                 <AccountIcon />
                 <span className="text-sm text-black">{email}</span>
               </button>
-              <div className="absolute right-0 mt-2 w-40 rounded-xl border border-gray-200 bg-white shadow-lg hidden group-hover:block">
-                <Link to="/account" className="block px-4 py-2 text-sm hover:bg-gray-50">Account</Link>
-                <button onClick={() => supabase.auth.signOut()} className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50">Sign out</button>
+              <div id="account-dropdown" className="absolute right-0 mt-2 w-40 rounded-xl border border-gray-200 bg-white shadow-lg hidden z-50">
+                <Link to="/login" className="block px-4 py-2 text-sm hover:bg-gray-50">Account</Link>
+                <button 
+                  onClick={async () => {
+                    await supabase.auth.signOut();
+                    window.location.href = '/';
+                  }} 
+                  className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50"
+                >
+                  Sign out
+                </button>
               </div>
             </div>
           ) : (
