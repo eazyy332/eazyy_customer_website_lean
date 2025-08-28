@@ -152,11 +152,12 @@ export default function OrderPayment() {
           total: totalPrice
         },
         contact: {
-          name: address?.fullName || address?.name || 'Customer',
+          firstName: address?.firstName || address?.fullName?.split(' ')[0] || 'Customer',
+          lastName: address?.lastName || address?.fullName?.split(' ').slice(1).join(' ') || '',
           email: address?.email || 'customer@example.com',
           phone: address?.phoneNumber || address?.phone || null
         },
-        address: typeof address === 'string' ? address : (
+        address: typeof address === 'string' ? address : address?.fullAddress || (
           address?.fullAddress || 
           `${address?.streetAddress || ''} ${address?.apartment || ''}, ${address?.city || ''} ${address?.postalCode || ''}`.trim()
         ),

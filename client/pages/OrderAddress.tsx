@@ -6,12 +6,15 @@ import AuthGuard from "@/components/AuthGuard";
 
 interface AddressData {
   fullName: string;
+  firstName: string;
+  lastName: string;
   streetAddress: string;
   apartment: string;
   city: string;
   postalCode: string;
   country: string;
   phoneNumber: string;
+  email: string;
   specialInstructions: string;
 }
 
@@ -43,12 +46,15 @@ export default function OrderAddress() {
   
   const [address, setAddress] = useState<AddressData>({
     fullName: '',
+    firstName: '',
+    lastName: '',
     streetAddress: '',
     apartment: '',
     city: '',
     postalCode: '',
     country: 'Netherlands',
     phoneNumber: '',
+    email: '',
     specialInstructions: ''
   });
 
@@ -96,6 +102,17 @@ export default function OrderAddress() {
 
   const handleAddressChange = (field: keyof AddressData, value: string) => {
     setAddress(prev => ({ ...prev, [field]: value }));
+    
+    // Auto-update fullName when firstName or lastName changes
+    if (field === 'firstName' || field === 'lastName') {
+      const newFirstName = field === 'firstName' ? value : address.firstName;
+      const newLastName = field === 'lastName' ? value : address.lastName;
+      setAddress(prev => ({ 
+        ...prev, 
+        [field]: value,
+        fullName: `${newFirstName} ${newLastName}`.trim()
+      }));
+    }
   };
 
   const handlePlaceSelect = (place: google.maps.places.PlaceResult) => {
@@ -138,12 +155,15 @@ export default function OrderAddress() {
       setAddress(prev => ({
         ...prev,
         fullName: prev.fullName || '',
+        firstName: prev.firstName || '',
+        lastName: prev.lastName || '',
         streetAddress: selected.fullAddress,
         apartment: '',
         city: '',
         postalCode: '',
         country: 'Netherlands',
         phoneNumber: prev.phoneNumber || '',
+        email: prev.email || '',
         specialInstructions: ''
       }));
     }
@@ -154,10 +174,11 @@ export default function OrderAddress() {
       return true;
     }
     
-    return address.fullName.trim() !== '' &&
+    return (address.firstName.trim() !== '' || address.fullName.trim() !== '') &&
            address.streetAddress.trim() !== '' &&
            address.city.trim() !== '' &&
            address.postalCode.trim() !== '' &&
+           address.email.trim() !== '' &&
            address.phoneNumber.trim() !== '';
   };
 
@@ -295,15 +316,39 @@ export default function OrderAddress() {
                 <h3 className="text-lg font-medium text-black mb-6">Enter New Address</h3>
                 
                 <div className="space-y-6">
-                  {/* Full Name */}
+                  {/* Name Fields */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-black mb-2">First Name *</label>
+                      <input 
+                        type="text" 
+                        value={address.firstName}
+                        onChange={(e) => handleAddressChange('firstName', e.target.value)}
+                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors"
+                        placeholder="Enter your first name"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-black mb-2">Last Name *</label>
+                      <input 
+                        type="text" 
+                        value={address.lastName}
+                        onChange={(e) => handleAddressChange('lastName', e.target.value)}
+                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors"
+                        placeholder="Enter your last name"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Email */}
                   <div>
-                    <label className="block text-sm font-medium text-black mb-2">Full Name *</label>
+                    <label className="block text-sm font-medium text-black mb-2">Email Address *</label>
                     <input 
-                      type="text" 
-                      value={address.fullName}
-                      onChange={(e) => handleAddressChange('fullName', e.target.value)}
+                      type="email" 
+                      value={address.email}
+                      onChange={(e) => handleAddressChange('email', e.target.value)}
                       className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors"
-                      placeholder="Enter your full name"
+                      placeholder="Enter your email address"
                     />
                   </div>
 

@@ -45,7 +45,7 @@ export async function createOrder(req: Request, res: Response) {
       totals: { subtotal: number; tax?: number; shippingFee?: number; total: number };
       pickupDate?: string | null;
       deliveryDate?: string | null;
-      contact: { name: string; email: string; phone?: string | null };
+      contact: { name?: string; firstName?: string; lastName?: string; email: string; phone?: string | null };
       address: string;
       serviceId?: string | null;
       categoryId?: string | null;
@@ -103,10 +103,17 @@ export async function createOrder(req: Request, res: Response) {
       }
     }
 
+    // Build customer name from contact info
+    const customerName = contact?.name || 
+      (contact?.firstName && contact?.lastName ? `${contact.firstName} ${contact.lastName}` : '') ||
+      contact?.firstName || 
+      contact?.lastName || 
+      'Customer';
+
     const orderData = {
       order_number: generateOrderNumber(),
       user_id: userId,
-      customer_name: contact?.name ?? "",
+      customer_name: customerName,
       email: contact?.email ?? "",
       phone: contact?.phone ?? null,
       shipping_address: address ?? "",

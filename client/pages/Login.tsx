@@ -8,6 +8,8 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSignUp, setIsSignUp] = useState(false);
@@ -82,6 +84,10 @@ export default function Login() {
       setError("Passwords don't match");
       return;
     }
+    if (!firstName.trim() || !lastName.trim()) {
+      setError("Please enter your first and last name");
+      return;
+    }
     try {
       setLoading(true);
       setError(null);
@@ -93,6 +99,11 @@ export default function Login() {
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/login`
+          data: {
+            first_name: firstName.trim(),
+            last_name: lastName.trim(),
+            full_name: `${firstName.trim()} ${lastName.trim()}`
+          }
         }
       });
       
@@ -106,6 +117,18 @@ export default function Login() {
       if (data?.user && !data?.session) {
         setError("Check your email for a confirmation link!");
       } else if (data?.session) {
+        // Create profile after successful signup
+        try {
+          await supabase.from('profiles').insert({
+            id: data.user.id,
+            first_name: firstName.trim(),
+            last_name: lastName.trim()
+          });
+        } catch (profileErr) {
+          console.log('Profile creation failed:', profileErr);
+          // Don't fail signup if profile creation fails
+        }
+
         // Auto-confirmed, redirect to home
         // Check for pending order after successful signup
         const pendingOrder = localStorage.getItem('pendingOrder');
@@ -170,6 +193,32 @@ export default function Login() {
           
           <div className="rounded-2xl border border-gray-200 p-6">
             <form onSubmit={isSignUp ? signUp : signIn} className="space-y-4">
+              {isSignUp && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm text-gray-700 mb-1">First Name</label>
+                    <input
+                      type="text"
+                      required
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      className="w-full rounded-xl border border-gray-300 px-4 py-2"
+                      placeholder="First name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm text-gray-700 mb-1">Last Name</label>
+                    <input
+                      type="text"
+                      required
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      className="w-full rounded-xl border border-gray-300 px-4 py-2"
+                      placeholder="Last name"
+                    />
+                  </div>
+                </div>
+              )}
               <div>
                 <label className="block text-sm text-gray-700 mb-1">Email</label>
                 <input
