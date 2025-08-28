@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import AuthGuard from "@/components/AuthGuard";
+import { useAuth } from "@/hooks/useAuth";
 
 type OrderStatus =
   | "confirmed"
@@ -35,10 +36,19 @@ export default function OrderHistory() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
 
   useEffect(() => {
     let isMounted = true;
     async function loadOrders() {
+      if (!user) {
+        if (isMounted) {
+          setOrders([]);
+          setLoading(false);
+        }
+        return;
+      }
+      
       try {
         setLoading(true);
         setError(null);
@@ -66,6 +76,7 @@ export default function OrderHistory() {
             shipping_address,
             order_items (product_name, quantity, unit_price)
           `)
+          .eq('user_id', user.id)
           .order('created_at', { ascending: false });
         if (error) throw error;
 
