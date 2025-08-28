@@ -40,6 +40,7 @@ const OrderDetail = lazy(() => import("./pages/OrderDetail"));
 const Messages = lazy(() => import("./pages/Messages"));
 const Login = lazy(() => import("./pages/Login"));
 const Cart = lazy(() => import("./pages/Cart"));
+const Account = lazy(() => import("./pages/Account"));
 
 const queryClient = new QueryClient();
 
@@ -101,7 +102,7 @@ function App() {
                   <Route path="/order/:id" element={<OrderDetail />} />
                   <Route path="/cart" element={<Cart />} />
                   <Route path="/login" element={<Login />} />
-                  <Route path="/account" element={<Login />} />
+                  <Route path="/account" element={<Account />} />
                   <Route path="/messages" element={<Messages />} />
 
                   {/* Legacy Routes */}

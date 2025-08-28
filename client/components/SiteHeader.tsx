@@ -76,7 +76,7 @@ export default function SiteHeader() {
                 <span className="text-sm text-black">{email}</span>
               </button>
               <div id="account-dropdown" className="absolute right-0 mt-2 w-40 rounded-xl border border-gray-200 bg-white shadow-lg hidden z-50">
-                <Link to="/login" className="block px-4 py-2 text-sm hover:bg-gray-50">Account</Link>
+                <Link to="/account" className="block px-4 py-2 text-sm hover:bg-gray-50">Account</Link>
                 <button 
                   onClick={async () => {
                     await supabase.auth.signOut();
@@ -89,7 +89,7 @@ export default function SiteHeader() {
               </div>
             </div>
           ) : (
-            <Link to="/login" className="p-1.5 rounded hover:bg-gray-100" title="Account">
+            <Link to="/account" className="p-1.5 rounded hover:bg-gray-100" title="Account">
               <AccountIcon />
             </Link>
           )}
