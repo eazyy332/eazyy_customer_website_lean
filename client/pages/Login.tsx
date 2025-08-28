@@ -119,7 +119,7 @@ export default function Login() {
       } else if (data?.session) {
         // Create profile after successful signup
         try {
-          await supabase.from('profiles').insert({
+          await supabase.from('profiles').upsert({
             id: data.user.id,
             first_name: firstName.trim(),
             last_name: lastName.trim()
