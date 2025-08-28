@@ -387,8 +387,8 @@ export default function ItemSelection() {
               <h1 className="mt-5 text-4xl md:text-5xl font-medium text-white">{meta.title}</h1>
               <p className="mt-3 max-w-2xl text-white/90 text-lg leading-relaxed">{meta.description}</p>
 
-              {/* Right-side circular service selectors */}
-              <div className="hidden md:flex items-center gap-5 absolute bottom-6 right-8">
+              {/* Right-side circular service selectors - visible on all screen sizes */}
+              <div className="flex items-center gap-3 md:gap-5 absolute bottom-6 right-4 md:right-8">
                 {[
                   { key: 'eazzy-bag', src: iconBag, alt: 'eazyy bag' },
                   { key: 'dry-cleaning', src: iconDry, alt: 'dry cleaning' },
@@ -398,11 +398,11 @@ export default function ItemSelection() {
                   <button
                     key={item.key}
                     onClick={() => navigate(`/order/items/${item.key}`)}
-                    className="w-14 h-14 rounded-full bg-white/95 backdrop-blur flex items-center justify-center shadow border"
+                    className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/95 backdrop-blur flex items-center justify-center shadow border"
                     style={{ borderColor: `${meta.accent}30` }}
                     aria-label={item.alt}
                   >
-                    <img src={item.src} alt="" className="w-8 h-8 object-contain" />
+                    <img src={item.src} alt="" className="w-6 h-6 md:w-8 md:h-8 object-contain" />
                   </button>
                 ))}
               </div>
@@ -425,35 +425,6 @@ export default function ItemSelection() {
                 {subcat.name}
               </button>
             ))}
-          </div>
-
-          {/* Mobile Service Switcher */}
-          <div className="mt-4 md:hidden">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-medium text-gray-600">Switch Service:</span>
-              <span className="text-xs text-gray-500">Swipe to see all</span>
-            </div>
-            <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
-              {[
-                { key: 'eazzy-bag', src: iconBag, alt: 'eazyy bag', name: 'eazyy Bag' },
-                { key: 'dry-cleaning', src: iconDry, alt: 'dry cleaning', name: 'Dry Clean' },
-                { key: 'wash-iron', src: iconWashIron, alt: 'wash & iron', name: 'Wash & Iron' },
-                { key: 'repairs', src: iconRepair, alt: 'repairs', name: 'Repairs' },
-              ].map((item) => (
-                <button
-                  key={item.key}
-                  onClick={() => navigate(`/order/items/${item.key}`)}
-                  className={`flex-shrink-0 flex flex-col items-center gap-2 p-3 rounded-xl border transition-colors ${
-                    category === item.key 
-                      ? 'bg-primary/10 border-primary text-primary' 
-                      : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'
-                  }`}
-                >
-                  <img src={item.src} alt="" className="w-8 h-8 object-contain" />
-                  <span className="text-xs font-medium whitespace-nowrap">{item.name}</span>
-                </button>
-              ))}
-            </div>
           </div>
 
           {/* Items grid */}
