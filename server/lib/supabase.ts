@@ -15,14 +15,26 @@ if (supabaseUrl && supabaseServiceKey && supabaseUrl.startsWith('https://')) {
     }
   });
 } else {
-  // Placeholder client that returns errors for all operations
+  // Placeholder client that returns errors for all operations with proper method chaining
+  const mockResponse = { data: null, error: { message: 'Supabase not configured' } };
+  const createChainableObject = () => ({
+    select: () => createChainableObject(),
+    insert: () => createChainableObject(),
+    update: () => createChainableObject(),
+    delete: () => createChainableObject(),
+    eq: () => createChainableObject(),
+    in: () => createChainableObject(),
+    order: () => createChainableObject(),
+    limit: () => createChainableObject(),
+    maybeSingle: () => Promise.resolve(mockResponse),
+    single: () => Promise.resolve(mockResponse),
+    then: (resolve: any) => Promise.resolve(mockResponse).then(resolve),
+    catch: (reject: any) => Promise.resolve(mockResponse).catch(reject),
+    get count() { return Promise.resolve({ data: 0, error: { message: 'Supabase not configured' } }); }
+  });
+
   supabaseAdmin = {
-    from: () => ({
-      select: () => ({ data: null, error: { message: 'Supabase not configured' } }),
-      insert: () => ({ data: null, error: { message: 'Supabase not configured' } }),
-      update: () => ({ data: null, error: { message: 'Supabase not configured' } }),
-      delete: () => ({ data: null, error: { message: 'Supabase not configured' } }),
-    }),
+    from: () => createChainableObject(),
     auth: {
       getUser: () => Promise.resolve({ data: { user: null }, error: { message: 'Supabase not configured' } })
     }
