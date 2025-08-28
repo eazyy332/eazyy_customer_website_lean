@@ -130,15 +130,12 @@ export default function OrderPayment() {
   const handlePayment = async () => {
     if (!isFormValid()) return;
 
-    // Check if Supabase is configured before attempting order creation
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    if (!supabaseUrl || supabaseUrl.includes('your_supabase_url_here') || !supabaseUrl.startsWith('https://')) {
-      alert('Supabase not configured. Please connect to Supabase to enable order creation.');
-      return;
-    }
-
     setIsProcessing(true);
     try {
+      // Get auth token for server-side user identification
+      const { data: { session } } = await supabase.auth.getSession();
+      const authToken = session?.access_token;
+
       // Prepare the order data in the format expected by the API
       const orderData = {
         items: selectedServices.map(service => ({
@@ -169,9 +166,18 @@ export default function OrderPayment() {
 
       console.log('Sending order data:', orderData);
       
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json'
+      };
+      
+      // Add auth token if available
+      if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+      }
+      
       const res = await fetch('/api/orders', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(orderData),
       });
       
@@ -183,12 +189,7 @@ export default function OrderPayment() {
       if (!res.ok || !data.ok) {
         const errorMessage = data.error || 'Failed to create order';
         console.error('Order creation failed:', errorMessage);
-        
-        if (errorMessage.includes('Supabase not configured')) {
-          alert('Database not configured. Please connect to Supabase to enable order creation.');
-        } else {
-          alert(`Order creation failed: ${errorMessage}`);
-        }
+        alert(`Order creation failed: ${errorMessage}`);
         return;
       }
 
@@ -197,7 +198,7 @@ export default function OrderPayment() {
       
       navigate('/order/confirmation', {
         state: {
-          orderId: data.orderId,
+          orderId: data.orderNumber || data.orderId,
           selectedServices,
           totalPrice,
           schedule,
@@ -206,6 +207,7 @@ export default function OrderPayment() {
         }
       });
     } catch (e) {
+      console.error('Order creation exception:', e);
       alert('Order creation failed. Please try again.');
     } finally {
       setIsProcessing(false);

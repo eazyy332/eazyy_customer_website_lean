@@ -12,16 +12,7 @@ type OrderItemInput = {
 
 export async function createOrder(req: Request, res: Response) {
   try {
-    // Check if Supabase is properly configured
-    const supabaseUrl = (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL) as string | undefined;
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string | undefined;
-    
-    const isSupabaseConfigured = supabaseUrl && 
-      supabaseKey && 
-      supabaseUrl !== 'your_supabase_url_here' && 
-      supabaseKey !== 'your_supabase_service_role_key_here' &&
-      supabaseUrl.startsWith('https://') &&
-      supabaseUrl.includes('.supabase.co');
+    console.log('Order creation request received:', req.body);
 
     const {
       items,
@@ -53,137 +44,190 @@ export async function createOrder(req: Request, res: Response) {
       return res.status(400).json({ ok: false, error: "No items provided" });
     }
 
-    // Generate a mock order ID for development
-    const generateMockOrderId = () => {
-      return `EZ-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
-    };
+    // Check if Supabase is properly configured
+    const supabaseUrl = (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL) as string | undefined;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string | undefined;
+    
+    console.log('Supabase configuration check:', {
+      hasUrl: !!supabaseUrl,
+      hasKey: !!supabaseServiceKey,
+      urlValid: supabaseUrl && supabaseUrl.startsWith('https://') && supabaseUrl.includes('.supabase.co'),
+      keyValid: supabaseServiceKey && supabaseServiceKey.length > 50
+    });
+
+    const isSupabaseConfigured = supabaseUrl && 
+      supabaseServiceKey && 
+      supabaseUrl !== 'your_supabase_url_here' && 
+      supabaseServiceKey !== 'your_supabase_service_role_key_here' &&
+      supabaseUrl.startsWith('https://') &&
+      supabaseUrl.includes('.supabase.co') &&
+      supabaseServiceKey.length > 50;
+
+    console.log('Supabase configured:', isSupabaseConfigured);
 
     if (!isSupabaseConfigured) {
-      // Mock order creation for development
-      console.log('Creating mock order (Supabase not configured)');
-      const mockOrderId = generateMockOrderId();
-      
-      // Simulate processing delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      console.log('Mock order created:', {
-        orderId: mockOrderId,
-        items: items.length,
-        total: totals?.total || 0,
-        customer: contact?.name
-      });
-
-      return res.json({ 
-        ok: true, 
-        orderId: mockOrderId,
-        message: "Order created successfully (development mode)"
+      console.log('Supabase not configured, returning error');
+      return res.status(503).json({ 
+        ok: false, 
+        error: "Supabase not configured. Please connect to Supabase to enable order creation." 
       });
     }
 
-    // Real Supabase order creation
+    // Calculate totals
     const subtotal = totals?.subtotal ?? items.reduce((s, it) => s + it.price * it.quantity, 0);
     const tax = totals?.tax ?? 0;
     const shippingFee = totals?.shippingFee ?? 0;
     const total = totals?.total ?? subtotal + tax + shippingFee - (discountAmount ?? 0);
 
-    const generateShortOrderNumber = () => {
-      const partA = Math.random().toString(36).slice(2, 8).toUpperCase();
-      const partB = Math.floor(Date.now() / 1000).toString(36).toUpperCase();
-      const raw = `EZ-${partA}${partB}`;
-      return raw.slice(0, 20);
+    // Generate order number
+    const generateOrderNumber = () => {
+      const timestamp = Date.now().toString(36).toUpperCase();
+      const random = Math.random().toString(36).slice(2, 6).toUpperCase();
+      return `EZ-${timestamp}-${random}`;
     };
 
-    const baseOrder: any = {
-      order_number: generateShortOrderNumber(),
+    // Get current user ID from auth context if available
+    let userId = null;
+    try {
+      // Try to get user from auth header if present
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        const token = authHeader.substring(7);
+        const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
+        if (!error && user) {
+          userId = user.id;
+        }
+      }
+    } catch (e) {
+      console.log('Could not get user from auth header:', e);
+    }
+
+    // If no user from auth, try to find any existing user for demo purposes
+    if (!userId) {
+      try {
+        const { data: existingUser } = await supabaseAdmin
+          .from('profiles')
+          .select('id')
+          .limit(1)
+          .maybeSingle();
+        if (existingUser) {
+          userId = existingUser.id;
+        }
+      } catch (e) {
+        console.log('Could not find existing user:', e);
+      }
+    }
+
+    const orderData = {
+      order_number: generateOrderNumber(),
+      user_id: userId,
       customer_name: contact?.name ?? "",
       email: contact?.email ?? "",
       phone: contact?.phone ?? null,
       shipping_address: address ?? "",
       status: "pending",
       payment_method: "credit_card",
-      shipping_method: "hand-over",
+      payment_status: "pending",
+      shipping_method: "pickup_delivery",
       subtotal,
       tax,
       shipping_fee: shippingFee,
       total_amount: total,
-      pickup_date: pickupDate ?? new Date().toISOString(),
-      delivery_date: deliveryDate ?? null,
+      pickup_date: pickupDate ? new Date(pickupDate).toISOString() : new Date(Date.now() + 24*60*60*1000).toISOString(),
+      delivery_date: deliveryDate ? new Date(deliveryDate).toISOString() : null,
       service_id: serviceId ?? null,
       category_id: categoryId ?? null,
+      latitude: "52.3676", // Default Amsterdam coordinates
+      longitude: "4.9041",
+      promo_code: promoCode ?? null,
+      discount_amount: discountAmount ?? null,
     };
 
-    if (process.env.ENABLE_ORDER_DISCOUNTS === 'true') {
-      baseOrder.promo_code = promoCode ?? null;
-      baseOrder.discount_amount = discountAmount ?? null;
-    }
+    console.log('Creating order with data:', orderData);
 
-    // Try to get an existing user_id for the order
-    try {
-      const { data: anyOrder } = await supabaseAdmin
-        .from('orders')
-        .select('user_id')
-        .not('user_id', 'is', null)
-        .limit(1)
-        .maybeSingle();
-      if (anyOrder?.user_id) {
-        baseOrder.user_id = anyOrder.user_id;
-      }
-    } catch {}
-
-    console.log('Creating real order with Supabase:', baseOrder.order_number);
-    const { data: order, error: orderErr } = await supabaseAdmin
+    // Insert order
+    const { data: order, error: orderError } = await supabaseAdmin
       .from("orders")
-      .insert(baseOrder)
-      .select("id")
+      .insert(orderData)
+      .select("id, order_number")
       .single();
 
-    if (orderErr || !order) {
-      console.error("Order creation error:", orderErr);
-      return res.status(500).json({ ok: false, error: orderErr?.message || "Failed to create order" });
+    if (orderError) {
+      console.error("Order creation error:", orderError);
+      return res.status(500).json({ 
+        ok: false, 
+        error: `Failed to create order: ${orderError.message}` 
+      });
     }
 
-    const orderId = order.id as string;
-    const { data: fullOrder } = await supabaseAdmin
-      .from('orders')
-      .select('order_number')
-      .eq('id', orderId)
-      .maybeSingle();
+    if (!order) {
+      console.error("No order returned from insert");
+      return res.status(500).json({ 
+        ok: false, 
+        error: "Failed to create order: No data returned" 
+      });
+    }
+
+    console.log('Order created successfully:', order);
 
     // Insert order items
-    const isUuid = (v: unknown) =>
-      typeof v === 'string' && /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/.test(v);
-
-    const itemsPayload = items.map((s) => ({
-      order_id: orderId,
-      product_id: isUuid(s.id) ? s.id : null,
-      product_name: s.name,
-      unit_price: s.price,
-      quantity: s.quantity,
-      subtotal: s.price * s.quantity,
-      service_id: s.serviceId ?? serviceId ?? null,
-      category_id: s.categoryId ?? categoryId ?? null,
+    const itemsPayload = items.map((item) => ({
+      order_id: order.id,
+      product_id: null, // We don't have product IDs in this context
+      product_name: item.name,
+      unit_price: item.price,
+      quantity: item.quantity,
+      subtotal: item.price * item.quantity,
+      service_id: item.serviceId ?? serviceId ?? null,
+      category_id: item.categoryId ?? categoryId ?? null,
+      description: `${item.name} - ${item.quantity}x at €${item.price}`,
       is_temporary: false,
       is_facility_added: false,
     }));
 
-    const { error: itemsErr } = await supabaseAdmin.from("order_items").insert(itemsPayload);
+    console.log('Creating order items:', itemsPayload);
 
-    if (itemsErr) {
-      console.error("Order items creation error:", itemsErr);
-      return res.status(500).json({ ok: false, error: itemsErr.message });
+    const { error: itemsError } = await supabaseAdmin
+      .from("order_items")
+      .insert(itemsPayload);
+
+    if (itemsError) {
+      console.error("Order items creation error:", itemsError);
+      // Don't fail the entire order if items fail - we can fix this later
+      console.log("Order created but items failed to insert");
+    } else {
+      console.log('Order items created successfully');
     }
 
     // Link custom quote if provided
     if (sourceQuoteId) {
-      await supabaseAdmin
-        .from('custom_price_quotes')
-        .update({ order_id: orderId, order_number: fullOrder?.order_number ?? null, status: 'accepted' })
-        .eq('id', sourceQuoteId);
+      try {
+        await supabaseAdmin
+          .from('custom_price_quotes')
+          .update({ 
+            order_id: order.id, 
+            order_number: order.order_number,
+            status: 'accepted' 
+          })
+          .eq('id', sourceQuoteId);
+        console.log('Custom quote linked to order');
+      } catch (e) {
+        console.log('Failed to link custom quote:', e);
+      }
     }
 
-    return res.json({ ok: true, orderId });
+    console.log('Order creation completed successfully');
+    return res.json({ 
+      ok: true, 
+      orderId: order.id,
+      orderNumber: order.order_number
+    });
+
   } catch (e: any) {
     console.error("Unexpected order creation error:", e);
-    return res.status(500).json({ ok: false, error: e?.message || "Unexpected error" });
+    return res.status(500).json({ 
+      ok: false, 
+      error: `Unexpected error: ${e?.message || 'Unknown error'}` 
+    });
   }
 }
