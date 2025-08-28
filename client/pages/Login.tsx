@@ -98,7 +98,7 @@ export default function Login() {
         email, 
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/login`
+          emailRedirectTo: `${window.location.origin}/login`,
           data: {
             first_name: firstName.trim(),
             last_name: lastName.trim(),
