@@ -27,7 +27,7 @@ const heroRepair = iconRepair;
 function normalizeCategorySlug(raw: string): string {
   const map: Record<string, string> = {
     "eazyy-bag": "eazzy-bag",
-    "eazy-bag": "eazzy-bag",
+    "eazy-bag": "eazyy-bag",
     "wash-and-iron": "wash-iron",
     "dry-clean": "dry-cleaning",
     "drycleaning": "dry-cleaning",
@@ -183,11 +183,14 @@ export default function ItemSelection() {
       if (!rawCategory) return;
       setLoading(true);
       console.debug('[ItemSelection] route', { rawCategory, normalized: category });
+      
+      // Try both the raw category and normalized category for service lookup
       const { data: svc } = await supabase
         .from('services')
         .select('*')
-        .eq('service_identifier', rawCategory)
+        .or(`service_identifier.eq.${rawCategory},service_identifier.eq.${category}`)
         .maybeSingle();
+      
       if (!mounted) return;
       setService(svc);
       if (svc?.id) {
@@ -199,6 +202,7 @@ export default function ItemSelection() {
         setCategoriesDb(cats || []);
         setItemsDb(items || []);
       } else {
+        console.warn('[ItemSelection] No service found for identifier:', { rawCategory, normalized: category });
         setCategoriesDb([]);
         setItemsDb([]);
       }
