@@ -26,6 +26,7 @@ const heroRepair = iconRepair;
 
 function normalizeCategorySlug(raw: string): string {
   const map: Record<string, string> = {
+    "eazyy-bag": "eazyy-bag", 
     "eazy-bag": "eazyy-bag",
     "eazzy-bag": "eazyy-bag", // Handle the typo variant
     "wash-and-iron": "wash-iron",
@@ -72,11 +73,11 @@ export default function ItemSelection() {
       description: 'Choose from different bag sizes and laundry options',
       icon: '🧺',
       items: [
-        { id: 'small-bag', name: 'Small Bag (up to 5 lbs)', description: 'Perfect for a few items or undergarments', price: 15.99, subcategory: 'bags' },
-        { id: 'regular-bag', name: 'Regular Bag (up to 10 lbs)', description: 'Standard size for weekly laundry', price: 24.99, subcategory: 'bags' },
-        { id: 'large-bag', name: 'Large Bag (up to 15 lbs)', description: 'Maximum capacity for families', price: 34.99, subcategory: 'bags' },
-        { id: 'delicate-bag', name: 'Delicate Items Bag', description: 'Special care for sensitive fabrics', price: 29.99, subcategory: 'specialty' },
-        { id: 'eco-bag', name: 'Eco-Friendly Wash Bag', description: 'Environmentally conscious cleaning', price: 27.99, subcategory: 'specialty' }
+        { id: 'small-bag', name: 'Small Bag (up to 5 lbs)', description: 'Perfect for a few items or undergarments', price: 15.99, subcategory: 'bags', icon: '👝' },
+        { id: 'regular-bag', name: 'Regular Bag (up to 10 lbs)', description: 'Standard size for weekly laundry', price: 24.99, subcategory: 'bags', icon: '🎒' },
+        { id: 'large-bag', name: 'Large Bag (up to 15 lbs)', description: 'Maximum capacity for families', price: 34.99, subcategory: 'bags', icon: '🧳' },
+        { id: 'delicate-bag', name: 'Delicate Items Bag', description: 'Special care for sensitive fabrics', price: 29.99, subcategory: 'specialty', icon: '🌸' },
+        { id: 'eco-bag', name: 'Eco-Friendly Wash Bag', description: 'Environmentally conscious cleaning', price: 27.99, subcategory: 'specialty', icon: '🌿' }
       ],
       subcategories: ['all', 'bags', 'specialty']
     },
@@ -161,7 +162,7 @@ export default function ItemSelection() {
     },
     'repairs': {
       title: 'Repairs',
-      description: "Fix, tailor, and extend your garment's life. From hemming to zippers—skilled repairs with pickup & delivery.",
+      description: "Fix, tailor, and extend your garment’s life. From hemming to zippers—skilled repairs with pickup & delivery.",
       hero: heroRepair,
       accent: '#F59E0B',
       label: 'Repairs'
@@ -211,380 +212,371 @@ export default function ItemSelection() {
     }
     load();
     return () => {
-      moun    }
-ted 
-  }
-  )
-}= false;
+      mounted = false;
     };
   }, [rawCategory, category]);
 
   useEffect(() => {
     // Save cart to localStorage
     localStorage.setItem('eazzy-cart', JSON.stringify(cart));
-    // Dispatch cart updated event
+    // Notify any listeners (e.g., floating cart button)
     try {
-      window.dispatchEvent
-      )
-    }
-  }
-  )
       window.dispatchEvent(new CustomEvent('cart:updated'));
-    } catch (error) {
-      // Ignore errors
-    }
+    } catch {}
   }, [cart]);
 
-  const addToCart = (item: any) => {
-    const cartItem: CartItem = {
-      ...item,
-      serviceCategory: category,
-      quantity: 1
-    };
-    
-    setCart(prev => {
-      const existingIndex = prev.findIndex(
-        i => i.id === item.id && i.serviceCategory === category
-      );
-      
-      if (existingIndex >= 0) {
-        const updated = [...prev];
-        updated[existingIndex].quantity += 1;
-        r
-      }
-    }
-    )
-  }
-}eturn updated;
-      } else {
-        return [...prev, cartItem];
-     
-  }
-} }
-    });
-  };
-
-  const updateQuantity = (itemId: string, newQuantity: num
-  }
-}ber) => {
-    if (newQuantity <= 0) {
-      setCart(prev => prev.filter(
-        i => !(i.id === itemId && i.serviceCategory     }
-=== 
-  }
-}category)
-      ));
-    } else {
-      setCart(prev => prev.map(i => 
-        i.id === itemId && i.serviceCategory === category 
-          ? { ...i, quantity: newQuantity }
-          : i
-      ));
-    }
-  };
-
-  const getItemQuantity = (itemId: string) => {
-    const item = cart.find(i => i.id === itemId && i.serviceCategory === category);
-    return item?.quantity || 0;
-  };
-
-  const getItemImage = (item: any) => {
-    const name = (item.name || "").toLowerCase();
-    if (name.includes("bag")) return foldedBagIcon;
-    if (name.includes("polo")) return poloIcon;
-    if (name.includes("henley")) return henleyIcon;
-    if (name.includes("t-shirt") || name.includes("tee") || name.includes("shirt")) return tshirtIcon;
-    return teeGraphicIcon;
-  };
-
-  const totalCartItems = cart.reduce((total, item) => total + item.quantity, 0);
-  const totalCartPrice = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-
-  // Use fallback data if no service found or loading
-  const displayService = service || currentService;
-  const displayItems = itemsDb.length > 0 ? itemsDb : (currentService?.items || []);
-  const displayCategories = categoriesDb.length > 0 ? categoriesDb : (currentService?.subcategories || ['all']);
-
-  const filteredItems = selectedSubcategory === 'all' 
-    ? displayItems 
-    : displayItems.filter((item: any) => item.subcategory === selectedSubcategory);
-
-  if (!allowedSlugs.has(category)) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto p-6">
-          <div className="w-16 h-16 bg-red-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-            <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.072 16.5c-.77.833.192 2.5 1.732 2.5z" />
-            </svg>
-          </div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Service Category Not Found</h2>
-          <p className="text-gray-600 mb-6">The service category "{category}" is not available.</p>
-          <Link 
-            to="/order/start" 
-            className="bg-primary text-white px-6 py-2 rounded-full hover:bg-blue-700 transition-colors"
-          >
-            Back to Services
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  if (loading) {
+  // Guard: only show not found if neither DB service nor a known fallback slug exist
+  if (!loading && !service && !allowedSlugs.has(category)) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading items...</p>
+          <h1 className="text-2xl font-medium text-black mb-4">Service Category Not Found</h1>
+          <Link to="/order/start" className="text-primary hover:underline">← Back to Service Categories</Link>
         </div>
       </div>
     );
   }
 
-  const meta = serviceMeta[category] || {
-    title: displayService?.name || 'Service',
-    description: displayService?.description || 'Select items for this service',
-    hero: altIcon,
-    accent: '#1D62DB',
-    label: 'Service'
+  // Choose data source
+  const usingDb = itemsDb.length > 0;
+  const itemsSource: any[] = usingDb ? itemsDb : (currentService?.items ?? []);
+
+  const subcategoryOptions: Array<{ id: string; name: string }> = usingDb
+    ? [{ id: 'all', name: 'All' }, ...categoriesDb.map((c: any) => ({ id: String(c.id), name: c.name || 'Category' }))]
+    : [{ id: 'all', name: 'All' }, ...(currentService?.subcategories || []).filter((id: string) => id !== 'all').map((id: string) => ({ id, name: id.charAt(0).toUpperCase() + id.slice(1) }))];
+
+  const filteredItems = usingDb
+    ? (selectedSubcategory === 'all' ? itemsSource : itemsSource.filter((i: any) => (i.category_id ?? '') === selectedSubcategory))
+    : (selectedSubcategory === 'all' ? itemsSource : itemsSource.filter((i: any) => (i.subcategory ?? 'all') === selectedSubcategory));
+
+  const fallbackMeta = serviceMeta[category || ''] || {} as any;
+  const meta = {
+    title: service?.name ?? fallbackMeta.title ?? '',
+    description: service?.short_description ?? service?.description ?? fallbackMeta.description ?? '',
+    hero: service?.image_url ?? fallbackMeta.hero ?? "/images_devlopment/eazyy-bag-service-banner-background.png",
+    accent: service?.color_hex ?? (service?.color_scheme?.primary) ?? fallbackMeta.accent ?? '#1D62DB',
+    label: service?.price_unit ?? fallbackMeta.label ?? 'per piece',
+    serviceId: service?.id ?? null,
+  } as any;
+  const formatEuro = (value: number) => value.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const getItemImage = (item: any) => {
+    if (item.icon) return item.icon;
+    const key = (item.name || '').toLowerCase();
+    if (key.includes('polo')) return poloIcon;
+    if (key.includes('henley')) return henleyIcon;
+    if (key.includes('t-shirt') || key.includes('tee') || key.includes('shirt')) return tshirtIcon;
+    return teeGraphicIcon;
+  };
+
+  // Category pill icon mapping per service
+  const getSubcategoryIcon = (subcatId: string): string => {
+    if (subcatId === 'all') return foldedBagIcon;
+    const cat = categoriesDb.find((c) => String(c.id) === subcatId);
+    return cat?.icon || cat?.icon_name || foldedBagIcon;
+  };
+
+  const addToCart = (item: Item) => {
+    const cartItem: CartItem = {
+      ...item,
+      serviceCategory: category || '',
+      quantity: 1
+    };
+
+    setCart(prevCart => {
+      const existingIndex = prevCart.findIndex(cartItem => 
+        cartItem.id === item.id && cartItem.serviceCategory === category
+      );
+
+      if (existingIndex >= 0) {
+        const updated = [...prevCart];
+        updated[existingIndex].quantity += 1;
+        return updated;
+      } else {
+        return [...prevCart, cartItem];
+      }
+    });
+  };
+
+  const addDynamicToCart = (rawItem: any) => {
+    const value = Number(dynamicInputs[String(rawItem.id)] || rawItem.min_input_value || 0);
+    const unitPrice = Number(rawItem.unit_price || 0);
+    if (!value || !unitPrice) return;
+
+    const computedPrice = unitPrice * value;
+    const displayItem: Item = {
+      id: String(rawItem.id),
+      name: String(rawItem.name || ''),
+      description: String(rawItem.description || ''),
+      price: computedPrice,
+      category: category,
+      subcategory: String(rawItem.subcategory || rawItem.category_id || ''),
+      quantity: 1,
+    };
+
+    setCart(prevCart => {
+      const idx = prevCart.findIndex(i => i.id === displayItem.id && i.serviceCategory === category);
+      if (idx >= 0) {
+        const copy = [...prevCart];
+        copy[idx] = { ...copy[idx], price: computedPrice, quantity: 1 };
+        return copy;
+      }
+      return [...prevCart, { ...displayItem, serviceCategory: category } as CartItem];
+    });
+  };
+
+  const removeFromCart = (itemId: string) => {
+    setCart(prev => prev.filter(i => !(i.id === itemId && i.serviceCategory === category)));
+  };
+
+  const updateQuantity = (itemId: string, newQuantity: number) => {
+    if (newQuantity <= 0) {
+      setCart(prevCart => prevCart.filter(item => !(item.id === itemId && item.serviceCategory === category)));
+    } else {
+      setCart(prevCart => prevCart.map(item => 
+        item.id === itemId && item.serviceCategory === category
+          ? { ...item, quantity: newQuantity }
+          : item
+      ));
+    }
+  };
+
+  const getItemQuantityInCart = (itemId: string) => {
+    const cartItem = cart.find(item => item.id === itemId && item.serviceCategory === category);
+    return cartItem ? cartItem.quantity : 0;
+  };
+
+  const getTotalPrice = () => {
+    return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+  };
+
+  const getTotalItems = () => {
+    return cart.reduce((total, item) => total + item.quantity, 0);
+  };
+
+  const proceedToCheckout = () => {
+    if (cart.length > 0) {
+      navigate('/order/scheduling', {
+        state: {
+          selectedServices: cart.map(item => ({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            serviceCategory: item.serviceCategory
+          })),
+          totalPrice: getTotalPrice()
+        }
+      });
+    }
+  };
+
+  const continueShopping = () => {
+    navigate('/order/start');
   };
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Main Content */}
-      <main className="px-4 md:px-8 lg:px-12 pt-8 pb-24">
-        <div className="max-w-[960px] mx-auto">
-          {/* Breadcrumb */}
-          <div className="mb-6">
-            <nav className="flex items-center gap-2 text-sm text-gray-600">
-              <Link to="/order/start" className="hover:text-primary">Service Categories</Link>
-              <span>›</span>
-              <span className="text-black font-medium">{meta.title}</span>
-            </nav>
-          </div>
-
-          {/* Service Header */}
-          <div className="mb-8">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center">
-                <img src={meta.hero} alt={meta.title} className="w-10 h-10 object-contain" />
+      <main className="px-4 md:px-8 lg:px-12 pt-8 pb-12">
+        <div className="max-w-[1200px] mx-auto">
+          {/* Hero banner */}
+          <section className="relative rounded-[28px] overflow-hidden shadow-[0_20px_60px_rgba(17,24,39,0.15)]">
+            <img src={meta.hero} alt="" className="absolute inset-0 w-full h-full object-cover" />
+            <div className="relative z-10 px-6 md:px-10 py-10 md:py-14">
+              <div className="inline-flex items-center h-8 px-3 rounded-full text-white/90" style={{ backgroundColor: meta.accent }}>
+                <span className="text-[13px] font-medium">6 services</span>
               </div>
-              <div>
-                <h1 className="text-3xl font-medium text-black">{meta.title}</h1>
-                <p className="text-gray-600">{meta.description}</p>
-              </div>
-            </div>
-          </div>
+              <h1 className="mt-5 text-4xl md:text-5xl font-medium text-white">{meta.title}</h1>
+              <p className="mt-3 max-w-2xl text-white/90 text-lg leading-relaxed">{meta.description}</p>
 
-          {/* Subcategory Filter */}
-          {displayCategories.length > 1 && (
-            <div className="mb-8">
-              <div className="flex gap-2 overflow-x-auto pb-2">
-                {displayCategories.map((subcat: string) => (
+              {/* Right-side circular service selectors - visible on all screen sizes */}
+              <div className="flex items-center gap-3 md:gap-5 absolute bottom-6 right-4 md:right-8">
+                {[
+                  { key: 'eazzy-bag', src: iconBag, alt: 'eazyy bag' },
+                  { key: 'dry-cleaning', src: iconDry, alt: 'dry cleaning' },
+                  { key: 'wash-iron', src: iconWashIron, alt: 'wash & iron' },
+                  { key: 'repairs', src: iconRepair, alt: 'repairs' },
+                ].map((item) => (
                   <button
-                    key={subcat}
-                    onClick={() => setSelectedSubcategory(subcat)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-                      selectedSubcategory === subcat
-                        ? 'bg-primary text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
+                    key={item.key}
+                    onClick={() => navigate(`/order/items/${item.key}`)}
+                    className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/95 backdrop-blur flex items-center justify-center shadow border"
+                    style={{ borderColor: `${meta.accent}30` }}
+                    aria-label={item.alt}
                   >
-                    {subcat === 'all' ? 'All Items' : subcat.charAt(0).toUpperCase() + subcat.slice(1)}
+                    <img src={item.src} alt="" className="w-6 h-6 md:w-8 md:h-8 object-contain" />
                   </button>
                 ))}
               </div>
             </div>
-          )}
+          </section>
 
-          {/* Items Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {/* Subcategory pills */}
+          <div className="mt-6 flex gap-3 overflow-x-auto no-scrollbar">
+            {subcategoryOptions.map((subcat: any) => (
+              <button
+                key={subcat.id}
+                onClick={() => setSelectedSubcategory(subcat.id)}
+                className={`inline-flex items-center gap-2 h-10 px-4 rounded-[10px] border text-sm ${selectedSubcategory === subcat.id ? 'text-white' : 'text-black'} transition-colors`}
+                style={{
+                  backgroundColor: selectedSubcategory === subcat.id ? meta.accent : '#fff',
+                  borderColor: selectedSubcategory === subcat.id ? meta.accent : '#E5E7EB'
+                }}
+              >
+                <img src={getSubcategoryIcon(subcat.id)} alt="" className={`w-5 h-5 object-contain rounded ${selectedSubcategory === subcat.id ? 'bg-white' : 'bg-transparent'}`} />
+                {subcat.name}
+              </button>
+            ))}
+          </div>
+
+          {/* Items grid */}
+          <div className="mt-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-10">
             {filteredItems.map((item: any) => {
-              const quantity = getItemQuantity(item.id);
-              const isCustomPricing = item.custom_pricing || item.is_custom_price;
-              const dynamicValue = dynamicInputs[item.id] || item.min_input_value || 1;
-              const displayPrice = isCustomPricing 
-                ? (item.unit_price || 0) * dynamicValue 
-                : item.price;
+              const quantityInCart = getItemQuantityInCart(String(item.id));
+              const accent = meta.accent;
+
+              // DB-driven attributes for quote/dynamic pricing
+              const requiresQuote = Boolean(item?.custom_pricing || item?.is_custom_price);
+              const hasDynamic = Boolean(!requiresQuote && item?.unit_price && item?.unit_label);
+              const dynamicValue = Number(dynamicInputs[String(item.id)] || 0);
+              const dynamicPreview = hasDynamic ? Number(item.unit_price) * (dynamicValue || Number(item.min_input_value || 0)) : 0;
+
+              const price = typeof item.price === 'number' ? item.price : Number(item.price || 0);
+              const displayName = String(item.name || '');
 
               return (
-                <div key={item.id} className="rounded-2xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
-                  <div className="flex items-center gap-4 mb-4">
-                    <img 
-                      src={getItemImage(item)} 
-                      alt={item.name} 
-                      className="w-12 h-12 object-contain" 
-                    />
-                    <div className="flex-1">
-                      <h3 className="font-medium text-black">{item.name}</h3>
-                      <p className="text-sm text-gray-600">{item.description}</p>
-                    </div>
-                  </div>
+                <div key={String(item.id)} className="group">
+                  <img src={getItemImage(item)} alt="" className="w-36 h-36 md:w-40 md:h-40 object-contain mx-auto" />
+                  <div className="mt-2 text-[13px] text-black">{displayName}</div>
 
-                  {/* Custom Pricing Input */}
-                  {isCustomPricing && (
-                    <div className="mb-4">
-                      <label className="block text-sm text-gray-600 mb-2">
-                        {item.unit_label || 'Quantity'}
-                      </label>
-                      <input
-                        type="number"
-                        min={item.min_input_value || 1}
-                        max={item.max_input_value || 100}
-                        value={dynamicValue}
-                        onChange={(e) => setDynamicInputs(prev => ({
-                          ...prev,
-                          [item.id]: Number(e.target.value)
-                        }))}
-                        placeholder={item.input_placeholder || 'Enter amount'}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                      />
+                  {/* Price row */}
+                  {!hasDynamic && (
+                    <div className="flex items-baseline gap-1 text-[11px] text-gray-600">
+                      <span className="align-super">€</span>
+                      <span className="text-[15px] font-semibold text-black">{formatEuro(price)}</span>
+                      <span className="ml-1">per piece</span>
+                    </div>
+                  )}
+                  {hasDynamic && (
+                    <div className="text-[12px] text-gray-700">
+                      €{Number(item.unit_price).toFixed(2)} per {item.unit_label}
                     </div>
                   )}
 
-                  <div className="flex items-center justify-between">
-                    <div className="text-lg font-semibold text-primary">
-                      €{displayPrice?.toFixed(2) || '0.00'}
-                      {isCustomPricing && item.unit_label && (
-                        <span className="text-sm text-gray-600 ml-1">
-                          per {item.unit_label}
-                        </span>
-                      )}
-                    </div>
+                  <div className="text-[11px] mt-1" style={{ color: accent }}>{meta.label}</div>
 
-                    {quantity === 0 ? (
+                  {/* Actions */}
+                  <div className="mt-2 flex items-center gap-2">
+                    {requiresQuote ? (
                       <button
-                        onClick={() => addToCart({
-                          ...item,
-                          price: displayPrice,
-                          custom_input_value: isCustomPricing ? dynamicValue : null
-                        })}
-                        className="rounded-full bg-primary text-white px-4 py-2 text-sm font-medium hover:bg-blue-700 transition-colors"
+                        onClick={() => navigate('/order/custom-quote', { state: { presetItem: { id: String(item.id), name: displayName, serviceCategory: category } } })}
+                        className="w-full rounded-full border border-gray-300 px-4 py-2 text-sm font-medium hover:border-primary"
                       >
-                        Add to Cart
+                        Get Quote
                       </button>
+                    ) : hasDynamic ? (
+                      <div className="w-full">
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="number"
+                            min={item.min_input_value ?? 0}
+                            max={item.max_input_value ?? undefined}
+                            step={0.1}
+                            value={dynamicValue || ''}
+                            onChange={(e) => setDynamicInputs(prev => ({ ...prev, [String(item.id)]: Number(e.target.value) }))}
+                            placeholder={item.input_placeholder || `Enter ${item.unit_label}`}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                          />
+                          <button
+                            onClick={() => addDynamicToCart(item)}
+                            className="rounded-full bg-primary text-white px-3 py-2 text-sm font-semibold"
+                          >
+                            Add
+                          </button>
+                          {quantityInCart > 0 && (
+                            <button
+                              onClick={() => removeFromCart(String(item.id))}
+                              className="rounded-full border border-gray-300 px-3 py-2 text-sm"
+                            >
+                              Remove
+                            </button>
+                          )}
+                        </div>
+                        <div className="mt-1 text-xs text-gray-600">
+                          {dynamicValue ? `Est. €${dynamicPreview.toFixed(2)}` : (item.min_input_value ? `Min ${item.min_input_value} ${item.unit_label}` : '')}
+                        </div>
+                      </div>
                     ) : (
-                      <div className="flex items-center gap-2">
+                      <>
                         <button
-                          onClick={() => updateQuantity(item.id, quantity - 1)}
-                          className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50"
+                          onClick={() => updateQuantity(String(item.id), Math.max(0, quantityInCart - 1))}
+                          className="w-7 h-7 rounded-full border border-gray-300 flex items-center justify-center text-sm disabled:opacity-50"
+                          disabled={quantityInCart === 0}
+                          aria-label="Decrease"
                         >
-                          −
+                          –
                         </button>
-                        <span className="w-8 text-center font-medium">{quantity}</span>
+                        <span className="text-sm w-4 text-center">{quantityInCart}</span>
                         <button
-                          onClick={() => updateQuantity(item.id, quantity + 1)}
-                          className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50"
+                          onClick={() => (quantityInCart === 0 ? addToCart({ id: String(item.id), name: displayName, description: String(item.description || ''), price, category, subcategory: String(item.subcategory || item.category_id || ''), quantity: 1 }) : updateQuantity(String(item.id), quantityInCart + 1))}
+                          className="w-7 h-7 rounded-full border border-gray-300 flex items-center justify-center text-sm"
+                          aria-label="Increase"
                         >
                           +
                         </button>
-                      </div>
+                      </>
                     )}
                   </div>
                 </div>
               );
             })}
           </div>
-
-          {/* Empty State */}
-          {filteredItems.length === 0 && (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 bg-gray-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-4.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 009.586 13H7" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-medium text-black mb-2">No Items Available</h3>
-              <p className="text-gray-600 mb-4">
-                {selectedSubcategory === 'all' 
-                  ? 'No items found for this service category.'
-                  : `No items found in the "${selectedSubcategory}" category.`
-                }
-              </p>
-              <Link 
-                to="/order/start" 
-                className="inline-block bg-primary text-white px-6 py-2 rounded-full hover:bg-blue-700 transition-colors"
-              >
-                Choose Different Service
-              </Link>
-            </div>
-          )}
-
-          {/* Cart Summary */}
-          {totalCartItems > 0 && (
-            <div className="fixed bottom-20 md:bottom-6 left-4 right-4 md:left-auto md:right-6 md:w-80 bg-white rounded-2xl border border-gray-200 p-4 shadow-lg z-40">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <div className="font-medium text-black">{totalCartItems} items</div>
-                  <div className="text-sm text-gray-600">€{totalCartPrice.toFixed(2)} total</div>
-                </div>
-                <Link 
-                  to="/cart"
-                  className="bg-primary text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-blue-700 transition-colors"
-                >
-                  View Cart
-                </Link>
-              </div>
-            </div>
-          )}
         </div>
       </main>
 
-      {/* Cart Drawer */}
-      <Drawer open={cartOpen} onOpenChange={setCartOpen}>
-        <DrawerContent>
-          <DrawerHeader>
-            <DrawerTitle>Your Cart</DrawerTitle>
-            <DrawerDescription>
-              {totalCartItems} items • €{totalCartPrice.toFixed(2)}
-            </DrawerDescription>
-          </DrawerHeader>
-          <div className="px-4 pb-6">
-            {cart.length === 0 ? (
-              <p className="text-gray-600 text-center py-8">Your cart is empty</p>
-            ) : (
-              <div className="space-y-4">
-                {cart.map(item => (
-                  <div key={`${item.serviceCategory}-${item.id}`} className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <img src={getItemImage(item)} alt="" className="w-8 h-8 object-contain" />
-                      <div>
-                        <div className="font-medium text-black">{item.name}</div>
-                        <div className="text-sm text-gray-600">€{item.price.toFixed(2)} each</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center"
-                      >
-                        −
-                      </button>
-                      <span className="w-8 text-center">{item.quantity}</span>
-                      <button
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center"
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-                ))}
+      {/* Sticky order actions */}
+      {cart.length > 0 && (
+        <div className="fixed inset-x-0 z-50" style={{ bottom: "calc(env(safe-area-inset-bottom, 0px) + 16px)" }}>
+          <div className="mx-auto max-w-[1200px] px-4 md:px-8 lg:px-12">
+            <div className="rounded-2xl border border-gray-200 bg-white shadow-xl p-3 flex items-center justify-between">
+              <div>
+                <div className="text-xs text-gray-600">{cart.reduce((total, item) => total + item.quantity, 0)} items</div>
+                <div className="text-lg font-semibold text-black">€{cart.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2)}</div>
               </div>
-            )}
-            {cart.length > 0 && (
-              <div className="pt-4 border-t mt-4">
-                <Link 
-                  to="/cart"
-                  className="block w-full bg-primary text-white py-3 rounded-full text-center font-medium"
+              <div className="flex gap-2">
+                <button
+                  onClick={() => navigate('/cart')}
+                  className="rounded-full border border-gray-300 px-5 py-2.5 font-medium text-sm"
                 >
-                  Continue to Cart
-                </Link>
+                  View cart
+                </button>
+                <button
+                  onClick={() => {
+                    if (cart.length > 0) {
+                      navigate('/order/scheduling', {
+                        state: {
+                          selectedServices: cart.map(item => ({
+                            id: item.id,
+                            name: item.name,
+                            price: item.price,
+                            quantity: item.quantity,
+                            serviceCategory: item.serviceCategory,
+                          })),
+                          totalPrice: cart.reduce((t, i) => t + (i.price * i.quantity), 0)
+                        }
+                      });
+                    }
+                  }}
+                  className="rounded-full bg-primary text-white px-5 py-2.5 font-semibold text-sm"
+                >
+                  Continue
+                </button>
               </div>
-            )}
+            </div>
           </div>
-        </DrawerContent>
-      </Drawer>
+        </div>
+      )}
+
+      {/* Drawer removed; dedicated cart page is used now */}
     </div>
   );
+}
