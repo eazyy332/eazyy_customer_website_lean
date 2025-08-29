@@ -229,8 +229,10 @@ ted
     }
   }
   )
-}(new CustomEvent('cart:updated'));
-    } catch {}
+      window.dispatchEvent(new CustomEvent('cart:updated'));
+    } catch (error) {
+      // Ignore errors
+    }
   }, [cart]);
 
   const addToCart = (item: any) => {
@@ -260,7 +262,7 @@ ted
 }ber) => {
     if (newQuantity <= 0) {
       setCart(prev => prev.filter(
-        i => !(i.id === itemId && i.serviceCategory     }
+        i => !(i.id === itemId && i.serviceCategory === category)
 === 
   }
 }category)
