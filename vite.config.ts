@@ -13,6 +13,11 @@ export default defineConfig(({ mode }) => {
   // Load env file based on `mode` in the current working directory.
   const env = loadEnv(mode, process.cwd(), '');
   
+  // Explicitly set environment variables for server-side code
+  process.env.VITE_SUPABASE_URL = env.VITE_SUPABASE_URL;
+  process.env.SUPABASE_URL = env.VITE_SUPABASE_URL;
+  process.env.SUPABASE_SERVICE_ROLE_KEY = env.SUPABASE_SERVICE_ROLE_KEY;
+  
   return {
     server: {
       host: "::",
