@@ -218,4 +218,4 @@ export default function ItemSelection() {
 
   useEffect(() => {
     // Save cart to localStorage
-    localStorage.setItem('eaz
+    localStorage.setItem('eazzy-cart', JSON.stringify(cart));
