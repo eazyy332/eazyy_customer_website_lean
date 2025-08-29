@@ -110,11 +110,10 @@ export default function ItemSelection() {
           console.log('[ItemSelection] Items query result:', { 
             data: items, 
             error: itemsError,
-            itemsWithIcons: items?.filter(item => item.icon || item.image_url || item.icon_name).length || 0,
+            itemsWithIcons: items?.filter(item => item.icon || item.icon_name).length || 0,
             sampleItemIcons: items?.slice(0, 3).map(item => ({
               name: item.name,
               icon: item.icon,
-              image_url: item.image_url,
               icon_name: item.icon_name
             })) || []
           });
@@ -134,11 +133,10 @@ export default function ItemSelection() {
         console.log('[ItemSelection] Direct items query result:', { 
           data: directItems, 
           error: directItemsError,
-          itemsWithIcons: directItems?.filter(item => item.icon || item.image_url || item.icon_name).length || 0,
+          itemsWithIcons: directItems?.filter(item => item.icon || item.icon_name).length || 0,
           sampleItemIcons: directItems?.slice(0, 3).map(item => ({
             name: item.name,
             icon: item.icon,
-            image_url: item.image_url,
             icon_name: item.icon_name
           })) || []
         });
@@ -162,12 +160,14 @@ export default function ItemSelection() {
         console.log('[ItemSelection] ALL items in database (first 10):', { 
           data: debugAllItems, 
           error: allItemsError,
-          itemsWithIcons: debugAllItems?.filter(item => item.icon || item.image_url || item.icon_name).length || 0,
+          itemsWithIcons: debugAllItems?.filter(item => item.icon || item.icon_name).length || 0,
           iconSamples: debugAllItems?.map(item => ({
             name: item.name,
             icon: item.icon,
             icon_name: item.icon_name,
-            hasIcon: !!(item.icon || item.icon_name)
+            hasIcon: !!(item.icon || item.icon_name),
+            iconValue: item.icon,
+            iconType: typeof item.icon
           })) || []
         });
         
@@ -273,11 +273,22 @@ export default function ItemSelection() {
   const formatEuro = (value: number) => value.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   
   const getItemImage = (item: any) => {
+    console.log('[getItemImage] Processing item:', {
+      name: item.name,
+      icon: item.icon,
+      iconType: typeof item.icon,
+      iconLength: item.icon?.length,
+      iconTrimmed: item.icon?.trim(),
+      hasValidIcon: !!(item.icon && item.icon !== 'NULL' && item.icon.trim() !== '')
+    });
+    
     // Use the icon field from the items table
-    if (item.icon && item.icon !== 'NULL' && item.icon.trim() !== '') {
+    if (item.icon && item.icon !== 'NULL' && item.icon !== null && item.icon.trim() !== '') {
+      console.log('[getItemImage] Using icon from database:', item.icon);
       return item.icon;
     }
     
+    console.log('[getItemImage] Using fallback image for item:', item.name);
     // Fallback to a default placeholder image
     return "https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
   };
