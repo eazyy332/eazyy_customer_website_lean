@@ -12,8 +12,9 @@ const heroRepair = "";
 
 function normalizeCategorySlug(raw: string): string {
   const map: Record<string, string> = {
+    "eazyy-bag": "eazyy-bag", 
     "easy-bag": "eazzy-bag",
-    "eazzy-bag": "eazyy-bag",
+    "eazyy-bag": "eazzy-bag",
     "wash-and-iron": "wash-iron",
     "dry-clean": "dry-cleaning",
     "drycleaning": "dry-cleaning",
@@ -148,7 +149,7 @@ export default function ItemSelection() {
     },
     'repairs': {
       title: 'Repairs',
-      description: "Fix, tailor, and extend your garment's life. From hemming to zippers—skilled repairs with pickup & delivery.",
+      description: "Fix, tailor, and extend your garment’s life. From hemming to zippers—skilled repairs with pickup & delivery.",
       hero: heroRepair,
       accent: '#F59E0B',
       label: 'Repairs'
@@ -192,14 +193,10 @@ export default function ItemSelection() {
       if (!mounted) return;
       setService(svc);
       if (svc?.id) {
-        const [{ data: cats, error: catsError }, { data: items, error: itemsError }] = await Promise.all([
+        const [{ data: cats }, { data: items }] = await Promise.all([
           supabase.from('categories').select('*').eq('service_id', svc.id).order('sequence', { ascending: true }),
           supabase.from('items').select('*').eq('service_id', svc.id).order('sequence', { ascending: true }),
         ]);
-          
-        if (catsError) console.error('Categories error:', catsError);
-        if (itemsError) console.error('Items error:', itemsError);
-        
         if (!mounted) return;
         setCategoriesDb(cats || []);
         setItemsDb(items || []);
@@ -208,11 +205,8 @@ export default function ItemSelection() {
         setCategoriesDb([]);
         setItemsDb([]);
       }
-      
       setSelectedSubcategory('all');
       setLoading(false);
-    } catch (err) {
-      console.error('Service fetch error:', err);
     }
     load();
     return () => {
@@ -264,41 +258,25 @@ export default function ItemSelection() {
   } as any;
   const formatEuro = (value: number) => value.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const getItemImage = (item: any) => {
-    return item.icon || item.image_url || '';
+    return item.icon || item.image_url || null;
   };
 
   // Category pill icon mapping per service
   const getSubcategoryIcon = (subcatId: string): string => {
-    if (subcatId === 'all') return service?.icon || service?.image_url || '';
+    if (subcatId === 'all') return service?.icon || service?.image_url || "";
     const cat = categoriesDb.find((c) => String(c.id) === subcatId);
-    return cat?.icon || cat?.icon_name || '';
+    return cat?.icon || cat?.icon_name || "";
   };
 
   const getServiceIcon = (serviceIdentifier: string) => {
-    console.log('Looking for service icon:', serviceIdentifier, 'in services:', allServices);
-    
-    if (!allServices || allServices.length === 0) {
-      console.log('No services loaded yet');
-      return '';
-    }
-    
-    // Handle different variations of service identifiers
-    const serviceData = allServices.find(s => {
-      const matches = [
-        s.service_identifier === serviceIdentifier,
-        s.service_identifier === 'eazyy-bag' && serviceIdentifier === 'easy-bag',
-        s.service_identifier === 'easy-bag' && serviceIdentifier === 'eazyy-bag',
-        s.service_identifier === 'eazzy-bag' && serviceIdentifier === 'eazyy-bag',
-        s.service_identifier === 'eazzy-bag' && serviceIdentifier === 'easy-bag'
-      ];
-      return matches.some(Boolean);
-    });
-    
-    console.log('Found service:', serviceData);
-    const iconUrl = serviceData?.icon || serviceData?.image_url;
-    console.log('Icon URL:', iconUrl);
-    
-    return iconUrl || '';
+    // Handle different variations of eazyy-bag identifier
+    const normalizedIdentifier = serviceIdentifier === 'eazyy-bag' ? 'eazyy-bag' : serviceIdentifier;
+    const serviceData = allServices.find(s => 
+      s.service_identifier === normalizedIdentifier || 
+      s.service_identifier === serviceIdentifier ||
+      (serviceIdentifier === 'eazyy-bag' && (s.service_identifier === 'easy-bag' || s.service_identifier === 'eazzy-bag'))
+    );
+    return serviceData?.icon || serviceData?.image_url;
   };
   const addToCart = (item: Item) => {
     const cartItem: CartItem = {
