@@ -3,7 +3,6 @@ import { createClient } from '@supabase/supabase-js';
 
 // Load environment variables
 dotenv.config();
-dotenv.config({ path: '.env.local', override: true });
 
 async function checkSupabaseConnection() {
   console.log('🔍 CHECKING SUPABASE CONNECTION\n');

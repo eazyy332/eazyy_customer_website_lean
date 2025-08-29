@@ -11,11 +11,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 async function main() {
-  // Load .env.local if present in addition to default .env
-  dotenv.config({ path: '.env.local' });
+  // Load .env file
+  dotenv.config();
   const databaseUrl = process.env.SUPABASE_DB_URL || process.env.DATABASE_URL || '';
   if (!databaseUrl) {
-    console.error('Missing SUPABASE_DB_URL (or DATABASE_URL). Put your Supabase Postgres connection string into .env.local as SUPABASE_DB_URL');
+    console.error('Missing SUPABASE_DB_URL (or DATABASE_URL). Put your Supabase Postgres connection string into .env as SUPABASE_DB_URL');
     process.exit(1);
   }
 

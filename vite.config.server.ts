@@ -2,13 +2,13 @@ import { defineConfig } from "vite";
 import path from "path";
 import { config } from "dotenv";
 
-// Load environment variables from .env.local
-config({ path: path.resolve(__dirname, ".env.local") });
+// Load environment variables from .env
+config();
 
 import dotenv from 'dotenv'
 
-// Load environment variables from .env.local
-dotenv.config({ path: '.env.local' })
+// Load environment variables from .env
+dotenv.config()
 // Server build configuration
 export default defineConfig({
   build: {

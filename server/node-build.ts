@@ -2,7 +2,6 @@ import path from "path";
 import dotenv from "dotenv";
 // Load base then local overrides for server runtime
 dotenv.config();
-dotenv.config({ path: ".env.local", override: true });
 import { createServer } from "./index";
 import * as express from "express";
 
