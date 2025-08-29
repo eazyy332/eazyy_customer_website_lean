@@ -487,13 +487,6 @@ export default function ItemSelection() {
                 <div key={String(item.id)} className="group">
                   <div className="w-36 h-36 md:w-40 md:h-40 mx-auto mb-2">
                     <img 
-                      src={item.icon}
-                      onLoad={() => console.log(`[IMAGE] Successfully loaded: ${item.icon}`)}
-                      onError={(e) => {
-                        console.log(`[IMAGE] Failed to load: ${item.icon}`);
-                        console.log('[IMAGE] Error details:', e);
-                        // Set fallback image on error
-                        e.currentTarget.src = "https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
                       src={getItemImage(item)}
                       onLoad={() => console.log(`[IMAGE SUCCESS] Successfully loaded image for "${item.name}": ${getItemImage(item)}`)}
                       onError={(e) => {
