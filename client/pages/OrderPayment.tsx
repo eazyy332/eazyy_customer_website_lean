@@ -157,16 +157,17 @@ export default function OrderPayment() {
           total: totalPrice
         },
         contact: {
-          name: `${address?.firstName || ''} ${address?.lastName || ''}`.trim() || address?.fullName || '',
+          name: `${address?.firstName || ''} ${address?.lastName || ''}`.trim() || address?.fullName || address?.customerName || '',
           firstName: address?.firstName || '',
           lastName: address?.lastName || '',
           email: address?.email || '',
-          phone: address?.phoneNumber || address?.phone || null
+          phone: address?.phoneNumber || address?.phone || null,
+          phoneNumber: address?.phoneNumber || address?.phone || null
         },
-        address: typeof address === 'string' ? address : address?.fullAddress || (
+        address: typeof address === 'string' ? address : 
           address?.fullAddress || 
-          `${address?.streetAddress || ''} ${address?.apartment || ''}, ${address?.city || ''} ${address?.postalCode || ''}`.trim()
-        ),
+          `${address?.streetAddress || ''}${address?.apartment ? `, ${address.apartment}` : ''}, ${address?.city || ''} ${address?.postalCode || ''}`.trim() ||
+          'Address not provided',
         pickupDate: schedule?.pickupDate || null,
         deliveryDate: schedule?.deliveryDate || null,
         sourceQuoteId

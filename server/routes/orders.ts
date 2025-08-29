@@ -103,16 +103,21 @@ export async function createOrder(req: Request, res: Response) {
       (contact?.firstName && contact?.lastName ? `${contact.firstName} ${contact.lastName}` : '') ||
       contact?.firstName || 
       contact?.lastName || 
-      contact?.email?.split('@')[0] || 
-      'Customer';
+      (contact?.email ? contact.email.split('@')[0] : 'Customer');
+
+    // Build proper address string
+    const shippingAddress = typeof address === 'string' ? address : 
+      address?.fullAddress || 
+      `${address?.streetAddress || ''}${address?.apartment ? `, ${address.apartment}` : ''}, ${address?.city || ''} ${address?.postalCode || ''}`.trim() ||
+      'Address not provided';
 
     const orderData = {
       order_number: generateOrderNumber(),
       user_id: userId,
       customer_name: customerName,
-      email: contact?.email || "",
-      phone: contact?.phone || contact?.phoneNumber || null,
-      shipping_address: address ?? "",
+      email: contact?.email || contact?.firstName || contact?.lastName || "",
+      phone: contact?.phone || contact?.phoneNumber || address?.phoneNumber || address?.phone || null,
+      shipping_address: shippingAddress,
       status: "pending",
       payment_method: "credit_card",
       payment_status: "pending",
