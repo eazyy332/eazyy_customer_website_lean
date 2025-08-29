@@ -84,11 +84,17 @@ export default function ItemSelection() {
       if (svc?.id) {
         const [{ data: cats }, { data: items }] = await Promise.all([
           supabase.from('categories').select('*').eq('service_id', svc.id).order('sequence', { ascending: true }),
-          supabase.from('items').select('*').eq('service_id', svc.id).order('sequence', { ascending: true }),
+          supabase.from('items').select('*').eq('service_id', svc.id).eq('status', true).order('sequence', { ascending: true }),
         ]);
         if (!mounted) return;
         setCategoriesDb(cats || []);
         setItemsDb(items || []);
+        console.debug('[ItemSelection] loaded data', { 
+          service: svc?.name, 
+          categories: cats?.length || 0, 
+          items: items?.length || 0,
+          itemsWithDescription: items?.filter(item => item.description && item.description.trim() !== '').length || 0
+        });
       } else {
         console.warn('[ItemSelection] No service found for identifier:', { rawCategory, normalized: category });
         setCategoriesDb([]);
