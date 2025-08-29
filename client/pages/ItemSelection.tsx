@@ -136,6 +136,11 @@ export default function ItemSelection() {
     ? itemsSource 
     : itemsSource.filter((i: any) => (i.category_id ?? '') === selectedSubcategory);
 
+  // Filter out items without description
+  const itemsWithDescription = filteredItems.filter((item: any) => 
+    item.description && item.description.trim() !== ''
+  );
+
   const meta = {
     title: service?.name ?? '',
     description: service?.short_description ?? service?.description ?? '',
@@ -330,7 +335,7 @@ export default function ItemSelection() {
 
           {/* Items grid */}
           <div className="mt-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-8 gap-y-10">
-            {filteredItems.map((item: any) => {
+            {itemsWithDescription.map((item: any) => {
               const quantityInCart = getItemQuantityInCart(String(item.id));
               const accent = meta.accent;
 
