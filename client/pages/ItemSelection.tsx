@@ -554,6 +554,24 @@ export default function ItemSelection() {
                     </div>
                   </div>
                 ))}
+              </div>
+            )}
+            {cart.length > 0 && (
+              <div className="pt-4 border-t mt-4">
+                <Link 
+                  to="/cart"
+                  className="block w-full bg-primary text-white py-3 rounded-full text-center font-medium"
+                >
+                  Continue to Cart
+                </Link>
+              </div>
+            )}
+          </div>
+        </DrawerContent>
+      </Drawer>
+    </div>
+  );
+}
                 <div className="pt-4 border-t">
                   <Link 
                     to="/cart"
