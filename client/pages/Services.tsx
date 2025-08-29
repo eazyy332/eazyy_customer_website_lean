@@ -324,126 +324,17 @@ export default function Services() {
       {/* Main Services Grid */}
       <section className="px-4 lg:px-16 py-12">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* eazzy Bag Service */}
-          <div className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100">
-            <div className="w-20 h-20 bg-gray-100 rounded-2xl mb-6 flex items-center justify-center">
-              <img
-                src="https://api.builder.io/api/v1/image/assets/TEMP/8053aaf5482c5a1eaffc8f5b8f8d52642ee84791?width=160"
-                alt="eazzy Bag"
-                className="w-12 h-12 object-contain"
-              />
-            </div>
-            <div className="flex items-center mb-4">
-              <img
-                src="https://cdn.builder.io/api/v1/image/assets%2F0ba0452a2d1340e7b84136d8ed253a1b%2Fb6e642e462f04f14827396626baf4d5e?format=webp&width=800"
-                alt="eazyy logo"
-                className="h-6 w-auto mr-2"
-              />
-              <h3 className="text-2xl font-medium text-black">Bag</h3>
-            </div>
-            <p className="text-gray-600 mb-6 leading-relaxed">
-              Fill our sturdy bag with a week's worth of laundry. We'll wash,
-              dry, fold, and return everything fresh and ready to wear.
-            </p>
-            <div className="space-y-2 text-sm text-gray-600 mb-6">
-              <div>• Capacity: Up to 15 lbs</div>
-              <div>• Turnaround: 24-48 hours</div>
-              <div>• Starting at $24.99</div>
-            </div>
-            <Link
-              to="/order/items/eazzy-bag"
-              className="block w-full bg-primary text-white py-3 rounded-full font-medium hover:bg-blue-700 transition-colors text-center"
-            >
-              Order Now
-            </Link>
-          </div>
-
-          {/* Dry Cleaning Service */}
-          <div className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100">
-            <div className="w-20 h-20 bg-gray-100 rounded-2xl mb-6 flex items-center justify-center">
-              <img
-                src="https://api.builder.io/api/v1/image/assets/TEMP/fce4d46b116b276f657742c2e7a9594f49ddecfa?width=160"
-                alt="Dry Clean"
-                className="w-12 h-12 object-contain"
-              />
-            </div>
-            <h3 className="text-2xl font-medium text-black mb-4">
-              Dry Cleaning
-            </h3>
-            <p className="text-gray-600 mb-6 leading-relaxed">
-              Professional dry cleaning for delicate fabrics. Stains vanish,
-              colors stay vibrant, and garments look like new.
-            </p>
-            <div className="space-y-2 text-sm text-gray-600 mb-6">
-              <div>• Suits, dresses, coats</div>
-              <div>• Eco-friendly solvents</div>
-              <div>• Expert stain removal</div>
-            </div>
-            <Link
-              to="/order/items/dry-cleaning"
-              className="block w-full bg-primary text-white py-3 rounded-full font-medium hover:bg-blue-700 transition-colors text-center"
-            >
-              Get Quote
-            </Link>
-          </div>
-
-          {/* Wash & Iron Service */}
-          <div className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100">
-            <div className="w-20 h-20 bg-gray-100 rounded-2xl mb-6 flex items-center justify-center">
-              <img
-                src="https://api.builder.io/api/v1/image/assets/TEMP/323ee1d10112f83f8a173fa73990b7e744464d8d?width=160"
-                alt="Wash and Iron"
-                className="w-12 h-12 object-contain"
-              />
-            </div>
-            <h3 className="text-2xl font-medium text-black mb-4">
-              Wash & Iron
-            </h3>
-            <p className="text-gray-600 mb-6 leading-relaxed">
-              Daily laundry expertly washed and ironed for a crisp finish.
-              Folded neatly and delivered to your door.
-            </p>
-            <div className="space-y-2 text-sm text-gray-600 mb-6">
-              <div>• Shirts, trousers, linens</div>
-              <div>• Professional pressing</div>
-              <div>• Same-day service</div>
-            </div>
-            <Link
-              to="/order/items/wash-iron"
-              className="block w-full bg-primary text-white py-3 rounded-full font-medium hover:bg-blue-700 transition-colors text-center"
-            >
-              Book Service
-            </Link>
-          </div>
-
-          {/* Repair Service */}
-          <div className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100">
-            <div className="w-20 h-20 bg-gray-100 rounded-2xl mb-6 flex items-center justify-center">
-              <img
-                src="https://api.builder.io/api/v1/image/assets/TEMP/054342f0a30f3564e498e0898a4167eaae155932?width=160"
-                alt="Repair"
-                className="w-12 h-12 object-contain"
-              />
-            </div>
-            <h3 className="text-2xl font-medium text-black mb-4">
-              Repairs & Alterations
-            </h3>
-            <p className="text-gray-600 mb-6 leading-relaxed">
-              Skilled tailors breathe new life into your garments. Mend tears,
-              replace zippers, and secure hems.
-            </p>
-            <div className="space-y-2 text-sm text-gray-600 mb-6">
-              <div>• Hemming & alterations</div>
-              <div>• Zipper replacement</div>
-              <div>• Tear repairs</div>
-            </div>
-            <Link
-              to="/order/items/repairs"
-              className="block w-full bg-primary text-white py-3 rounded-full font-medium hover:bg-blue-700 transition-colors text-center"
-            >
-              Request Repair
-            </Link>
-          </div>
+          {services.map((service) => (
+            <div key={service.id} className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100">
+              <div className="w-20 h-20 bg-gray-100 rounded-2xl mb-6 flex items-center justify-center">
+                <img
+                  src={service.icon || service.image_url}
+                  alt={service.name}
+                  className="w-12 h-12 object-contain"
+                />
+              </div>
+              <div className="flex items-center mb-4">
+                <img
         </div>
       </section>
 
