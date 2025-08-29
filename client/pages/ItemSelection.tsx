@@ -26,7 +26,6 @@ const heroRepair = iconRepair;
 
 function normalizeCategorySlug(raw: string): string {
   const map: Record<string, string> = {
-    "eazyy-bag": "eazyy-bag", 
     "eazy-bag": "eazyy-bag",
     "eazzy-bag": "eazyy-bag", // Handle the typo variant
     "wash-and-iron": "wash-iron",
