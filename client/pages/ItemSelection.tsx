@@ -102,11 +102,22 @@ export default function ItemSelection() {
           const categoryIds = cats.map(c => c.id);
           const { data: items, error: itemsError } = await supabase
             .from('items')
-            .select('*')
+            .select('id, name, description, price, category_id, service_id, icon, image_url, icon_name, status, sequence, is_custom_price, custom_pricing, unit_price, unit_label, min_input_value, max_input_value, input_placeholder')
             .in('category_id', categoryIds)
+            .eq('status', true)
             .order('sequence', { ascending: true });
           
-          console.log('[ItemSelection] Items query result:', { data: items, error: itemsError });
+          console.log('[ItemSelection] Items query result:', { 
+            data: items, 
+            error: itemsError,
+            itemsWithIcons: items?.filter(item => item.icon || item.image_url || item.icon_name).length || 0,
+            sampleItemIcons: items?.slice(0, 3).map(item => ({
+              name: item.name,
+              icon: item.icon,
+              image_url: item.image_url,
+              icon_name: item.icon_name
+            })) || []
+          });
           combinedItems = items || [];
         } else {
           console.log('[ItemSelection] No categories found, skipping items query');
@@ -115,11 +126,22 @@ export default function ItemSelection() {
         // Also try loading items directly by service_id if the field exists
         const { data: directItems, error: directItemsError } = await supabase
           .from('items')
-          .select('*')
+          .select('id, name, description, price, category_id, service_id, icon, image_url, icon_name, status, sequence, is_custom_price, custom_pricing, unit_price, unit_label, min_input_value, max_input_value, input_placeholder')
           .eq('service_id', svc.id)
+          .eq('status', true)
           .order('sequence', { ascending: true });
         
-        console.log('[ItemSelection] Direct items query result:', { data: directItems, error: directItemsError });
+        console.log('[ItemSelection] Direct items query result:', { 
+          data: directItems, 
+          error: directItemsError,
+          itemsWithIcons: directItems?.filter(item => item.icon || item.image_url || item.icon_name).length || 0,
+          sampleItemIcons: directItems?.slice(0, 3).map(item => ({
+            name: item.name,
+            icon: item.icon,
+            image_url: item.image_url,
+            icon_name: item.icon_name
+          })) || []
+        });
         
         // Combine items from both queries (remove duplicates by id)
         if (directItems) {
@@ -133,10 +155,22 @@ export default function ItemSelection() {
         // Also try loading ALL items to see what's in the database
         const { data: debugAllItems, error: allItemsError } = await supabase
           .from('items')
-          .select('*')
+          .select('id, name, description, price, category_id, service_id, icon, image_url, icon_name, status')
+          .eq('status', true)
           .limit(10);
         
-        console.log('[ItemSelection] ALL items in database (first 10):', { data: debugAllItems, error: allItemsError });
+        console.log('[ItemSelection] ALL items in database (first 10):', { 
+          data: debugAllItems, 
+          error: allItemsError,
+          itemsWithIcons: debugAllItems?.filter(item => item.icon || item.image_url || item.icon_name).length || 0,
+          iconSamples: debugAllItems?.map(item => ({
+            name: item.name,
+            icon: item.icon,
+            image_url: item.image_url,
+            icon_name: item.icon_name,
+            hasIcon: !!(item.icon || item.image_url || item.icon_name)
+          })) || []
+        });
         
         // Also try loading ALL categories to see what's in the database
         const { data: allCategories, error: allCategoriesError } = await supabase
@@ -240,13 +274,26 @@ export default function ItemSelection() {
   const formatEuro = (value: number) => value.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   
   const getItemImage = (item: any) => {
+    console.log(`[ItemSelection] Getting image for item "${item.name}":`, {
+      icon: item.icon,
+      image_url: item.image_url,
+      icon_name: item.icon_name,
+      hasIcon: !!(item.icon),
+      hasImageUrl: !!(item.image_url),
+      hasIconName: !!(item.icon_name)
+    });
+    
     // Use icon first, then image_url from Supabase
     if (item.icon && item.icon !== 'NULL' && item.icon.trim() !== '') {
+      console.log(`[ItemSelection] Using icon for "${item.name}":`, item.icon);
       return item.icon;
     }
     if (item.image_url && item.image_url !== 'NULL' && item.image_url.trim() !== '') {
+      console.log(`[ItemSelection] Using image_url for "${item.name}":`, item.image_url);
       return item.image_url;
     }
+    
+    console.log(`[ItemSelection] Using fallback image for "${item.name}"`);
     // Fallback to a default placeholder image
     return "https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
   };
