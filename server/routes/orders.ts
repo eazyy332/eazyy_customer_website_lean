@@ -59,20 +59,10 @@ export async function createOrder(req: Request, res: Response) {
 
     // Get current user ID from auth context
     let userId = null;
-    let isSupabaseConfigured = false;
     try {
-      // Check if Supabase is properly configured
-      const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || '';
-      const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-      isSupabaseConfigured = supabaseUrl && 
-        supabaseServiceKey && 
-        supabaseUrl.startsWith('https://') && 
-        !supabaseUrl.includes('your_supabase_url_here') &&
-        !supabaseServiceKey.includes('your_supabase_service_role_key_here');
-
       // Try to get user from auth header if present
       const authHeader = req.headers.authorization;
-      if (isSupabaseConfigured && authHeader && authHeader.startsWith('Bearer ')) {
+      if (authHeader && authHeader.startsWith('Bearer ')) {
         const token = authHeader.substring(7);
         const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
         if (!error && user) {
@@ -82,14 +72,14 @@ export async function createOrder(req: Request, res: Response) {
           console.log('Auth token validation failed:', error?.message);
         }
       } else {
-        console.log(isSupabaseConfigured ? 'No authorization header found' : 'Supabase not configured, skipping auth');
+        console.log('No authorization header found');
       }
     } catch (e) {
       console.log('Could not get user from auth header:', e);
     }
 
-    // Require authentication only if Supabase is configured
-    if (isSupabaseConfigured && !userId) {
+    // Require authentication
+    if (!userId) {
       return res.status(401).json({ 
         ok: false, 
         error: 'Authentication required. Please sign in to place an order.' 

@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || '';
+const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || '';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
 console.log('Supabase configuration check:', {
@@ -10,17 +10,22 @@ console.log('Supabase configuration check:', {
   urlPreview: supabaseUrl ? supabaseUrl.substring(0, 30) + '...' : 'missing'
 });
 
-// Create a placeholder client if environment variables are not available
-// This allows the dev server to start even before Supabase is connected
-let supabaseAdmin: any;
+if (!supabaseUrl || !supabaseServiceKey) {
+  throw new Error('Missing Supabase environment variables. Please check VITE_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in your .env file.');
+}
 
-if (supabaseUrl && 
-    supabaseServiceKey && 
-    supabaseUrl.startsWith('https://') && 
-    !supabaseUrl.includes('your_supabase_url_here') &&
-    !supabaseServiceKey.includes('your_supabase_service_role_key_here')) {
-  console.log('Creating real Supabase client');
-  supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
+if (!supabaseUrl.startsWith('https://')) {
+  throw new Error('Invalid Supabase URL. Must start with https://');
+}
+
+console.log('Creating Supabase client with URL:', supabaseUrl.substring(0, 30) + '...');
+
+export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false
+  }
+});
     auth: {
       autoRefreshToken: false,
       persistSession: false
