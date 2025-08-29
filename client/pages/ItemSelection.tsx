@@ -269,7 +269,13 @@ export default function ItemSelection() {
   };
 
   const getServiceIcon = (serviceIdentifier: string) => {
-    const serviceData = allServices.find(s => s.service_identifier === serviceIdentifier);
+    // Handle different variations of eazyy-bag identifier
+    const normalizedIdentifier = serviceIdentifier === 'eazyy-bag' ? 'eazyy-bag' : serviceIdentifier;
+    const serviceData = allServices.find(s => 
+      s.service_identifier === normalizedIdentifier || 
+      s.service_identifier === serviceIdentifier ||
+      (serviceIdentifier === 'eazyy-bag' && (s.service_identifier === 'easy-bag' || s.service_identifier === 'eazzy-bag'))
+    );
     return serviceData?.icon || serviceData?.image_url;
   };
   const addToCart = (item: Item) => {
