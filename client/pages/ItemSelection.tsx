@@ -189,7 +189,7 @@ export default function ItemSelection() {
       const { data: svc } = await supabase
         .from('services')
         .select('*')
-        .or(`service_identifier.eq.${rawCategory},service_identifier.eq.${category},service_identifier.eq.eazyy-bag`)
+        .or(`service_identifier.eq.${rawCategory},service_identifier.eq.${category},service_identifier.eq.eazyy-bag,service_identifier.eq.easy-bag`)
         .maybeSingle();
       
       if (!mounted) return;
