@@ -27,8 +27,8 @@ const heroRepair = iconRepair;
 function normalizeCategorySlug(raw: string): string {
   const map: Record<string, string> = {
     "eazyy-bag": "eazyy-bag", 
-    "eazy-bag": "eazyy-bag",
-    "eazzy-bag": "eazyy-bag", // Handle the typo variant
+    "easy-bag": "eazzy-bag",
+    "eazyy-bag": "eazzy-bag",
     "wash-and-iron": "wash-iron",
     "dry-clean": "dry-cleaning",
     "drycleaning": "dry-cleaning",
@@ -68,7 +68,7 @@ export default function ItemSelection() {
 
   // Service data organized by category
   const serviceData: Record<string, any> = {
-    'eazzy-bag': {
+    'eazyy-bag': {
       name: 'eazzy Bag Services',
       description: 'Choose from different bag sizes and laundry options',
       icon: '🧺',
@@ -139,7 +139,7 @@ export default function ItemSelection() {
   const currentService = serviceData[category || ''];
 
   const serviceMeta: Record<string, { title: string; description: string; hero: string; accent: string; label: string } > = {
-    'eazzy-bag': {
+    'eazyy-bag': {
       title: 'eazyy Bag',
       description: "Fill a bag. We'll handle the rest. Weight-based washing with pickup & delivery on your schedule.",
       hero: heroEazzy,
