@@ -255,7 +255,10 @@ export default function ItemSelection() {
   const updateQuantity = (itemId: string, newQuantity: number) => {
     if (newQuantity <= 0) {
       setCart(prev => prev.filter(
-        i => !(i.id === itemId && i.serviceCategory === category)
+        i => !(i.id === itemId && i.serviceCategory     }
+=== 
+  }
+}category)
       ));
     } else {
       setCart(prev => prev.map(i => 
