@@ -97,7 +97,7 @@ export default function ItemSelection() {
         console.log('[ItemSelection] Categories query result:', { data: cats, error: catsError });
         
         // Load items for this service through categories
-        let allItems: any[] = [];
+        let combinedItems: any[] = [];
         if (cats && cats.length > 0) {
           const categoryIds = cats.map(c => c.id);
           const { data: items, error: itemsError } = await supabase
