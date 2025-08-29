@@ -280,7 +280,7 @@ export default function ItemSelection() {
     
     if (!allServices || allServices.length === 0) {
       console.log('No services loaded yet');
-      return null;
+      return '';
     }
     
     // Handle different variations of service identifiers
