@@ -274,26 +274,11 @@ export default function ItemSelection() {
   const formatEuro = (value: number) => value.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   
   const getItemImage = (item: any) => {
-    console.log(`[ItemSelection] Getting image for item "${item.name}":`, {
-      icon: item.icon,
-      image_url: item.image_url,
-      icon_name: item.icon_name,
-      hasIcon: !!(item.icon),
-      hasImageUrl: !!(item.image_url),
-      hasIconName: !!(item.icon_name)
-    });
-    
-    // Use icon first, then image_url from Supabase
+    // Use the icon field from the items table
     if (item.icon && item.icon !== 'NULL' && item.icon.trim() !== '') {
-      console.log(`[ItemSelection] Using icon for "${item.name}":`, item.icon);
       return item.icon;
     }
-    if (item.image_url && item.image_url !== 'NULL' && item.image_url.trim() !== '') {
-      console.log(`[ItemSelection] Using image_url for "${item.name}":`, item.image_url);
-      return item.image_url;
-    }
     
-    console.log(`[ItemSelection] Using fallback image for "${item.name}"`);
     // Fallback to a default placeholder image
     return "https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
   };
