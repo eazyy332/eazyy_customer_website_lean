@@ -26,8 +26,9 @@ const heroRepair = iconRepair;
 
 function normalizeCategorySlug(raw: string): string {
   const map: Record<string, string> = {
-    "eazyy-bag": "eazzy-bag",
+    "eazyy-bag": "eazyy-bag", 
     "eazy-bag": "eazyy-bag",
+    "eazzy-bag": "eazyy-bag", // Handle the typo variant
     "wash-and-iron": "wash-iron",
     "dry-clean": "dry-cleaning",
     "drycleaning": "dry-cleaning",
@@ -188,7 +189,7 @@ export default function ItemSelection() {
       const { data: svc } = await supabase
         .from('services')
         .select('*')
-        .or(`service_identifier.eq.${rawCategory},service_identifier.eq.${category}`)
+        .or(`service_identifier.eq.${rawCategory},service_identifier.eq.${category},service_identifier.eq.eazyy-bag`)
         .maybeSingle();
       
       if (!mounted) return;
