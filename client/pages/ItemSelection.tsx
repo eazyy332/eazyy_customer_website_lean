@@ -273,24 +273,16 @@ export default function ItemSelection() {
   const formatEuro = (value: number) => value.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   
   const getItemImage = (item: any) => {
-    console.log('[getItemImage] Processing item:', {
-      name: item.name,
+    // Debug what's in the icon field
+    console.log(`[DEBUG] Item "${item.name}" icon field:`, {
       icon: item.icon,
       iconType: typeof item.icon,
-      iconLength: item.icon?.length,
-      iconTrimmed: item.icon?.trim(),
-      hasValidIcon: !!(item.icon && item.icon !== 'NULL' && item.icon.trim() !== '')
+      iconValue: JSON.stringify(item.icon),
+      isValidUrl: item.icon && (item.icon.startsWith('http://') || item.icon.startsWith('https://'))
     });
     
-    // Use the icon field from the items table
-    if (item.icon && item.icon !== 'NULL' && item.icon !== null && item.icon.trim() !== '') {
-      console.log('[getItemImage] Using icon from database:', item.icon);
-      return item.icon;
-    }
-    
-    console.log('[getItemImage] Using fallback image for item:', item.name);
-    // Fallback to a default placeholder image
-    return "https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
+    // Return the icon directly from database
+    return item.icon || "https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
   };
 
   // Category pill icon mapping per service
@@ -490,6 +482,13 @@ export default function ItemSelection() {
                   <div className="w-36 h-36 md:w-40 md:h-40 mx-auto mb-2">
                     <img 
                       src={item.icon}
+                      onLoad={() => console.log(`[IMAGE] Successfully loaded: ${item.icon}`)}
+                      onError={(e) => {
+                        console.log(`[IMAGE] Failed to load: ${item.icon}`);
+                        console.log('[IMAGE] Error details:', e);
+                        // Set fallback image on error
+                        e.currentTarget.src = "https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
+                      }}
                       alt={item.name}
                       className="w-36 h-36 md:w-40 md:h-40 object-cover rounded-lg mx-auto"
                     />
