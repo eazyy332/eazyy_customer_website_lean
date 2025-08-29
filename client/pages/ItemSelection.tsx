@@ -96,14 +96,40 @@ export default function ItemSelection() {
         
         console.log('[ItemSelection] Categories query result:', { data: cats, error: catsError });
         
-        // Load items for this service
-        const { data: items, error: itemsError } = await supabase
+        // Load items for this service through categories
+        let allItems: any[] = [];
+        if (cats && cats.length > 0) {
+          const categoryIds = cats.map(c => c.id);
+          const { data: items, error: itemsError } = await supabase
+            .from('items')
+            .select('*')
+            .in('category_id', categoryIds)
+            .order('sequence', { ascending: true });
+          
+          console.log('[ItemSelection] Items query result:', { data: items, error: itemsError });
+          allItems = items || [];
+        } else {
+          console.log('[ItemSelection] No categories found, skipping items query');
+        }
+        
+        // Also try loading items directly by service_id if the field exists
+        const { data: directItems, error: directItemsError } = await supabase
           .from('items')
           .select('*')
           .eq('service_id', svc.id)
           .order('sequence', { ascending: true });
         
-        console.log('[ItemSelection] Items query result:', { data: items, error: itemsError });
+        console.log('[ItemSelection] Direct items query result:', { data: directItems, error: directItemsError });
+        
+        // Combine items from both queries (remove duplicates by id)
+        const combinedItems = [...allItems];
+        if (directItems) {
+          directItems.forEach(item => {
+            if (!combinedItems.find(existing => existing.id === item.id)) {
+              combinedItems.push(item);
+            }
+          });
+        }
         
         // Also try loading ALL items to see what's in the database
         const { data: allItems, error: allItemsError } = await supabase
@@ -126,13 +152,13 @@ export default function ItemSelection() {
         
         if (!mounted) return;
         setCategoriesDb(cats || []);
-        setItemsDb(items || []);
+        setItemsDb(combinedItems);
         console.log('[ItemSelection] Final loaded data:', { 
           service: svc?.name, 
           categories: cats?.length || 0, 
-          items: items?.length || 0,
-          itemsWithDescription: items?.filter(item => item.description && typeof item.description === 'string' && item.description.trim() !== '').length || 0,
-          itemsWithStatus: items?.filter(item => item.status === true).length || 0,
+          items: combinedItems?.length || 0,
+          itemsWithDescription: combinedItems?.filter(item => item.description && typeof item.description === 'string' && item.description.trim() !== '' && item.description !== 'NULL').length || 0,
+          itemsWithStatus: combinedItems?.filter(item => item.status === true).length || 0,
           serviceId: svc.id
         });
       } else {
@@ -188,7 +214,10 @@ export default function ItemSelection() {
 
   // Filter out items without description
   const itemsWithDescription = filteredItems.filter((item: any) => {
-    const hasDescription = item.description && typeof item.description === 'string' && item.description.trim() !== '';
+    const hasDescription = item.description && 
+      typeof item.description === 'string' && 
+      item.description.trim() !== '' && 
+      item.description !== 'NULL';
     console.log(`[ItemSelection] Item "${item.name}" description check:`, {
       description: item.description,
       hasDescription,
