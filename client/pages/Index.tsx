@@ -93,9 +93,9 @@ export default function Index() {
               <div className="bg-white/95 border border-white/60 rounded-[24px] p-7 md:p-8 shadow-[0_8px_30px_rgba(17,24,39,0.1)] ring-1 ring-white/40">
                 <div className="w-20 h-20 bg-gray-100 rounded-2xl mb-5 flex items-center justify-center">
                   <img
-                    src="https://api.builder.io/api/v1/image/assets/TEMP/8053aaf5482c5a1eaffc8f5b8f8d52642ee84791?width=160"
+                    src="https://images.pexels.com/photos/5591663/pexels-photo-5591663.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop"
                     alt="eazzy bag icon"
-                    className="w-12 h-12 object-contain"
+                    className="w-12 h-12 object-cover rounded-lg"
                   />
                 </div>
                 <div className="mb-4">
@@ -120,9 +120,9 @@ export default function Index() {
               <div className="bg-white/95 border border-white/60 rounded-[24px] p-7 md:p-8 shadow-[0_8px_30px_rgba(17,24,39,0.1)] ring-1 ring-white/40">
                 <div className="w-20 h-20 bg-gray-100 rounded-2xl mb-5 flex items-center justify-center">
                   <img
-                    src="https://api.builder.io/api/v1/image/assets/TEMP/fce4d46b116b276f657742c2e7a9594f49ddecfa?width=160"
+                    src="https://images.pexels.com/photos/5591774/pexels-photo-5591774.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop"
                     alt="Dry Clean"
-                    className="w-12 h-12 object-contain"
+                    className="w-12 h-12 object-cover rounded-lg"
                   />
                 </div>
                 <div className="mb-4">
@@ -147,9 +147,9 @@ export default function Index() {
               <div className="bg-white/95 border border-white/60 rounded-[24px] p-7 md:p-8 shadow-[0_8px_30px_rgba(17,24,39,0.1)] ring-1 ring-white/40">
                 <div className="w-20 h-20 bg-gray-100 rounded-2xl mb-5 flex items-center justify-center">
                   <img
-                    src="https://api.builder.io/api/v1/image/assets/TEMP/323ee1d10112f83f8a173fa73990b7e744464d8d?width=160"
+                    src="https://images.pexels.com/photos/5591728/pexels-photo-5591728.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop"
                     alt="Wash and Iron"
-                    className="w-12 h-12 object-contain"
+                    className="w-12 h-12 object-cover rounded-lg"
                   />
                 </div>
                 <div className="mb-4">
@@ -174,9 +174,9 @@ export default function Index() {
               <div className="bg-white/95 border border-white/60 rounded-[24px] p-7 md:p-8 shadow-[0_8px_30px_rgba(17,24,39,0.1)] ring-1 ring-white/40">
                 <div className="w-20 h-20 bg-gray-100 rounded-2xl mb-5 flex items-center justify-center">
                   <img
-                    src="https://api.builder.io/api/v1/image/assets/TEMP/054342f0a30f3564e498e0898a4167eaae155932?width=160"
+                    src="https://images.pexels.com/photos/6069112/pexels-photo-6069112.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop"
                     alt="Repair"
-                    className="w-12 h-12 object-contain"
+                    className="w-12 h-12 object-cover rounded-lg"
                   />
                 </div>
                 <div className="mb-4">

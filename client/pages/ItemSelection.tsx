@@ -13,16 +13,16 @@ const foldedBagIcon = "https://images.pexels.com/photos/1656684/pexels-photo-165
 const altIcon = "https://images.pexels.com/photos/1656684/pexels-photo-1656684.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
 
 // Service selector icons (per your assets)
-const iconBag = "https://images.pexels.com/photos/1656684/pexels-photo-1656684.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop";
-const iconWashIron = "https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop";
-const iconDry = "https://images.pexels.com/photos/1040945/pexels-photo-1040945.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop";
-const iconRepair = "https://images.pexels.com/photos/1656684/pexels-photo-1656684.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop";
+const iconBag = "https://images.pexels.com/photos/5591663/pexels-photo-5591663.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop";
+const iconWashIron = "https://images.pexels.com/photos/5591728/pexels-photo-5591728.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop";
+const iconDry = "https://images.pexels.com/photos/5591774/pexels-photo-5591774.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop";
+const iconRepair = "https://images.pexels.com/photos/6069112/pexels-photo-6069112.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop";
 
 // Hero images (fallback to service icons if dedicated assets are missing)
 const heroEazzy = iconBag;
 const heroDry = iconDry;
 const heroWash = iconWashIron;
-const heroRepair = "https://images.pexels.com/photos/1656684/pexels-photo-1656684.jpeg?auto=compress&cs=tinysrgb&w=800&h=400&fit=crop";
+const heroRepair = iconRepair;
 
 function normalizeCategorySlug(raw: string): string {
   const map: Record<string, string> = {
