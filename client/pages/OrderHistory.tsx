@@ -53,15 +53,7 @@ export default function OrderHistory() {
         setLoading(true);
         setError(null);
         
-        // Check if Supabase is properly configured
-        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-        if (!supabaseUrl || supabaseUrl.includes('your_supabase_url_here') || !supabaseUrl.startsWith('https://')) {
-          if (isMounted) {
-            setError('Supabase not configured. Please connect to Supabase to view your orders.');
-            setLoading(false);
-          }
-          return;
-        }
+        console.log('Loading orders for user:', user.id);
         
         const { data, error } = await supabase
           .from('orders')
@@ -74,16 +66,22 @@ export default function OrderHistory() {
             pickup_date,
             delivery_date,
             shipping_address,
+            customer_name,
+            email,
+            phone,
             order_items (product_name, quantity, unit_price)
           `)
           .eq('user_id', user.id)
           .order('created_at', { ascending: false });
+        
+        console.log('Orders query result:', { data, error });
+        
         if (error) throw error;
 
         const mapped: Order[] = (data || []).map((o: any) => ({
-          id: o.order_number || o.id,
+          id: o.order_number || o.id.slice(0, 8),
           date: o.created_at,
-          status: (o.status || 'confirmed') as OrderStatus,
+          status: mapOrderStatus(o.status),
           services: (o.order_items || []).map((it: any) => ({
             name: it.product_name || 'Item',
             quantity: Number(it.quantity || 1),
@@ -92,11 +90,14 @@ export default function OrderHistory() {
           total: Number(o.total_amount || 0),
           pickupDate: o.pickup_date || undefined,
           deliveryDate: o.delivery_date || undefined,
-          address: o.shipping_address || '',
+          address: o.shipping_address || 'No address provided',
           type: 'standard',
         }));
+        
+        console.log('Mapped orders:', mapped);
         if (isMounted) setOrders(mapped);
       } catch (e: any) {
+        console.error('Error loading orders:', e);
         if (isMounted) setError(e?.message || 'Failed to load orders');
       } finally {
         if (isMounted) setLoading(false);
@@ -104,7 +105,23 @@ export default function OrderHistory() {
     }
     loadOrders();
     return () => { isMounted = false; };
-  }, []);
+  }, [user]);
+
+  // Map database status to our OrderStatus type
+  const mapOrderStatus = (dbStatus: string): OrderStatus => {
+    const statusMap: Record<string, OrderStatus> = {
+      'pending': 'confirmed',
+      'awaiting_pickup_customer': 'pickup_scheduled',
+      'in_transit_to_facility': 'picked_up',
+      'arrived_at_facility': 'picked_up',
+      'processing': 'in_processing',
+      'ready_for_delivery': 'ready_for_delivery',
+      'in_transit_to_customer': 'out_for_delivery',
+      'delivered': 'delivered',
+      'cancelled': 'cancelled'
+    };
+    return statusMap[dbStatus] || 'confirmed';
+  };
 
   const getStatusColor = (status: OrderStatus) => {
     switch (status) {

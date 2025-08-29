@@ -120,8 +120,17 @@ export default function Account() {
   if (loading) {
     return (
       <AuthGuard redirectMessage="Please sign in to view your account">
+    case 'in_transit_to_customer':
+    case 'out_for_delivery':
+      return 'bg-blue-100 text-blue-800';
+    case 'ready_for_delivery':
+      return 'bg-green-100 text-green-800';
         <div className="min-h-screen bg-white flex items-center justify-center">
+    case 'arrived_at_facility':
           <div className="text-center">
+    case 'awaiting_pickup_customer':
+    case 'pickup_scheduled':
+      return 'bg-yellow-100 text-yellow-800';
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
             <p className="text-gray-600">Loading account...</p>
           </div>
