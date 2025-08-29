@@ -325,6 +325,9 @@ export default function Services() {
       <section className="px-4 lg:px-16 py-12">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {services.map((service) => (
+            )
+            )
+            }
             <div key={service.id} className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100">
               <div className="w-20 h-20 bg-gray-100 rounded-2xl mb-6 flex items-center justify-center">
                 <img
@@ -682,5 +685,6 @@ export default function Services() {
         </div>
       </footer>
     </div>
+  )
   );
 }
