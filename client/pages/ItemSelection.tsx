@@ -573,7 +573,3 @@ export default function ItemSelection() {
     </div>
   );
 }
-                <div className="pt-4 border-t">
-                  <Link 
-                    to="/cart"
-                    className="block w-full bg-primary text-white py-3 rounded-full text-center font-medium"
