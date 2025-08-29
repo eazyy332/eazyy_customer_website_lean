@@ -4,26 +4,6 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, Dr
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { supabase } from "@/lib/supabase";
 
-// Item icons (served as static paths)
-const tshirtIcon = "https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
-const poloIcon = "https://images.pexels.com/photos/1040945/pexels-photo-1040945.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
-const henleyIcon = "https://images.pexels.com/photos/1656684/pexels-photo-1656684.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
-const teeGraphicIcon = "https://images.pexels.com/photos/1656684/pexels-photo-1656684.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
-const foldedBagIcon = "https://images.pexels.com/photos/1656684/pexels-photo-1656684.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
-const altIcon = "https://images.pexels.com/photos/1656684/pexels-photo-1656684.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
-
-// Service selector icons (per your assets)
-const iconBag = "https://images.pexels.com/photos/5591663/pexels-photo-5591663.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop";
-const iconWashIron = "https://images.pexels.com/photos/5591728/pexels-photo-5591728.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop";
-const iconDry = "https://images.pexels.com/photos/5591774/pexels-photo-5591774.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop";
-const iconRepair = "https://images.pexels.com/photos/6069112/pexels-photo-6069112.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop";
-
-// Hero images (fallback to service icons if dedicated assets are missing)
-const heroEazzy = iconBag;
-const heroDry = iconDry;
-const heroWash = iconWashIron;
-const heroRepair = iconRepair;
-
 function normalizeCategorySlug(raw: string): string {
   const map: Record<string, string> = {
     "eazyy-bag": "eazyy-bag", 
@@ -253,26 +233,21 @@ export default function ItemSelection() {
   const meta = {
     title: service?.name ?? fallbackMeta.title ?? '',
     description: service?.short_description ?? service?.description ?? fallbackMeta.description ?? '',
-    hero: service?.image_url ?? fallbackMeta.hero ?? "/images_devlopment/eazyy-bag-service-banner-background.png",
+    hero: service?.image_url ?? service?.icon ?? "",
     accent: service?.color_hex ?? (service?.color_scheme?.primary) ?? fallbackMeta.accent ?? '#1D62DB',
     label: service?.price_unit ?? fallbackMeta.label ?? 'per piece',
     serviceId: service?.id ?? null,
   } as any;
   const formatEuro = (value: number) => value.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const getItemImage = (item: any) => {
-    if (item.icon) return item.icon;
-    const key = (item.name || '').toLowerCase();
-    if (key.includes('polo')) return poloIcon;
-    if (key.includes('henley')) return henleyIcon;
-    if (key.includes('t-shirt') || key.includes('tee') || key.includes('shirt')) return tshirtIcon;
-    return teeGraphicIcon;
+    return item.icon || item.image_url || null;
   };
 
   // Category pill icon mapping per service
   const getSubcategoryIcon = (subcatId: string): string => {
-    if (subcatId === 'all') return foldedBagIcon;
+    if (subcatId === 'all') return service?.icon || service?.image_url || "";
     const cat = categoriesDb.find((c) => String(c.id) === subcatId);
-    return cat?.icon || cat?.icon_name || foldedBagIcon;
+    return cat?.icon || cat?.icon_name || "";
   };
 
   const addToCart = (item: Item) => {
@@ -445,7 +420,9 @@ export default function ItemSelection() {
 
               return (
                 <div key={String(item.id)} className="group">
-                  <img src={getItemImage(item)} alt="" className="w-36 h-36 md:w-40 md:h-40 object-contain mx-auto" />
+                  {getItemImage(item) && (
+                    <img src={getItemImage(item)} alt="" className="w-36 h-36 md:w-40 md:h-40 object-contain mx-auto" />
+                  )}
                   <div className="mt-2 text-[13px] text-black">{displayName}</div>
 
                   {/* Price row */}

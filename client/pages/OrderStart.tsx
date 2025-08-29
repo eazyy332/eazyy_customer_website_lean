@@ -8,46 +8,14 @@ export default function OrderStart() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Fallback service data when Supabase is not configured
-  const fallbackServices = [
-    {
-      id: 'eazzy-bag',
-      name: 'eazzy Bag',
-      service_identifier: 'eazzy-bag',
-      short_description: 'Fill our sturdy bag with a week\'s worth of laundry. We\'ll wash, dry, fold, and return everything fresh.',
-      icon: 'https://images.pexels.com/photos/5591663/pexels-photo-5591663.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'
-    },
-    {
-      id: 'dry-cleaning',
-      name: 'Dry Cleaning',
-      service_identifier: 'dry-cleaning',
-      short_description: 'Professional dry cleaning for delicate fabrics. Stains vanish, colors stay vibrant.',
-      icon: 'https://images.pexels.com/photos/5591774/pexels-photo-5591774.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'
-    },
-    {
-      id: 'wash-iron',
-      name: 'Wash & Iron',
-      service_identifier: 'wash-iron',
-      short_description: 'Daily laundry expertly washed and ironed for a crisp finish.',
-      icon: 'https://images.pexels.com/photos/5591728/pexels-photo-5591728.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'
-    },
-    {
-      id: 'repairs',
-      name: 'Repairs & Alterations',
-      service_identifier: 'repairs',
-      short_description: 'Skilled tailors breathe new life into your garments.',
-      icon: 'https://images.pexels.com/photos/6069112/pexels-photo-6069112.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'
-    }
-  ];
-
   useEffect(() => {
     const loadServices = async () => {
       try {
         // Check if Supabase is properly configured
         const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
         if (!supabaseUrl || supabaseUrl.includes('your_supabase_url_here') || !supabaseUrl.startsWith('https://')) {
-          // Use fallback data when Supabase is not configured
-          setServices(fallbackServices);
+          // No fallback - require database configuration
+          setServices([]);
           setLoading(false);
           return;
         }
@@ -55,25 +23,22 @@ export default function OrderStart() {
         try {
           const { data, error: fetchError } = await supabase
             .from("services")
-            .select("id, name, service_identifier, description, short_description, icon, image_url")
+            .select("id, name, service_identifier, description, short_description, icon, image_url, icon_name")
             .order("sequence", { ascending: true });
 
           if (fetchError) {
             console.error('Error fetching services:', fetchError);
-            // Use fallback data on fetch error
-            setServices(fallbackServices);
+            setServices([]);
           } else {
-            setServices(data || fallbackServices);
+            setServices(data || []);
           }
         } catch (fetchErr) {
           console.error('Fetch error:', fetchErr);
-          // Use fallback data on network error
-          setServices(fallbackServices);
+          setServices([]);
         }
       } catch (err) {
         console.error('Connection error:', err);
-        // Use fallback data on any error
-        setServices(fallbackServices);
+        setServices([]);
       } finally {
         setLoading(false);
       }
@@ -177,14 +142,13 @@ export default function OrderStart() {
               >
                 <div className="text-center">
                   <div className="w-16 h-16 bg-gray-100 rounded-2xl mx-auto mb-4 flex items-center justify-center group-hover:scale-105 transition-transform">
-                    <img 
-                      src={s.icon || s.image_url || 'https://images.pexels.com/photos/5591663/pexels-photo-5591663.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop'} 
-                      alt={s.name} 
-                      className="w-10 h-10 object-cover rounded-lg"
-                      onError={(e) => {
-                        e.currentTarget.src = 'https://images.pexels.com/photos/5591663/pexels-photo-5591663.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop';
-                      }}
-                    />
+                    {(s.icon || s.image_url) && (
+                      <img 
+                        src={s.icon || s.image_url} 
+                        alt={s.name} 
+                        className="w-10 h-10 object-cover rounded-lg"
+                      />
+                    )}
                   </div>
                   <h3 className="text-xl font-medium text-black mb-3">{s.name}</h3>
                   <p className="text-gray-600 mb-6 text-sm leading-relaxed">

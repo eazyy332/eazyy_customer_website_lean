@@ -116,19 +116,8 @@ export default function Services() {
             // Use fallback data on fetch error
             setServices(fallbackServices);
           } else {
-            // Map database services to include proper icon URLs
-            const mappedServices = (servicesData || []).map(service => ({
-              ...service,
-              icon: service.icon || service.image_url || getServiceIconUrl(service.service_identifier),
-              image_url: service.image_url || service.icon || getServiceIconUrl(service.service_identifier)
-            }));
-            setServices(mappedServices.length > 0 ? mappedServices : fallbackServices);
-            const mappedServices = (servicesData || []).map(service => ({
-              ...service,
-              icon: service.icon || service.image_url || getServiceIconUrl(service.service_identifier),
-              image_url: service.image_url || service.icon || getServiceIconUrl(service.service_identifier)
-            }));
-            setServices(mappedServices.length > 0 ? mappedServices : fallbackServices);
+            // Use database services as-is without fallback URLs
+            setServices(servicesData || []);
           }
         } catch (fetchErr) {
           console.error('Fetch error:', fetchErr);
@@ -146,28 +135,6 @@ export default function Services() {
 
     loadServices();
   }, []);
-
-  // Helper function to get service icon URL based on service identifier
-  const getServiceIconUrl = (serviceIdentifier: string) => {
-    const iconMap: Record<string, string> = {
-      'eazyy-bag': 'https://images.pexels.com/photos/5591663/pexels-photo-5591663.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
-      'dry-cleaning': 'https://images.pexels.com/photos/5591774/pexels-photo-5591774.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
-      'wash-iron': 'https://images.pexels.com/photos/5591728/pexels-photo-5591728.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
-      'repairs': 'https://images.pexels.com/photos/6069112/pexels-photo-6069112.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'
-    };
-    return iconMap[serviceIdentifier] || 'https://images.pexels.com/photos/5591663/pexels-photo-5591663.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop';
-  };
-
-  // Helper function to get service icon URL based on service identifier
-  const getServiceIconUrl = (serviceIdentifier: string) => {
-    const iconMap: Record<string, string> = {
-      'eazyy-bag': 'https://images.pexels.com/photos/5591663/pexels-photo-5591663.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
-      'dry-cleaning': 'https://images.pexels.com/photos/5591774/pexels-photo-5591774.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
-      'wash-iron': 'https://images.pexels.com/photos/5591728/pexels-photo-5591728.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
-      'repairs': 'https://images.pexels.com/photos/6069112/pexels-photo-6069112.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'
-    };
-    return iconMap[serviceIdentifier] || 'https://images.pexels.com/photos/5591663/pexels-photo-5591663.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop';
-  };
 
   if (loading) {
     return (
@@ -361,11 +328,13 @@ export default function Services() {
           {services.map((service) => (
             <div key={service.id} className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100">
               <div className="w-20 h-20 bg-gray-100 rounded-2xl mb-6 flex items-center justify-center">
-                <img
-                  src={service.icon || service.image_url}
-                  alt={service.name}
-                  className="w-12 h-12 object-contain"
-                />
+                {(service.icon || service.image_url) && (
+                  <img
+                    src={service.icon || service.image_url}
+                    alt={service.name}
+                    className="w-12 h-12 object-contain"
+                  />
+                )}
               </div>
               <div className="flex items-center mb-4">
                 <h3 className="text-xl font-semibold text-black">{service.name}</h3>

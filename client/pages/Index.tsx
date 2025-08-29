@@ -1,8 +1,36 @@
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 
 export default function Index() {
+  const [services, setServices] = useState<any[]>([]);
+
+  useEffect(() => {
+    const loadServices = async () => {
+      try {
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+        if (!supabaseUrl || supabaseUrl.includes('your_supabase_url_here') || !supabaseUrl.startsWith('https://')) {
+          return;
+        }
+
+        const { data, error } = await supabase
+          .from("services")
+          .select("id, name, service_identifier, icon, image_url, icon_name")
+          .eq("status", true)
+          .order("sequence", { ascending: true });
+
+        if (!error && data) {
+          setServices(data);
+        }
+      } catch (err) {
+        console.error('Error loading services:', err);
+      }
+    };
+
+    loadServices();
+  }, []);
+
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
       <Helmet>
@@ -92,11 +120,13 @@ export default function Index() {
               {/* eazzy bag */}
               <div className="bg-white/95 border border-white/60 rounded-[24px] p-7 md:p-8 shadow-[0_8px_30px_rgba(17,24,39,0.1)] ring-1 ring-white/40">
                 <div className="w-20 h-20 bg-gray-100 rounded-2xl mb-5 flex items-center justify-center">
-                  <img
-                    src="https://images.pexels.com/photos/5591663/pexels-photo-5591663.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop"
-                    alt="eazzy bag icon"
-                    className="w-12 h-12 object-cover rounded-lg"
-                  />
+                  {services.find(s => s.service_identifier === 'eazyy-bag')?.icon && (
+                    <img
+                      src={services.find(s => s.service_identifier === 'eazyy-bag')?.icon}
+                      alt="eazzy bag icon"
+                      className="w-12 h-12 object-cover rounded-lg"
+                    />
+                  )}
                 </div>
                 <div className="mb-4">
                   <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 text-blue-700 text-sm font-medium">
@@ -119,11 +149,13 @@ export default function Index() {
               {/* Dry Clean */}
               <div className="bg-white/95 border border-white/60 rounded-[24px] p-7 md:p-8 shadow-[0_8px_30px_rgba(17,24,39,0.1)] ring-1 ring-white/40">
                 <div className="w-20 h-20 bg-gray-100 rounded-2xl mb-5 flex items-center justify-center">
-                  <img
-                    src="https://images.pexels.com/photos/5591774/pexels-photo-5591774.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop"
-                    alt="Dry Clean"
-                    className="w-12 h-12 object-cover rounded-lg"
-                  />
+                  {services.find(s => s.service_identifier === 'dry-cleaning')?.icon && (
+                    <img
+                      src={services.find(s => s.service_identifier === 'dry-cleaning')?.icon}
+                      alt="Dry Clean"
+                      className="w-12 h-12 object-cover rounded-lg"
+                    />
+                  )}
                 </div>
                 <div className="mb-4">
                   <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-50 text-green-700 text-sm font-medium">
@@ -146,11 +178,13 @@ export default function Index() {
               {/* Wash and Iron */}
               <div className="bg-white/95 border border-white/60 rounded-[24px] p-7 md:p-8 shadow-[0_8px_30px_rgba(17,24,39,0.1)] ring-1 ring-white/40">
                 <div className="w-20 h-20 bg-gray-100 rounded-2xl mb-5 flex items-center justify-center">
-                  <img
-                    src="https://images.pexels.com/photos/5591728/pexels-photo-5591728.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop"
-                    alt="Wash and Iron"
-                    className="w-12 h-12 object-cover rounded-lg"
-                  />
+                  {services.find(s => s.service_identifier === 'wash-iron')?.icon && (
+                    <img
+                      src={services.find(s => s.service_identifier === 'wash-iron')?.icon}
+                      alt="Wash and Iron"
+                      className="w-12 h-12 object-cover rounded-lg"
+                    />
+                  )}
                 </div>
                 <div className="mb-4">
                   <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-rose-50 text-rose-700 text-sm font-medium">
@@ -173,11 +207,13 @@ export default function Index() {
               {/* Repair */}
               <div className="bg-white/95 border border-white/60 rounded-[24px] p-7 md:p-8 shadow-[0_8px_30px_rgba(17,24,39,0.1)] ring-1 ring-white/40">
                 <div className="w-20 h-20 bg-gray-100 rounded-2xl mb-5 flex items-center justify-center">
-                  <img
-                    src="https://images.pexels.com/photos/6069112/pexels-photo-6069112.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop"
-                    alt="Repair"
-                    className="w-12 h-12 object-cover rounded-lg"
-                  />
+                  {services.find(s => s.service_identifier === 'repairs')?.icon && (
+                    <img
+                      src={services.find(s => s.service_identifier === 'repairs')?.icon}
+                      alt="Repair"
+                      className="w-12 h-12 object-cover rounded-lg"
+                    />
+                  )}
                 </div>
                 <div className="mb-4">
                   <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 text-amber-700 text-sm font-medium">
