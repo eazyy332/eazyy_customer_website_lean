@@ -107,7 +107,7 @@ export default function ItemSelection() {
             .order('sequence', { ascending: true });
           
           console.log('[ItemSelection] Items query result:', { data: items, error: itemsError });
-          allItems = items || [];
+          combinedItems = items || [];
         } else {
           console.log('[ItemSelection] No categories found, skipping items query');
         }
@@ -122,7 +122,6 @@ export default function ItemSelection() {
         console.log('[ItemSelection] Direct items query result:', { data: directItems, error: directItemsError });
         
         // Combine items from both queries (remove duplicates by id)
-        const combinedItems = [...allItems];
         if (directItems) {
           directItems.forEach(item => {
             if (!combinedItems.find(existing => existing.id === item.id)) {
@@ -148,7 +147,7 @@ export default function ItemSelection() {
         console.log('[ItemSelection] ALL categories in database (first 10):', { data: allCategories, error: allCategoriesError });
         
         console.log('[ItemSelection] Categories loaded:', cats);
-        console.log('[ItemSelection] Items loaded (before filtering):', items);
+        console.log('[ItemSelection] Items loaded (before filtering):', combinedItems);
         
         if (!mounted) return;
         setCategoriesDb(cats || []);
