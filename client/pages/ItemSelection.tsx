@@ -59,7 +59,7 @@ export default function ItemSelection() {
     async function load() {
       if (!rawCategory) return;
       setLoading(true);
-      console.debug('[ItemSelection] route', { rawCategory, normalized: category });
+      console.log('[ItemSelection] Starting load for category:', { rawCategory, normalized: category });
       
       // Load all services for the selector buttons
       const { data: allServicesData } = await supabase
@@ -67,6 +67,8 @@ export default function ItemSelection() {
         .select('id, name, service_identifier, icon, image_url, icon_name')
         .eq('status', true)
         .order('sequence', { ascending: true });
+      
+      console.log('[ItemSelection] All services loaded:', allServicesData);
       
       if (mounted && allServicesData) {
         setAllServices(allServicesData);
@@ -79,24 +81,31 @@ export default function ItemSelection() {
         .or(`service_identifier.eq.${rawCategory},service_identifier.eq.${category}`)
         .maybeSingle();
       
+      console.log('[ItemSelection] Service lookup result:', svc);
+      
       if (!mounted) return;
       setService(svc);
       if (svc?.id) {
+        console.log('[ItemSelection] Loading categories and items for service:', svc.id);
         const [{ data: cats }, { data: items }] = await Promise.all([
           supabase.from('categories').select('*').eq('service_id', svc.id).order('sequence', { ascending: true }),
-          supabase.from('items').select('*').eq('service_id', svc.id).eq('status', true).order('sequence', { ascending: true }),
+          supabase.from('items').select('*').eq('service_id', svc.id).order('sequence', { ascending: true }),
         ]);
+        console.log('[ItemSelection] Categories loaded:', cats);
+        console.log('[ItemSelection] Items loaded (before filtering):', items);
+        
         if (!mounted) return;
         setCategoriesDb(cats || []);
         setItemsDb(items || []);
-        console.debug('[ItemSelection] loaded data', { 
+        console.log('[ItemSelection] Final loaded data:', { 
           service: svc?.name, 
           categories: cats?.length || 0, 
           items: items?.length || 0,
-          itemsWithDescription: items?.filter(item => item.description && item.description.trim() !== '').length || 0
+          itemsWithDescription: items?.filter(item => item.description && item.description.trim() !== '').length || 0,
+          itemsWithStatus: items?.filter(item => item.status === true).length || 0
         });
       } else {
-        console.warn('[ItemSelection] No service found for identifier:', { rawCategory, normalized: category });
+        console.log('[ItemSelection] No service found for identifier:', { rawCategory, normalized: category });
         setCategoriesDb([]);
         setItemsDb([]);
       }
@@ -133,6 +142,8 @@ export default function ItemSelection() {
   // Use only database data
   const itemsSource: any[] = itemsDb;
 
+  console.log('[ItemSelection] Items source before filtering:', itemsSource);
+
   const subcategoryOptions: Array<{ id: string; name: string }> = [
     { id: 'all', name: 'All' }, 
     ...categoriesDb.map((c: any) => ({ id: String(c.id), name: c.name || 'Category' }))
@@ -142,10 +153,14 @@ export default function ItemSelection() {
     ? itemsSource 
     : itemsSource.filter((i: any) => (i.category_id ?? '') === selectedSubcategory);
 
+  console.log('[ItemSelection] Items after subcategory filter:', filteredItems);
+
   // Filter out items without description
   const itemsWithDescription = filteredItems.filter((item: any) => 
     item.description && item.description.trim() !== ''
   );
+
+  console.log('[ItemSelection] Items with description:', itemsWithDescription);
 
   const meta = {
     title: service?.name ?? '',
