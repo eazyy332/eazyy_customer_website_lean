@@ -258,7 +258,9 @@ ted
 }eturn updated;
       } else {
         return [...prev, cartItem];
-      }
+     
+  }
+} }
     });
   };
 
