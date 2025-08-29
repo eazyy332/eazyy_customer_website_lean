@@ -14,20 +14,6 @@ export async function createOrder(req: Request, res: Response) {
   try {
     console.log('Order creation request received:', req.body);
 
-    // Check if Supabase is properly configured
-    const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || '';
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-    
-    if (!supabaseUrl || !supabaseServiceKey || 
-        supabaseUrl.includes('your_supabase_url_here') || 
-        !supabaseUrl.startsWith('https://')) {
-      console.error('Supabase not properly configured');
-      return res.status(500).json({ 
-        ok: false, 
-        error: 'Database not configured. Please connect to Supabase.' 
-      });
-    }
-
     const {
       items,
       totals,
