@@ -224,7 +224,12 @@ ted
     localStorage.setItem('eazzy-cart', JSON.stringify(cart));
     // Dispatch cart updated event
     try {
-      window.dispatchEvent(new CustomEvent('cart:updated'));
+      window.dispatchEvent
+      )
+    }
+  }
+  )
+}(new CustomEvent('cart:updated'));
     } catch {}
   }, [cart]);
 
