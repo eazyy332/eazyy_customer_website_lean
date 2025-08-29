@@ -250,7 +250,12 @@ ted
       if (existingIndex >= 0) {
         const updated = [...prev];
         updated[existingIndex].quantity += 1;
-        return updated;
+        r
+      }
+    }
+    )
+  }
+}eturn updated;
       } else {
         return [...prev, cartItem];
       }
@@ -262,7 +267,7 @@ ted
 }ber) => {
     if (newQuantity <= 0) {
       setCart(prev => prev.filter(
-        i => !(i.id === itemId && i.serviceCategory === category)
+        i => !(i.id === itemId && i.serviceCategory     }
 === 
   }
 }category)
