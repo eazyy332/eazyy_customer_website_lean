@@ -251,7 +251,9 @@ ted
     });
   };
 
-  const updateQuantity = (itemId: string, newQuantity: number) => {
+  const updateQuantity = (itemId: string, newQuantity: num
+  }
+}ber) => {
     if (newQuantity <= 0) {
       setCart(prev => prev.filter(
         i => !(i.id === itemId && i.serviceCategory     }
