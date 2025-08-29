@@ -278,7 +278,7 @@ export default function ItemSelection() {
       icon: item.icon,
       iconType: typeof item.icon,
       iconValue: JSON.stringify(item.icon),
-      isValidUrl: item.icon && (item.icon.startsWith('http://') || item.icon.startsWith('https://'))
+      isValidUrl: item.icon && typeof item.icon === 'string' && (item.icon.startsWith('http://') || item.icon.startsWith('https://'))
     });
     
     // Check if icon is a valid URL
