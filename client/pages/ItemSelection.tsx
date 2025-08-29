@@ -64,7 +64,7 @@ export default function ItemSelection() {
       // Load all services for the selector buttons
       const { data: allServicesData } = await supabase
         .from('services')
-        .select('id, name, service_identifier, icon, image_url, icon_name')
+        .select('id, name, service_identifier, icon, icon_name')
         .order('sequence', { ascending: true });
       
       console.log('[ItemSelection] All services loaded:', allServicesData);
@@ -102,7 +102,7 @@ export default function ItemSelection() {
           const categoryIds = cats.map(c => c.id);
           const { data: items, error: itemsError } = await supabase
             .from('items')
-            .select('id, name, description, price, category_id, service_id, icon, image_url, icon_name, status, sequence, is_custom_price, custom_pricing, unit_price, unit_label, min_input_value, max_input_value, input_placeholder')
+            .select('id, name, description, price, category_id, service_id, icon, icon_name, status, sequence, is_custom_price, custom_pricing, unit_price, unit_label, min_input_value, max_input_value, input_placeholder')
             .in('category_id', categoryIds)
             .eq('status', true)
             .order('sequence', { ascending: true });
@@ -126,7 +126,7 @@ export default function ItemSelection() {
         // Also try loading items directly by service_id if the field exists
         const { data: directItems, error: directItemsError } = await supabase
           .from('items')
-          .select('id, name, description, price, category_id, service_id, icon, image_url, icon_name, status, sequence, is_custom_price, custom_pricing, unit_price, unit_label, min_input_value, max_input_value, input_placeholder')
+          .select('id, name, description, price, category_id, service_id, icon, icon_name, status, sequence, is_custom_price, custom_pricing, unit_price, unit_label, min_input_value, max_input_value, input_placeholder')
           .eq('service_id', svc.id)
           .eq('status', true)
           .order('sequence', { ascending: true });
@@ -155,7 +155,7 @@ export default function ItemSelection() {
         // Also try loading ALL items to see what's in the database
         const { data: debugAllItems, error: allItemsError } = await supabase
           .from('items')
-          .select('id, name, description, price, category_id, service_id, icon, image_url, icon_name, status')
+          .select('id, name, description, price, category_id, service_id, icon, icon_name, status')
           .eq('status', true)
           .limit(10);
         
@@ -166,9 +166,8 @@ export default function ItemSelection() {
           iconSamples: debugAllItems?.map(item => ({
             name: item.name,
             icon: item.icon,
-            image_url: item.image_url,
             icon_name: item.icon_name,
-            hasIcon: !!(item.icon || item.image_url || item.icon_name)
+            hasIcon: !!(item.icon || item.icon_name)
           })) || []
         });
         
