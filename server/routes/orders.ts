@@ -133,31 +133,11 @@ export async function createOrder(req: Request, res: Response) {
     console.log('Creating order with data:', orderData);
 
     // Insert order
-    let order;
-    let orderError;
-    
-    try {
-      const result = await supabaseAdmin
-        .from("orders")
-        .insert(orderData)
-        .select("id, order_number")
-        .single();
-      
-      order = result.data;
-      orderError = result.error;
-    } catch (e: any) {
-      orderError = e;
-    }
-
-    // Handle Supabase not configured case
-    if (orderError && orderError.message === 'Supabase not configured') {
-      console.log('Supabase not configured - returning mock order for development');
-      order = {
-        id: `mock-${Date.now()}`,
-        order_number: orderData.order_number
-      };
-      orderError = null;
-    }
+    const { data: order, error: orderError } = await supabaseAdmin
+      .from("orders")
+      .insert(orderData)
+      .select("id, order_number")
+      .single();
 
     if (orderError) {
       console.error("Order creation error:", orderError);
@@ -178,7 +158,7 @@ export async function createOrder(req: Request, res: Response) {
     console.log('Order created successfully:', order);
 
     // Insert order items
-    const itemsPayload = items.map((item) => ({
+    const itemsPayload = items.map(item => ({
       order_id: order.id,
       product_id: null, // We don't have product IDs in this context
       product_name: item.name,
@@ -194,25 +174,20 @@ export async function createOrder(req: Request, res: Response) {
 
     console.log('Creating order items:', itemsPayload);
 
-    // Only try to insert items if Supabase is configured
-    if (!order.id.startsWith('mock-')) {
-      const { error: itemsError } = await supabaseAdmin
-        .from("order_items")
-        .insert(itemsPayload);
+    const { error: itemsError } = await supabaseAdmin
+      .from("order_items")
+      .insert(itemsPayload);
 
-      if (itemsError && itemsError.message !== 'Supabase not configured') {
-        console.error("Order items creation error:", itemsError);
-        // Don't fail the entire order if items fail - we can fix this later
-        console.log("Order created but items failed to insert");
-      } else {
-        console.log('Order items created successfully');
-      }
+    if (itemsError) {
+      console.error("Order items creation error:", itemsError);
+      // Don't fail the entire order if items fail - we can fix this later
+      console.log("Order created but items failed to insert");
     } else {
-      console.log('Mock order - skipping order items insertion');
+      console.log('Order items created successfully');
     }
 
     // Link custom quote if provided
-    if (sourceQuoteId && !order.id.startsWith('mock-')) {
+    if (sourceQuoteId) {
       try {
         await supabaseAdmin
           .from('custom_price_quotes')
@@ -226,8 +201,6 @@ export async function createOrder(req: Request, res: Response) {
       } catch (e) {
         console.log('Failed to link custom quote:', e);
       }
-    } else if (sourceQuoteId) {
-      console.log('Mock order - skipping custom quote linking');
     }
 
     console.log('Order creation completed successfully');
