@@ -6,9 +6,7 @@ import { supabase } from "@/lib/supabase";
 
 function normalizeCategorySlug(raw: string): string {
   const map: Record<string, string> = {
-    "eazyy-bag": "eazyy-bag", 
-    "easy-bag": "eazzy-bag",
-    "eazyy-bag": "eazzy-bag",
+    "easy-bag": "eazyy-bag",
     "wash-and-iron": "wash-iron",
     "dry-clean": "dry-cleaning",
     "drycleaning": "dry-cleaning",
@@ -47,109 +45,6 @@ export default function ItemSelection() {
   const [dynamicInputs, setDynamicInputs] = useState<Record<string, number>>({});
   const [allServices, setAllServices] = useState<any[]>([]);
 
-  // Service data organized by category
-  const serviceData: Record<string, any> = {
-    'eazyy-bag': {
-      name: 'eazzy Bag Services',
-      description: 'Choose from different bag sizes and laundry options',
-      icon: '🧺',
-      items: [
-        { id: 'small-bag', name: 'Small Bag (up to 5 lbs)', description: 'Perfect for a few items or undergarments', price: 15.99, subcategory: 'bags', icon: '👝' },
-        { id: 'regular-bag', name: 'Regular Bag (up to 10 lbs)', description: 'Standard size for weekly laundry', price: 24.99, subcategory: 'bags', icon: '🎒' },
-        { id: 'large-bag', name: 'Large Bag (up to 15 lbs)', description: 'Maximum capacity for families', price: 34.99, subcategory: 'bags', icon: '🧳' },
-        { id: 'delicate-bag', name: 'Delicate Items Bag', description: 'Special care for sensitive fabrics', price: 29.99, subcategory: 'specialty', icon: '🌸' },
-        { id: 'eco-bag', name: 'Eco-Friendly Wash Bag', description: 'Environmentally conscious cleaning', price: 27.99, subcategory: 'specialty', icon: '🌿' }
-      ],
-      subcategories: ['all', 'bags', 'specialty']
-    },
-    'wash-iron': {
-      name: 'Wash & Iron Services',
-      description: 'Individual items professionally washed and ironed',
-      icon: '👔',
-      items: [
-        { id: 'dress-shirt', name: 'Dress Shirt', description: 'Professional shirt cleaning and pressing', price: 4.99, subcategory: 'shirts', icon: '👔' },
-        { id: 'casual-shirt', name: 'Casual Shirt', description: 'Regular shirt wash and iron', price: 3.99, subcategory: 'shirts', icon: '👕' },
-        { id: 'blouse', name: 'Blouse', description: 'Delicate blouse care', price: 5.99, subcategory: 'shirts', icon: '👚' },
-        { id: 'trousers', name: 'Trousers', description: 'Professional trouser pressing', price: 6.99, subcategory: 'pants', icon: '👖' },
-        { id: 'jeans', name: 'Jeans', description: 'Denim wash and press', price: 5.99, subcategory: 'pants', icon: '👖' },
-        { id: 'skirt', name: 'Skirt', description: 'Skirt cleaning and pressing', price: 5.99, subcategory: 'other', icon: '👗' },
-        { id: 'polo-shirt', name: 'Polo Shirt', description: 'Polo shirt wash and iron', price: 4.99, subcategory: 'shirts', icon: '👕' },
-        { id: 'chinos', name: 'Chinos', description: 'Chino pants cleaning', price: 6.99, subcategory: 'pants', icon: '👖' }
-      ],
-      subcategories: ['all', 'shirts', 'pants', 'other']
-    },
-    'dry-cleaning': {
-      name: 'Dry Cleaning Services',
-      description: 'Professional dry cleaning for delicate and special items',
-      icon: '🧼',
-      items: [
-        { id: 'suit-jacket', name: 'Suit Jacket', description: 'Professional suit jacket cleaning', price: 15.99, subcategory: 'suits', icon: '🤵' },
-        { id: 'suit-pants', name: 'Suit Pants', description: 'Matching suit trouser cleaning', price: 12.99, subcategory: 'suits', icon: '👔' },
-        { id: 'dress', name: 'Dress', description: 'Elegant dress dry cleaning', price: 18.99, subcategory: 'dresses', icon: '👗' },
-        { id: 'evening-gown', name: 'Evening Gown', description: 'Special occasion dress care', price: 35.99, subcategory: 'dresses', icon: '👰' },
-        { id: 'coat', name: 'Coat', description: 'Winter coat cleaning', price: 25.99, subcategory: 'outerwear', icon: '🧥' },
-        { id: 'blazer', name: 'Blazer', description: 'Business blazer cleaning', price: 16.99, subcategory: 'suits', icon: '🤵' },
-        { id: 'wool-sweater', name: 'Wool Sweater', description: 'Delicate wool care', price: 13.99, subcategory: 'knitwear', icon: '🧶' },
-        { id: 'cashmere', name: 'Cashmere Item', description: 'Luxury cashmere cleaning', price: 22.99, subcategory: 'knitwear', icon: '✨' },
-        { id: 'leather-jacket', name: 'Leather Jacket', description: 'Specialized leather cleaning', price: 45.99, subcategory: 'specialty', icon: '🧥' },
-        { id: 'fur-item', name: 'Fur Item', description: 'Expert fur care and storage', price: 89.99, subcategory: 'specialty', icon: '🦔' }
-      ],
-      subcategories: ['all', 'suits', 'dresses', 'outerwear', 'knitwear', 'specialty']
-    },
-    'repairs': {
-      name: 'Repairs & Alterations',
-      description: 'Tailoring and repair services for your garments',
-      icon: '✂️',
-      items: [
-        { id: 'hem-pants', name: 'Hem Pants', description: 'Adjust trouser length', price: 12.99, subcategory: 'hemming', icon: '📏' },
-        { id: 'hem-dress', name: 'Hem Dress', description: 'Adjust dress length', price: 15.99, subcategory: 'hemming', icon: '📐' },
-        { id: 'hem-skirt', name: 'Hem Skirt', description: 'Adjust skirt length', price: 13.99, subcategory: 'hemming', icon: '📏' },
-        { id: 'take-in-waist', name: 'Take in Waist', description: 'Reduce waist size', price: 18.99, subcategory: 'fitting', icon: '📎' },
-        { id: 'let-out-waist', name: 'Let out Waist', description: 'Increase waist size', price: 16.99, subcategory: 'fitting', icon: '📎' },
-        { id: 'shorten-sleeves', name: 'Shorten Sleeves', description: 'Adjust sleeve length', price: 14.99, subcategory: 'fitting', icon: '✂️' },
-        { id: 'replace-zipper', name: 'Replace Zipper', description: 'New zipper installation', price: 19.99, subcategory: 'repairs', icon: '🔧' },
-        { id: 'button-replacement', name: 'Button Replacement', description: 'Replace missing buttons', price: 8.99, subcategory: 'repairs', icon: '🔘' },
-        { id: 'patch-hole', name: 'Patch Small Hole', description: 'Repair small tears or holes', price: 12.99, subcategory: 'repairs', icon: '🪡' },
-        { id: 'reinforcement', name: 'Reinforcement', description: 'Strengthen weak seams', price: 11.99, subcategory: 'repairs', icon: '💪' }
-      ],
-      subcategories: ['all', 'hemming', 'fitting', 'repairs']
-    }
-  };
-
-  const allowedSlugs = new Set(Object.keys(serviceData));
-  const currentService = serviceData[category || ''];
-
-  const serviceMeta: Record<string, { title: string; description: string; hero: string; accent: string; label: string } > = {
-    'eazyy-bag': {
-      title: 'eazyy Bag',
-      description: "Fill a bag. We'll handle the rest. Weight-based washing with pickup & delivery on your schedule.",
-      hero: "",
-      accent: '#1D62DB',
-      label: 'Laundry'
-    },
-    'dry-cleaning': {
-      title: 'Dry Cleaning',
-      description: 'Crisp care for delicate garments. Professional solvent cleaning and finishing, picked up and delivered.',
-      hero: "",
-      accent: '#16A34A',
-      label: 'Dry clean'
-    },
-    'wash-iron': {
-      title: 'Wash & Iron',
-      description: 'Washed. Pressed. Delivered. Per-item washing and precise ironing, picked up and delivered on your schedule.',
-      hero: "",
-      accent: '#DC2626',
-      label: 'Wash & iron'
-    },
-    'repairs': {
-      title: 'Repairs',
-      description: "Fix, tailor, and extend your garment’s life. From hemming to zippers—skilled repairs with pickup & delivery.",
-      hero: "",
-      accent: '#F59E0B',
-      label: 'Repairs'
-    }
-  };
-  
   useEffect(() => {
     // Load cart from localStorage
     const savedCart = localStorage.getItem('eazzy-cart');
@@ -181,7 +76,7 @@ export default function ItemSelection() {
       const { data: svc } = await supabase
         .from('services')
         .select('*')
-        .or(`service_identifier.eq.${rawCategory},service_identifier.eq.${category},service_identifier.eq.eazyy-bag,service_identifier.eq.easy-bag`)
+        .or(`service_identifier.eq.${rawCategory},service_identifier.eq.${category}`)
         .maybeSingle();
       
       if (!mounted) return;
@@ -217,8 +112,8 @@ export default function ItemSelection() {
     } catch {}
   }, [cart]);
 
-  // Guard: only show not found if neither DB service nor a known fallback slug exist
-  if (!loading && !service && !allowedSlugs.has(category)) {
+  // Guard: only show not found if no DB service exists
+  if (!loading && !service) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
@@ -229,28 +124,29 @@ export default function ItemSelection() {
     );
   }
 
-  // Choose data source
-  const usingDb = itemsDb.length > 0;
-  const itemsSource: any[] = usingDb ? itemsDb : (currentService?.items ?? []);
+  // Use only database data
+  const itemsSource: any[] = itemsDb;
 
-  const subcategoryOptions: Array<{ id: string; name: string }> = usingDb
-    ? [{ id: 'all', name: 'All' }, ...categoriesDb.map((c: any) => ({ id: String(c.id), name: c.name || 'Category' }))]
-    : [{ id: 'all', name: 'All' }, ...(currentService?.subcategories || []).filter((id: string) => id !== 'all').map((id: string) => ({ id, name: id.charAt(0).toUpperCase() + id.slice(1) }))];
+  const subcategoryOptions: Array<{ id: string; name: string }> = [
+    { id: 'all', name: 'All' }, 
+    ...categoriesDb.map((c: any) => ({ id: String(c.id), name: c.name || 'Category' }))
+  ];
 
-  const filteredItems = usingDb
-    ? (selectedSubcategory === 'all' ? itemsSource : itemsSource.filter((i: any) => (i.category_id ?? '') === selectedSubcategory))
-    : (selectedSubcategory === 'all' ? itemsSource : itemsSource.filter((i: any) => (i.subcategory ?? 'all') === selectedSubcategory));
+  const filteredItems = selectedSubcategory === 'all' 
+    ? itemsSource 
+    : itemsSource.filter((i: any) => (i.category_id ?? '') === selectedSubcategory);
 
-  const fallbackMeta = serviceMeta[category || ''] || {} as any;
   const meta = {
-    title: service?.name ?? fallbackMeta.title ?? '',
-    description: service?.short_description ?? service?.description ?? fallbackMeta.description ?? '',
-    hero: service?.image_url ?? service?.icon ?? fallbackMeta.hero ?? "",
-    accent: service?.color_hex ?? (service?.color_scheme?.primary) ?? fallbackMeta.accent ?? '#1D62DB',
-    label: service?.price_unit ?? fallbackMeta.label ?? 'per piece',
+    title: service?.name ?? '',
+    description: service?.short_description ?? service?.description ?? '',
+    hero: service?.image_url ?? "",
+    accent: service?.color_hex ?? '#1D62DB',
+    label: service?.price_unit ?? 'per piece',
     serviceId: service?.id ?? null,
   } as any;
+
   const formatEuro = (value: number) => value.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  
   const getItemImage = (item: any) => {
     return item.icon || item.image_url || "";
   };
@@ -263,19 +159,12 @@ export default function ItemSelection() {
   };
 
   const getServiceIcon = (serviceIdentifier: string) => {
-    // Handle different variations of eazyy-bag identifier
-    const normalizedIdentifier = serviceIdentifier === 'eazyy-bag' ? 'eazyy-bag' : serviceIdentifier;
     const serviceData = allServices.find(s => 
-      s.service_identifier === normalizedIdentifier || 
-      s.service_identifier === serviceIdentifier ||
-      (serviceIdentifier === 'eazyy-bag' && (s.service_identifier === 'easy-bag' || s.service_identifier === 'eazzy-bag'))
+      s.service_identifier === serviceIdentifier
     );
-    return serviceData?.icon || serviceData?.image_url || getDefaultServiceIcon(serviceIdentifier);
+    return serviceData?.icon || serviceData?.image_url || "";
   };
 
-  const getDefaultServiceIcon = (serviceIdentifier: string): string => {
-    return "";
-  };
   const addToCart = (item: Item) => {
     const cartItem: CartItem = {
       ...item,
@@ -381,77 +270,38 @@ export default function ItemSelection() {
         <div className="max-w-[1200px] mx-auto">
           {/* Hero banner */}
           <section className="relative rounded-[28px] overflow-hidden shadow-[0_20px_60px_rgba(17,24,39,0.15)]">
-            {meta.hero && <img src={meta.hero} alt="" className="absolute inset-0 w-full h-full object-cover" />}
-            {!meta.hero && <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-blue-500 to-blue-700"></div>}
+            {meta.hero ? (
+              <img src={meta.hero} alt="" className="absolute inset-0 w-full h-full object-cover" />
+            ) : (
+              <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-blue-500 to-blue-700"></div>
+            )}
             <div className="relative z-10 px-6 md:px-10 py-10 md:py-14">
               <div className="inline-flex items-center h-8 px-3 rounded-full text-white/90" style={{ backgroundColor: meta.accent }}>
-                <span className="text-[13px] font-medium">6 services</span>
+                <span className="text-[13px] font-medium">{allServices.length} services</span>
               </div>
               <h1 className="mt-5 text-4xl md:text-5xl font-medium text-white">{meta.title}</h1>
               <p className="mt-3 max-w-2xl text-white/90 text-lg leading-relaxed">{meta.description}</p>
 
               {/* Right-side circular service selectors - visible on all screen sizes */}
               <div className="flex items-center gap-3 md:gap-5 absolute bottom-6 right-4 md:right-8">
-                <button
-                  onClick={() => navigate('/order/items/eazyy-bag')}
-                  className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/95 backdrop-blur flex items-center justify-center shadow border border-gray-200 hover:border-primary transition-colors"
-                  aria-label="eazyy bag"
-                >
-                  {getServiceIcon('eazyy-bag') ? (
-                    <img 
-                      src={getServiceIcon('eazyy-bag')} 
-                      alt="eazyy bag" 
-                      className="w-6 h-6 md:w-8 md:h-8 object-contain rounded"
-                    />
-                  ) : (
-                    <span className="text-lg">🧺</span>
-                  )}
-                </button>
-                <button
-                  onClick={() => navigate('/order/items/dry-cleaning')}
-                  className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/95 backdrop-blur flex items-center justify-center shadow border border-gray-200 hover:border-primary transition-colors"
-                  aria-label="dry cleaning"
-                >
-                  {getServiceIcon('dry-cleaning') ? (
-                    <img 
-                      src={getServiceIcon('dry-cleaning')} 
-                      alt="dry cleaning" 
-                      className="w-6 h-6 md:w-8 md:h-8 object-contain rounded"
-                    />
-                  ) : (
-                    <span className="text-lg">🧼</span>
-                  )}
-                </button>
-                <button
-                  onClick={() => navigate('/order/items/wash-iron')}
-                  className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/95 backdrop-blur flex items-center justify-center shadow border border-gray-200 hover:border-primary transition-colors"
-                  aria-label="wash & iron"
-                >
-                  {getServiceIcon('wash-iron') ? (
-                    <img 
-                      src={getServiceIcon('wash-iron')} 
-                      alt="wash & iron" 
-                      className="w-6 h-6 md:w-8 md:h-8 object-contain rounded"
-                    />
-                  ) : (
-                    <span className="text-lg">👔</span>
-                  )}
-                </button>
-                <button
-                  onClick={() => navigate('/order/items/repairs')}
-                  className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/95 backdrop-blur flex items-center justify-center shadow border border-gray-200 hover:border-primary transition-colors"
-                  aria-label="repairs"
-                >
-                  {getServiceIcon('repairs') ? (
-                    <img 
-                      src={getServiceIcon('repairs')} 
-                      alt="repairs" 
-                      className="w-6 h-6 md:w-8 md:h-8 object-contain rounded"
-                    />
-                  ) : (
-                    <span className="text-lg">✂️</span>
-                  )}
-                </button>
+                {allServices.map((svc) => (
+                  <button
+                    key={svc.id}
+                    onClick={() => navigate(`/order/items/${svc.service_identifier}`)}
+                    className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/95 backdrop-blur flex items-center justify-center shadow border border-gray-200 hover:border-primary transition-colors"
+                    aria-label={svc.name}
+                  >
+                    {(svc.icon || svc.image_url) ? (
+                      <img 
+                        src={svc.icon || svc.image_url} 
+                        alt={svc.name} 
+                        className="w-6 h-6 md:w-8 md:h-8 object-contain rounded"
+                      />
+                    ) : (
+                      <span className="text-lg">📦</span>
+                    )}
+                  </button>
+                ))}
               </div>
             </div>
           </section>
@@ -631,8 +481,6 @@ export default function ItemSelection() {
           </div>
         </div>
       )}
-
-      {/* Drawer removed; dedicated cart page is used now */}
     </div>
   );
 }
