@@ -215,7 +215,11 @@ export default function ItemSelection() {
     }
     load();
     return () => {
-      mounted = false;
+      moun    }
+ted 
+  }
+  )
+}= false;
     };
   }, [rawCategory, category]);
 
