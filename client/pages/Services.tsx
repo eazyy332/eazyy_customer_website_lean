@@ -32,8 +32,8 @@ export default function Services() {
       service_identifier: 'eazyy-bag',
       description: 'Fill our sturdy bag with a week\'s worth of laundry. We\'ll wash, dry, fold, and return everything fresh and ready to wear.',
       short_description: 'Fill our sturdy bag with a week\'s worth of laundry. We\'ll wash, dry, fold, and return everything fresh.',
-      icon: 'https://api.builder.io/api/v1/image/assets/TEMP/8053aaf5482c5a1eaffc8f5b8f8d52642ee84791?width=160',
-      image_url: 'https://api.builder.io/api/v1/image/assets/TEMP/8053aaf5482c5a1eaffc8f5b8f8d52642ee84791?width=160',
+      icon: 'https://images.pexels.com/photos/5591663/pexels-photo-5591663.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
+      image_url: 'https://images.pexels.com/photos/5591663/pexels-photo-5591663.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
       price_starts_at: 24.99,
       price_unit: 'per bag',
       features: ['Up to 15 lbs', 'Wash, dry, and fold', '24-48 hour turnaround', 'Free pickup & delivery'],
@@ -48,8 +48,8 @@ export default function Services() {
       service_identifier: 'dry-cleaning',
       description: 'Professional dry cleaning for delicate fabrics. Stains vanish, colors stay vibrant, and garments look like new.',
       short_description: 'Professional dry cleaning for delicate fabrics. Stains vanish, colors stay vibrant.',
-      icon: 'https://api.builder.io/api/v1/image/assets/TEMP/fce4d46b116b276f657742c2e7a9594f49ddecfa?width=160',
-      image_url: 'https://api.builder.io/api/v1/image/assets/TEMP/fce4d46b116b276f657742c2e7a9594f49ddecfa?width=160',
+      icon: 'https://images.pexels.com/photos/5591774/pexels-photo-5591774.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
+      image_url: 'https://images.pexels.com/photos/5591774/pexels-photo-5591774.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
       price_starts_at: 12.99,
       price_unit: 'per item',
       features: ['Suits, dresses, coats', 'Eco-friendly solvents', 'Expert stain removal'],
@@ -64,8 +64,8 @@ export default function Services() {
       service_identifier: 'wash-iron',
       description: 'Daily laundry expertly washed and ironed for a crisp finish. Folded neatly and delivered to your door.',
       short_description: 'Daily laundry expertly washed and ironed for a crisp finish.',
-      icon: 'https://api.builder.io/api/v1/image/assets/TEMP/323ee1d10112f83f8a173fa73990b7e744464d8d?width=160',
-      image_url: 'https://api.builder.io/api/v1/image/assets/TEMP/323ee1d10112f83f8a173fa73990b7e744464d8d?width=160',
+      icon: 'https://images.pexels.com/photos/5591728/pexels-photo-5591728.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
+      image_url: 'https://images.pexels.com/photos/5591728/pexels-photo-5591728.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
       price_starts_at: 3.99,
       price_unit: 'per item',
       features: ['Shirts, trousers, linens', 'Professional pressing', 'Same-day service'],
@@ -80,8 +80,8 @@ export default function Services() {
       service_identifier: 'repairs',
       description: 'Skilled tailors breathe new life into your garments. Mend tears, replace zippers, and secure hems.',
       short_description: 'Skilled tailors breathe new life into your garments.',
-      icon: 'https://api.builder.io/api/v1/image/assets/TEMP/054342f0a30f3564e498e0898a4167eaae155932?width=160',
-      image_url: 'https://api.builder.io/api/v1/image/assets/TEMP/054342f0a30f3564e498e0898a4167eaae155932?width=160',
+      icon: 'https://images.pexels.com/photos/6069112/pexels-photo-6069112.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
+      image_url: 'https://images.pexels.com/photos/6069112/pexels-photo-6069112.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
       price_starts_at: 12.99,
       price_unit: 'per item',
       features: ['Hemming & alterations', 'Zipper replacement', 'Tear repairs'],
@@ -105,9 +105,9 @@ export default function Services() {
         }
 
         try {
-          const { data, error: fetchError } = await supabase
+          const { data: servicesData, error: fetchError } = await supabase
             .from("services")
-            .select("*")
+            .select("id, name, service_identifier, description, short_description, icon, image_url, icon_name, price_starts_at, price_unit, features, benefits, color_hex, is_popular, status")
             .eq("status", true)
             .order("sequence", { ascending: true });
 
@@ -116,7 +116,19 @@ export default function Services() {
             // Use fallback data on fetch error
             setServices(fallbackServices);
           } else {
-            setServices(data || fallbackServices);
+            // Map database services to include proper icon URLs
+            const mappedServices = (servicesData || []).map(service => ({
+              ...service,
+              icon: service.icon || service.image_url || getServiceIconUrl(service.service_identifier),
+              image_url: service.image_url || service.icon || getServiceIconUrl(service.service_identifier)
+            }));
+            setServices(mappedServices.length > 0 ? mappedServices : fallbackServices);
+            const mappedServices = (servicesData || []).map(service => ({
+              ...service,
+              icon: service.icon || service.image_url || getServiceIconUrl(service.service_identifier),
+              image_url: service.image_url || service.icon || getServiceIconUrl(service.service_identifier)
+            }));
+            setServices(mappedServices.length > 0 ? mappedServices : fallbackServices);
           }
         } catch (fetchErr) {
           console.error('Fetch error:', fetchErr);
@@ -134,6 +146,28 @@ export default function Services() {
 
     loadServices();
   }, []);
+
+  // Helper function to get service icon URL based on service identifier
+  const getServiceIconUrl = (serviceIdentifier: string) => {
+    const iconMap: Record<string, string> = {
+      'eazyy-bag': 'https://images.pexels.com/photos/5591663/pexels-photo-5591663.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
+      'dry-cleaning': 'https://images.pexels.com/photos/5591774/pexels-photo-5591774.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
+      'wash-iron': 'https://images.pexels.com/photos/5591728/pexels-photo-5591728.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
+      'repairs': 'https://images.pexels.com/photos/6069112/pexels-photo-6069112.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'
+    };
+    return iconMap[serviceIdentifier] || 'https://images.pexels.com/photos/5591663/pexels-photo-5591663.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop';
+  };
+
+  // Helper function to get service icon URL based on service identifier
+  const getServiceIconUrl = (serviceIdentifier: string) => {
+    const iconMap: Record<string, string> = {
+      'eazyy-bag': 'https://images.pexels.com/photos/5591663/pexels-photo-5591663.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
+      'dry-cleaning': 'https://images.pexels.com/photos/5591774/pexels-photo-5591774.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
+      'wash-iron': 'https://images.pexels.com/photos/5591728/pexels-photo-5591728.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
+      'repairs': 'https://images.pexels.com/photos/6069112/pexels-photo-6069112.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'
+    };
+    return iconMap[serviceIdentifier] || 'https://images.pexels.com/photos/5591663/pexels-photo-5591663.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop';
+  };
 
   if (loading) {
     return (
