@@ -1,6 +1,151 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
+
+interface Service {
+  id: string;
+  name: string;
+  service_identifier: string;
+  description: string;
+  short_description: string;
+  icon: string;
+  image_url: string;
+  price_starts_at: number;
+  price_unit: string;
+  features: string[];
+  benefits: string[];
+  color_hex: string;
+  is_popular: boolean;
+  status: boolean;
+}
 
 export default function Services() {
+  const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fallback service data when Supabase is not configured
+  const fallbackServices: Service[] = [
+    {
+      id: 'eazyy-bag',
+      name: 'eazyy Bag',
+      service_identifier: 'eazyy-bag',
+      description: 'Fill our sturdy bag with a week\'s worth of laundry. We\'ll wash, dry, fold, and return everything fresh and ready to wear.',
+      short_description: 'Fill our sturdy bag with a week\'s worth of laundry. We\'ll wash, dry, fold, and return everything fresh.',
+      icon: 'https://api.builder.io/api/v1/image/assets/TEMP/8053aaf5482c5a1eaffc8f5b8f8d52642ee84791?width=160',
+      image_url: 'https://api.builder.io/api/v1/image/assets/TEMP/8053aaf5482c5a1eaffc8f5b8f8d52642ee84791?width=160',
+      price_starts_at: 24.99,
+      price_unit: 'per bag',
+      features: ['Up to 15 lbs', 'Wash, dry, and fold', '24-48 hour turnaround', 'Free pickup & delivery'],
+      benefits: ['Capacity: Up to 15 lbs', 'Turnaround: 24-48 hours', 'Starting at $24.99'],
+      color_hex: '#1D62DB',
+      is_popular: false,
+      status: true
+    },
+    {
+      id: 'dry-cleaning',
+      name: 'Dry Cleaning',
+      service_identifier: 'dry-cleaning',
+      description: 'Professional dry cleaning for delicate fabrics. Stains vanish, colors stay vibrant, and garments look like new.',
+      short_description: 'Professional dry cleaning for delicate fabrics. Stains vanish, colors stay vibrant.',
+      icon: 'https://api.builder.io/api/v1/image/assets/TEMP/fce4d46b116b276f657742c2e7a9594f49ddecfa?width=160',
+      image_url: 'https://api.builder.io/api/v1/image/assets/TEMP/fce4d46b116b276f657742c2e7a9594f49ddecfa?width=160',
+      price_starts_at: 12.99,
+      price_unit: 'per item',
+      features: ['Suits, dresses, coats', 'Eco-friendly solvents', 'Expert stain removal'],
+      benefits: ['Professional dry cleaning', 'Expert stain removal', 'Eco-friendly solvents', 'Careful pressing', 'Protective packaging'],
+      color_hex: '#16A34A',
+      is_popular: false,
+      status: true
+    },
+    {
+      id: 'wash-iron',
+      name: 'Wash & Iron',
+      service_identifier: 'wash-iron',
+      description: 'Daily laundry expertly washed and ironed for a crisp finish. Folded neatly and delivered to your door.',
+      short_description: 'Daily laundry expertly washed and ironed for a crisp finish.',
+      icon: 'https://api.builder.io/api/v1/image/assets/TEMP/323ee1d10112f83f8a173fa73990b7e744464d8d?width=160',
+      image_url: 'https://api.builder.io/api/v1/image/assets/TEMP/323ee1d10112f83f8a173fa73990b7e744464d8d?width=160',
+      price_starts_at: 3.99,
+      price_unit: 'per item',
+      features: ['Shirts, trousers, linens', 'Professional pressing', 'Same-day service'],
+      benefits: ['Everything in Basic', 'Delicate item care', 'Professional pressing', 'Stain treatment', 'Fabric softener'],
+      color_hex: '#DC2626',
+      is_popular: true,
+      status: true
+    },
+    {
+      id: 'repairs',
+      name: 'Repairs & Alterations',
+      service_identifier: 'repairs',
+      description: 'Skilled tailors breathe new life into your garments. Mend tears, replace zippers, and secure hems.',
+      short_description: 'Skilled tailors breathe new life into your garments.',
+      icon: 'https://api.builder.io/api/v1/image/assets/TEMP/054342f0a30f3564e498e0898a4167eaae155932?width=160',
+      image_url: 'https://api.builder.io/api/v1/image/assets/TEMP/054342f0a30f3564e498e0898a4167eaae155932?width=160',
+      price_starts_at: 12.99,
+      price_unit: 'per item',
+      features: ['Hemming & alterations', 'Zipper replacement', 'Tear repairs'],
+      benefits: ['Hemming & alterations', 'Zipper replacement', 'Tear repairs'],
+      color_hex: '#F59E0B',
+      is_popular: false,
+      status: true
+    }
+  ];
+
+  useEffect(() => {
+    const loadServices = async () => {
+      try {
+        // Check if Supabase is properly configured
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+        if (!supabaseUrl || supabaseUrl.includes('your_supabase_url_here') || !supabaseUrl.startsWith('https://')) {
+          // Use fallback data when Supabase is not configured
+          setServices(fallbackServices);
+          setLoading(false);
+          return;
+        }
+
+        try {
+          const { data, error: fetchError } = await supabase
+            .from("services")
+            .select("*")
+            .eq("status", true)
+            .order("sequence", { ascending: true });
+
+          if (fetchError) {
+            console.error('Error fetching services:', fetchError);
+            // Use fallback data on fetch error
+            setServices(fallbackServices);
+          } else {
+            setServices(data || fallbackServices);
+          }
+        } catch (fetchErr) {
+          console.error('Fetch error:', fetchErr);
+          // Use fallback data on network error
+          setServices(fallbackServices);
+        }
+      } catch (err) {
+        console.error('Connection error:', err);
+        // Use fallback data on any error
+        setServices(fallbackServices);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadServices();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading services...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-white">
       {/* Header hidden (global header used) */}
