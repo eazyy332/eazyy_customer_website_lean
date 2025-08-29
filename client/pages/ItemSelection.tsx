@@ -12,9 +12,8 @@ const heroRepair = "";
 
 function normalizeCategorySlug(raw: string): string {
   const map: Record<string, string> = {
-    "eazyy-bag": "eazyy-bag", 
     "easy-bag": "eazzy-bag",
-    "eazyy-bag": "eazzy-bag",
+    "eazzy-bag": "eazyy-bag",
     "wash-and-iron": "wash-iron",
     "dry-clean": "dry-cleaning",
     "drycleaning": "dry-cleaning",
