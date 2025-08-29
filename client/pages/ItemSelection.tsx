@@ -96,21 +96,6 @@ export default function ItemSelection() {
         { id: 'coat', name: 'Coat', description: 'Winter coat cleaning', price: 25.99, subcategory: 'outerwear', icon: '🧥' },
         { id: 'blazer', name: 'Blazer', description: 'Business blazer cleaning', price: 16.99, subcategory: 'suits', icon: '🤵' },
         { id: 'wool-sweater', name: 'Wool Sweater', description: 'Delicate wool care', price: 13.99, subcategory: 'knitwear', icon: '🧶' },
-          ]);
-          
-          if (catsError) console.error('Categories error:', catsError);
-          if (itemsError) console.error('Items error:', itemsError);
-          
-          if (!mounted) return;
-          setCategoriesDb(cats || []);
-          setItemsDb(items || []);
-        } else {
-          console.warn('[ItemSelection] No service found for identifier:', { rawCategory, normalized: category });
-          setCategoriesDb([]);
-          setItemsDb([]);
-        }
-      } catch (err) {
-        console.error('Service fetch error:', err);
         { id: 'cashmere', name: 'Cashmere Item', description: 'Luxury cashmere cleaning', price: 22.99, subcategory: 'knitwear', icon: '✨' },
         { id: 'leather-jacket', name: 'Leather Jacket', description: 'Specialized leather cleaning', price: 45.99, subcategory: 'specialty', icon: '🧥' },
         { id: 'fur-item', name: 'Fur Item', description: 'Expert fur care and storage', price: 89.99, subcategory: 'specialty', icon: '🦔' }
@@ -164,7 +149,7 @@ export default function ItemSelection() {
     },
     'repairs': {
       title: 'Repairs',
-      description: "Fix, tailor, and extend your garment’s life. From hemming to zippers—skilled repairs with pickup & delivery.",
+      description: "Fix, tailor, and extend your garment's life. From hemming to zippers—skilled repairs with pickup & delivery.",
       hero: heroRepair,
       accent: '#F59E0B',
       label: 'Repairs'
@@ -208,10 +193,14 @@ export default function ItemSelection() {
       if (!mounted) return;
       setService(svc);
       if (svc?.id) {
-        const [{ data: cats }, { data: items }] = await Promise.all([
+        const [{ data: cats, error: catsError }, { data: items, error: itemsError }] = await Promise.all([
           supabase.from('categories').select('*').eq('service_id', svc.id).order('sequence', { ascending: true }),
           supabase.from('items').select('*').eq('service_id', svc.id).order('sequence', { ascending: true }),
         ]);
+          
+        if (catsError) console.error('Categories error:', catsError);
+        if (itemsError) console.error('Items error:', itemsError);
+        
         if (!mounted) return;
         setCategoriesDb(cats || []);
         setItemsDb(items || []);
@@ -223,6 +212,8 @@ export default function ItemSelection() {
       
       setSelectedSubcategory('all');
       setLoading(false);
+    } catch (err) {
+      console.error('Service fetch error:', err);
     }
     load();
     return () => {
