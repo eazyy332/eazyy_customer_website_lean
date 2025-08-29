@@ -23,74 +23,7 @@ export default function Services() {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // Fallback service data when Supabase is not configured
-  const fallbackServices: Service[] = [
-    {
-      id: 'eazyy-bag',
-      name: 'eazyy Bag',
-      service_identifier: 'eazyy-bag',
-      description: 'Fill our sturdy bag with a week\'s worth of laundry. We\'ll wash, dry, fold, and return everything fresh and ready to wear.',
-      short_description: 'Fill our sturdy bag with a week\'s worth of laundry. We\'ll wash, dry, fold, and return everything fresh.',
-      icon: 'https://images.pexels.com/photos/5591663/pexels-photo-5591663.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
-      image_url: 'https://images.pexels.com/photos/5591663/pexels-photo-5591663.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
-      price_starts_at: 24.99,
-      price_unit: 'per bag',
-      features: ['Up to 15 lbs', 'Wash, dry, and fold', '24-48 hour turnaround', 'Free pickup & delivery'],
-      benefits: ['Capacity: Up to 15 lbs', 'Turnaround: 24-48 hours', 'Starting at $24.99'],
-      color_hex: '#1D62DB',
-      is_popular: false,
-      status: true
-    },
-    {
-      id: 'dry-cleaning',
-      name: 'Dry Cleaning',
-      service_identifier: 'dry-cleaning',
-      description: 'Professional dry cleaning for delicate fabrics. Stains vanish, colors stay vibrant, and garments look like new.',
-      short_description: 'Professional dry cleaning for delicate fabrics. Stains vanish, colors stay vibrant.',
-      icon: 'https://images.pexels.com/photos/5591774/pexels-photo-5591774.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
-      image_url: 'https://images.pexels.com/photos/5591774/pexels-photo-5591774.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
-      price_starts_at: 12.99,
-      price_unit: 'per item',
-      features: ['Suits, dresses, coats', 'Eco-friendly solvents', 'Expert stain removal'],
-      benefits: ['Professional dry cleaning', 'Expert stain removal', 'Eco-friendly solvents', 'Careful pressing', 'Protective packaging'],
-      color_hex: '#16A34A',
-      is_popular: false,
-      status: true
-    },
-    {
-      id: 'wash-iron',
-      name: 'Wash & Iron',
-      service_identifier: 'wash-iron',
-      description: 'Daily laundry expertly washed and ironed for a crisp finish. Folded neatly and delivered to your door.',
-      short_description: 'Daily laundry expertly washed and ironed for a crisp finish.',
-      icon: 'https://images.pexels.com/photos/5591728/pexels-photo-5591728.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
-      image_url: 'https://images.pexels.com/photos/5591728/pexels-photo-5591728.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
-      price_starts_at: 3.99,
-      price_unit: 'per item',
-      features: ['Shirts, trousers, linens', 'Professional pressing', 'Same-day service'],
-      benefits: ['Everything in Basic', 'Delicate item care', 'Professional pressing', 'Stain treatment', 'Fabric softener'],
-      color_hex: '#DC2626',
-      is_popular: true,
-      status: true
-    },
-    {
-      id: 'repairs',
-      name: 'Repairs & Alterations',
-      service_identifier: 'repairs',
-      description: 'Skilled tailors breathe new life into your garments. Mend tears, replace zippers, and secure hems.',
-      short_description: 'Skilled tailors breathe new life into your garments.',
-      icon: 'https://images.pexels.com/photos/6069112/pexels-photo-6069112.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
-      image_url: 'https://images.pexels.com/photos/6069112/pexels-photo-6069112.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop',
-      price_starts_at: 12.99,
-      price_unit: 'per item',
-      features: ['Hemming & alterations', 'Zipper replacement', 'Tear repairs'],
-      benefits: ['Hemming & alterations', 'Zipper replacement', 'Tear repairs'],
-      color_hex: '#F59E0B',
-      is_popular: false,
-      status: true
-    }
-  ];
+  const [heroImage, setHeroImage] = useState<string>("");
 
   useEffect(() => {
     const loadServices = async () => {
@@ -98,8 +31,8 @@ export default function Services() {
         // Check if Supabase is properly configured
         const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
         if (!supabaseUrl || supabaseUrl.includes('your_supabase_url_here') || !supabaseUrl.startsWith('https://')) {
-          // Use fallback data when Supabase is not configured
-          setServices(fallbackServices);
+          // No fallback - require database configuration
+          setServices([]);
           setLoading(false);
           return;
         }
@@ -113,21 +46,25 @@ export default function Services() {
 
           if (fetchError) {
             console.error('Error fetching services:', fetchError);
-            // Use fallback data on fetch error
-            setServices(fallbackServices);
+            setServices([]);
+          } else {
+            setServices(servicesData || []);
+            
+            // Set hero image from first service
+            if (servicesData && servicesData.length > 0 && servicesData[0].image_url) {
+              setHeroImage(servicesData[0].image_url);
+            }
           } else {
             // Use database services as-is without fallback URLs
             setServices(servicesData || []);
           }
         } catch (fetchErr) {
           console.error('Fetch error:', fetchErr);
-          // Use fallback data on network error
-          setServices(fallbackServices);
+          setServices([]);
         }
       } catch (err) {
         console.error('Connection error:', err);
-        // Use fallback data on any error
-        setServices(fallbackServices);
+        setServices([]);
       } finally {
         setLoading(false);
       }
@@ -301,7 +238,18 @@ export default function Services() {
 
       {/* Hero Section */}
       <section className="px-4 lg:px-16 py-12 lg:py-20">
-        <div className="text-center max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto">
+          {heroImage && (
+            <div className="w-full h-64 md:h-80 lg:h-96 mb-12 rounded-3xl overflow-hidden">
+              <img
+                src={heroImage}
+                alt="Services Hero"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+          
+          <div className="text-center">
           <div className="inline-flex items-center px-4 py-2 bg-accent rounded-lg mb-6">
             <svg
               className="w-3 h-2 mr-3 fill-primary"
@@ -319,6 +267,7 @@ export default function Services() {
             From everyday essentials to specialty care, we handle all your
             laundry needs with expertise and attention to detail.
           </p>
+          </div>
         </div>
       </section>
 

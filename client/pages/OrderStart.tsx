@@ -6,6 +6,7 @@ export default function OrderStart() {
   const [services, setServices] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [heroImage, setHeroImage] = useState<string>("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,6 +32,11 @@ export default function OrderStart() {
             setServices([]);
           } else {
             setServices(data || []);
+            
+            // Set hero image from first service
+            if (data && data.length > 0 && data[0].image_url) {
+              setHeroImage(data[0].image_url);
+            }
           }
         } catch (fetchErr) {
           console.error('Fetch error:', fetchErr);
@@ -116,6 +122,17 @@ export default function OrderStart() {
       {/* Main Content */}
       <main className="px-4 lg:px-16 py-12 lg:py-20">
         <div className="max-w-4xl mx-auto">
+          {/* Hero Image */}
+          {heroImage && (
+            <div className="w-full h-48 md:h-64 mb-8 rounded-2xl overflow-hidden">
+              <img
+                src={heroImage}
+                alt="Order Start Hero"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+          
           {/* Header */}
           <div className="text-center mb-12">
             <div className="inline-flex items-center px-4 py-2 bg-accent rounded-lg mb-6">

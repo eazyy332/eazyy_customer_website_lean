@@ -4,12 +4,6 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, Dr
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { supabase } from "@/lib/supabase";
 
-// Hero image constants - these will be overridden by database values when available
-const heroEazzy = "";
-const heroDry = "";
-const heroWash = "";
-const heroRepair = "";
-
 function normalizeCategorySlug(raw: string): string {
   const map: Record<string, string> = {
     "eazyy-bag": "eazyy-bag", 
@@ -128,28 +122,28 @@ export default function ItemSelection() {
     'eazyy-bag': {
       title: 'eazyy Bag',
       description: "Fill a bag. We'll handle the rest. Weight-based washing with pickup & delivery on your schedule.",
-      hero: heroEazzy,
+      hero: "",
       accent: '#1D62DB',
       label: 'Laundry'
     },
     'dry-cleaning': {
       title: 'Dry Cleaning',
       description: 'Crisp care for delicate garments. Professional solvent cleaning and finishing, picked up and delivered.',
-      hero: heroDry,
+      hero: "",
       accent: '#16A34A',
       label: 'Dry clean'
     },
     'wash-iron': {
       title: 'Wash & Iron',
       description: 'Washed. Pressed. Delivered. Per-item washing and precise ironing, picked up and delivered on your schedule.',
-      hero: heroWash,
+      hero: "",
       accent: '#DC2626',
       label: 'Wash & iron'
     },
     'repairs': {
       title: 'Repairs',
       description: "Fix, tailor, and extend your garment’s life. From hemming to zippers—skilled repairs with pickup & delivery.",
-      hero: heroRepair,
+      hero: "",
       accent: '#F59E0B',
       label: 'Repairs'
     }
@@ -239,7 +233,7 @@ export default function ItemSelection() {
   const meta = {
     title: service?.name ?? fallbackMeta.title ?? '',
     description: service?.short_description ?? service?.description ?? fallbackMeta.description ?? '',
-    hero: service?.image_url ?? service?.icon ?? "",
+    hero: service?.image_url ?? service?.icon ?? fallbackMeta.hero ?? "",
     accent: service?.color_hex ?? (service?.color_scheme?.primary) ?? fallbackMeta.accent ?? '#1D62DB',
     label: service?.price_unit ?? fallbackMeta.label ?? 'per piece',
     serviceId: service?.id ?? null,
@@ -361,7 +355,9 @@ export default function ItemSelection() {
         <div className="max-w-[1200px] mx-auto">
           {/* Hero banner */}
           <section className="relative rounded-[28px] overflow-hidden shadow-[0_20px_60px_rgba(17,24,39,0.15)]">
-            <img src={meta.hero} alt="" className="absolute inset-0 w-full h-full object-cover" />
+            {meta.hero && (
+              <img src={meta.hero} alt="" className="absolute inset-0 w-full h-full object-cover" />
+            )}
             <div className="relative z-10 px-6 md:px-10 py-10 md:py-14">
               <div className="inline-flex items-center h-8 px-3 rounded-full text-white/90" style={{ backgroundColor: meta.accent }}>
                 <span className="text-[13px] font-medium">6 services</span>
@@ -372,8 +368,8 @@ export default function ItemSelection() {
               {/* Right-side circular service selectors - visible on all screen sizes */}
               <div className="flex items-center gap-3 md:gap-5 absolute bottom-6 right-4 md:right-8">
                 {['eazzy-bag', 'dry-cleaning', 'wash-iron', 'repairs'].map((serviceId) => {
-                  const serviceData = service || {};
-                  const iconUrl = serviceData.icon || serviceData.image_url;
+                  const matchingService = services.find(s => s.service_identifier === serviceId);
+                  const iconUrl = matchingService?.icon || matchingService?.image_url;
                   if (!iconUrl) return null;
                   
                   return (
@@ -404,7 +400,9 @@ export default function ItemSelection() {
                   borderColor: selectedSubcategory === subcat.id ? meta.accent : '#E5E7EB'
                 }}
               >
-                <img src={getSubcategoryIcon(subcat.id)} alt="" className={`w-5 h-5 object-contain rounded ${selectedSubcategory === subcat.id ? 'bg-white' : 'bg-transparent'}`} />
+                {getSubcategoryIcon(subcat.id) && (
+                  <img src={getSubcategoryIcon(subcat.id)} alt="" className={`w-5 h-5 object-contain rounded ${selectedSubcategory === subcat.id ? 'bg-white' : 'bg-transparent'}`} />
+                )}
                 {subcat.name}
               </button>
             ))}
