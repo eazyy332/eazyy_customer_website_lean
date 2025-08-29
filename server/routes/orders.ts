@@ -103,14 +103,15 @@ export async function createOrder(req: Request, res: Response) {
       (contact?.firstName && contact?.lastName ? `${contact.firstName} ${contact.lastName}` : '') ||
       contact?.firstName || 
       contact?.lastName || 
+      contact?.email?.split('@')[0] || 
       'Customer';
 
     const orderData = {
       order_number: generateOrderNumber(),
       user_id: userId,
       customer_name: customerName,
-      email: contact?.email ?? "",
-      phone: contact?.phone ?? null,
+      email: contact?.email || "",
+      phone: contact?.phone || contact?.phoneNumber || null,
       shipping_address: address ?? "",
       status: "pending",
       payment_method: "credit_card",

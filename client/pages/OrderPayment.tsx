@@ -157,9 +157,10 @@ export default function OrderPayment() {
           total: totalPrice
         },
         contact: {
+          name: `${address?.firstName || ''} ${address?.lastName || ''}`.trim() || address?.fullName || '',
           firstName: address?.firstName || '',
           lastName: address?.lastName || '',
-          email: address?.email || 'customer@example.com',
+          email: address?.email || '',
           phone: address?.phoneNumber || address?.phone || null
         },
         address: typeof address === 'string' ? address : address?.fullAddress || (
