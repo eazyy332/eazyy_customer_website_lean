@@ -371,23 +371,34 @@ export default function ItemSelection() {
 
               {/* Right-side circular service selectors - visible on all screen sizes */}
               <div className="flex items-center gap-3 md:gap-5 absolute bottom-6 right-4 md:right-8">
-                {['eazzy-bag', 'dry-cleaning', 'wash-iron', 'repairs'].map((serviceId) => {
-                  const serviceData = service || {};
-                  const iconUrl = serviceData.icon || serviceData.image_url;
-                  if (!iconUrl) return null;
-                  
-                  return (
-                  <button
-                    key={serviceId}
-                    onClick={() => navigate(`/order/items/${serviceId}`)}
-                    className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/95 backdrop-blur flex items-center justify-center shadow border"
-                    style={{ borderColor: `${meta.accent}30` }}
-                    aria-label={serviceId}
-                  >
-                    <img src={iconUrl} alt="" className="w-6 h-6 md:w-8 md:h-8 object-contain" />
-                  </button>
-                  );
-                })}
+                <button
+                  onClick={() => navigate('/order/items/eazyy-bag')}
+                  className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/95 backdrop-blur flex items-center justify-center shadow border border-gray-200 hover:border-primary transition-colors"
+                  aria-label="eazyy bag"
+                >
+                  <span className="text-lg">🧺</span>
+                </button>
+                <button
+                  onClick={() => navigate('/order/items/dry-cleaning')}
+                  className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/95 backdrop-blur flex items-center justify-center shadow border border-gray-200 hover:border-primary transition-colors"
+                  aria-label="dry cleaning"
+                >
+                  <span className="text-lg">🧼</span>
+                </button>
+                <button
+                  onClick={() => navigate('/order/items/wash-iron')}
+                  className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/95 backdrop-blur flex items-center justify-center shadow border border-gray-200 hover:border-primary transition-colors"
+                  aria-label="wash & iron"
+                >
+                  <span className="text-lg">👔</span>
+                </button>
+                <button
+                  onClick={() => navigate('/order/items/repairs')}
+                  className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/95 backdrop-blur flex items-center justify-center shadow border border-gray-200 hover:border-primary transition-colors"
+                  aria-label="repairs"
+                >
+                  <span className="text-lg">✂️</span>
+                </button>
               </div>
             </div>
           </section>
