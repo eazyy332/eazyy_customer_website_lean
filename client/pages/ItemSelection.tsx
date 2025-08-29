@@ -4,12 +4,6 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, Dr
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { supabase } from "@/lib/supabase";
 
-// Hero image constants - these will be overridden by database values when available
-const heroEazzy = "https://images.pexels.com/photos/5591663/pexels-photo-5591663.jpeg?auto=compress&cs=tinysrgb&w=1200&h=400&fit=crop";
-const heroDry = "https://images.pexels.com/photos/5591774/pexels-photo-5591774.jpeg?auto=compress&cs=tinysrgb&w=1200&h=400&fit=crop";
-const heroWash = "https://images.pexels.com/photos/5591728/pexels-photo-5591728.jpeg?auto=compress&cs=tinysrgb&w=1200&h=400&fit=crop";
-const heroRepair = "https://images.pexels.com/photos/6069112/pexels-photo-6069112.jpeg?auto=compress&cs=tinysrgb&w=1200&h=400&fit=crop";
-
 function normalizeCategorySlug(raw: string): string {
   const map: Record<string, string> = {
     "eazyy-bag": "eazyy-bag", 
@@ -129,28 +123,28 @@ export default function ItemSelection() {
     'eazyy-bag': {
       title: 'eazyy Bag',
       description: "Fill a bag. We'll handle the rest. Weight-based washing with pickup & delivery on your schedule.",
-      hero: heroEazzy,
+      hero: "",
       accent: '#1D62DB',
       label: 'Laundry'
     },
     'dry-cleaning': {
       title: 'Dry Cleaning',
       description: 'Crisp care for delicate garments. Professional solvent cleaning and finishing, picked up and delivered.',
-      hero: heroDry,
+      hero: "",
       accent: '#16A34A',
       label: 'Dry clean'
     },
     'wash-iron': {
       title: 'Wash & Iron',
       description: 'Washed. Pressed. Delivered. Per-item washing and precise ironing, picked up and delivered on your schedule.',
-      hero: heroWash,
+      hero: "",
       accent: '#DC2626',
       label: 'Wash & iron'
     },
     'repairs': {
       title: 'Repairs',
       description: "Fix, tailor, and extend your garment’s life. From hemming to zippers—skilled repairs with pickup & delivery.",
-      hero: heroRepair,
+      hero: "",
       accent: '#F59E0B',
       label: 'Repairs'
     }
@@ -251,21 +245,21 @@ export default function ItemSelection() {
   const meta = {
     title: service?.name ?? fallbackMeta.title ?? '',
     description: service?.short_description ?? service?.description ?? fallbackMeta.description ?? '',
-    hero: service?.image_url ?? service?.icon ?? "",
+    hero: service?.image_url ?? service?.icon ?? fallbackMeta.hero ?? "",
     accent: service?.color_hex ?? (service?.color_scheme?.primary) ?? fallbackMeta.accent ?? '#1D62DB',
     label: service?.price_unit ?? fallbackMeta.label ?? 'per piece',
     serviceId: service?.id ?? null,
   } as any;
   const formatEuro = (value: number) => value.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const getItemImage = (item: any) => {
-    return item.icon || item.image_url || "https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
+    return item.icon || item.image_url || "";
   };
 
   // Category pill icon mapping per service
   const getSubcategoryIcon = (subcatId: string): string => {
-    if (subcatId === 'all') return service?.icon || service?.image_url || "https://images.pexels.com/photos/5591663/pexels-photo-5591663.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop";
+    if (subcatId === 'all') return service?.icon || service?.image_url || "";
     const cat = categoriesDb.find((c) => String(c.id) === subcatId);
-    return cat?.icon || cat?.icon_name || "https://images.pexels.com/photos/5591663/pexels-photo-5591663.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop";
+    return cat?.icon || cat?.icon_name || "";
   };
 
   const getServiceIcon = (serviceIdentifier: string) => {
@@ -280,13 +274,7 @@ export default function ItemSelection() {
   };
 
   const getDefaultServiceIcon = (serviceIdentifier: string): string => {
-    const defaultIcons: Record<string, string> = {
-      'eazyy-bag': 'https://images.pexels.com/photos/5591663/pexels-photo-5591663.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop',
-      'dry-cleaning': 'https://images.pexels.com/photos/5591774/pexels-photo-5591774.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop',
-      'wash-iron': 'https://images.pexels.com/photos/5591728/pexels-photo-5591728.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop',
-      'repairs': 'https://images.pexels.com/photos/6069112/pexels-photo-6069112.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop'
-    };
-    return defaultIcons[serviceIdentifier] || 'https://images.pexels.com/photos/5591663/pexels-photo-5591663.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop';
+    return "";
   };
   const addToCart = (item: Item) => {
     const cartItem: CartItem = {
@@ -393,7 +381,8 @@ export default function ItemSelection() {
         <div className="max-w-[1200px] mx-auto">
           {/* Hero banner */}
           <section className="relative rounded-[28px] overflow-hidden shadow-[0_20px_60px_rgba(17,24,39,0.15)]">
-            <img src={meta.hero || heroEazzy} alt="" className="absolute inset-0 w-full h-full object-cover" />
+            {meta.hero && <img src={meta.hero} alt="" className="absolute inset-0 w-full h-full object-cover" />}
+            {!meta.hero && <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-blue-500 to-blue-700"></div>}
             <div className="relative z-10 px-6 md:px-10 py-10 md:py-14">
               <div className="inline-flex items-center h-8 px-3 rounded-full text-white/90" style={{ backgroundColor: meta.accent }}>
                 <span className="text-[13px] font-medium">6 services</span>
@@ -408,7 +397,7 @@ export default function ItemSelection() {
                   className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/95 backdrop-blur flex items-center justify-center shadow border border-gray-200 hover:border-primary transition-colors"
                   aria-label="eazyy bag"
                 >
-                  {getServiceIcon('eazyy-bag') && getServiceIcon('eazyy-bag') !== '' ? (
+                  {getServiceIcon('eazyy-bag') ? (
                     <img 
                       src={getServiceIcon('eazyy-bag')} 
                       alt="eazyy bag" 
@@ -423,7 +412,7 @@ export default function ItemSelection() {
                   className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/95 backdrop-blur flex items-center justify-center shadow border border-gray-200 hover:border-primary transition-colors"
                   aria-label="dry cleaning"
                 >
-                  {getServiceIcon('dry-cleaning') && getServiceIcon('dry-cleaning') !== '' ? (
+                  {getServiceIcon('dry-cleaning') ? (
                     <img 
                       src={getServiceIcon('dry-cleaning')} 
                       alt="dry cleaning" 
@@ -438,7 +427,7 @@ export default function ItemSelection() {
                   className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/95 backdrop-blur flex items-center justify-center shadow border border-gray-200 hover:border-primary transition-colors"
                   aria-label="wash & iron"
                 >
-                  {getServiceIcon('wash-iron') && getServiceIcon('wash-iron') !== '' ? (
+                  {getServiceIcon('wash-iron') ? (
                     <img 
                       src={getServiceIcon('wash-iron')} 
                       alt="wash & iron" 
@@ -453,7 +442,7 @@ export default function ItemSelection() {
                   className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/95 backdrop-blur flex items-center justify-center shadow border border-gray-200 hover:border-primary transition-colors"
                   aria-label="repairs"
                 >
-                  {getServiceIcon('repairs') && getServiceIcon('repairs') !== '' ? (
+                  {getServiceIcon('repairs') ? (
                     <img 
                       src={getServiceIcon('repairs')} 
                       alt="repairs" 
@@ -479,7 +468,7 @@ export default function ItemSelection() {
                   borderColor: selectedSubcategory === subcat.id ? meta.accent : '#E5E7EB'
                 }}
               >
-                {getSubcategoryIcon(subcat.id) && getSubcategoryIcon(subcat.id) !== '' ? (
+                {getSubcategoryIcon(subcat.id) ? (
                   <img src={getSubcategoryIcon(subcat.id)} alt="" className={`w-5 h-5 object-contain rounded ${selectedSubcategory === subcat.id ? 'bg-white' : 'bg-transparent'}`} />
                 ) : (
                   <span className="text-lg">📦</span>
@@ -506,7 +495,7 @@ export default function ItemSelection() {
 
               return (
                 <div key={String(item.id)} className="group">
-                  {getItemImage(item) && getItemImage(item) !== '' ? (
+                  {getItemImage(item) ? (
                     <img src={getItemImage(item)} alt="" className="w-36 h-36 md:w-40 md:h-40 object-contain mx-auto" />
                   ) : (
                     <div className="w-36 h-36 md:w-40 md:h-40 bg-gray-100 rounded-lg flex items-center justify-center mx-auto">
