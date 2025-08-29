@@ -273,22 +273,16 @@ export default function ItemSelection() {
   const formatEuro = (value: number) => value.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   
   const getItemImage = (item: any) => {
-    // Log what's in the icon field for debugging
-    console.log(`[IMAGE DEBUG] Item "${item.name}" icon field:`, {
+    // Debug what's in the icon field
+    console.log(`[DEBUG] Item "${item.name}" icon field:`, {
       icon: item.icon,
       iconType: typeof item.icon,
       iconValue: JSON.stringify(item.icon),
-      isValidUrl: item.icon && typeof item.icon === 'string' && (item.icon.startsWith('http://') || item.icon.startsWith('https://'))
+      isValidUrl: item.icon && (item.icon.startsWith('http://') || item.icon.startsWith('https://'))
     });
     
-    // Check if icon is a valid URL
-    if (item.icon && typeof item.icon === 'string' && (item.icon.startsWith('http://') || item.icon.startsWith('https://'))) {
-      return item.icon;
-    }
-    
-    // Fallback to default image if icon is not a valid URL
-    console.log(`[IMAGE DEBUG] Using fallback image for "${item.name}" because icon is not a valid URL:`, item.icon);
-    return "https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
+    // Return the icon directly from database
+    return item.icon || "https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
   };
 
   // Category pill icon mapping per service
@@ -487,18 +481,15 @@ export default function ItemSelection() {
                 <div key={String(item.id)} className="group">
                   <div className="w-36 h-36 md:w-40 md:h-40 mx-auto mb-2">
                     <img 
-                      src={getItemImage(item)}
-                      onLoad={() => console.log(`[IMAGE SUCCESS] Successfully loaded image for "${item.name}": ${getItemImage(item)}`)}
+                      src={item.icon}
+                      onLoad={() => console.log(`[IMAGE] Successfully loaded: ${item.icon}`)}
                       onError={(e) => {
-                        console.log(`[IMAGE ERROR] Failed to load image for "${item.name}":`, {
-                          attemptedUrl: getItemImage(item),
-                          originalIcon: item.icon,
-                          error: e
-                        });
+                        console.log(`[IMAGE] Failed to load: ${item.icon}`);
+                        console.log('[IMAGE] Error details:', e);
                         // Set fallback image on error
                         e.currentTarget.src = "https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
                       }}
-                      alt={item.name || 'Item'}
+                      alt={item.name}
                       className="w-36 h-36 md:w-40 md:h-40 object-cover rounded-lg mx-auto"
                     />
                   </div>
