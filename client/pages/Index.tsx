@@ -93,7 +93,7 @@ export default function Index() {
               <div className="bg-white/95 border border-white/60 rounded-[24px] p-7 md:p-8 shadow-[0_8px_30px_rgba(17,24,39,0.1)] ring-1 ring-white/40">
                 <div className="w-20 h-20 bg-gray-100 rounded-2xl mb-5 flex items-center justify-center">
                   <img
-                    src="https://api.builder.io/api/v1/image/assets/TEMP/8053aaf5482c5a1eaffc8f5b8f8d52642ee84791?width=160"
+                    src="https://images.pexels.com/photos/5591663/pexels-photo-5591663.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop"
                     alt="eazzy bag icon"
                     className="w-12 h-12 object-contain"
                   />
@@ -120,7 +120,7 @@ export default function Index() {
               <div className="bg-white/95 border border-white/60 rounded-[24px] p-7 md:p-8 shadow-[0_8px_30px_rgba(17,24,39,0.1)] ring-1 ring-white/40">
                 <div className="w-20 h-20 bg-gray-100 rounded-2xl mb-5 flex items-center justify-center">
                   <img
-                    src="https://api.builder.io/api/v1/image/assets/TEMP/fce4d46b116b276f657742c2e7a9594f49ddecfa?width=160"
+                    src="https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop"
                     alt="Dry Clean"
                     className="w-12 h-12 object-contain"
                   />
@@ -147,7 +147,7 @@ export default function Index() {
               <div className="bg-white/95 border border-white/60 rounded-[24px] p-7 md:p-8 shadow-[0_8px_30px_rgba(17,24,39,0.1)] ring-1 ring-white/40">
                 <div className="w-20 h-20 bg-gray-100 rounded-2xl mb-5 flex items-center justify-center">
                   <img
-                    src="https://api.builder.io/api/v1/image/assets/TEMP/323ee1d10112f83f8a173fa73990b7e744464d8d?width=160"
+                    src="https://images.pexels.com/photos/1040945/pexels-photo-1040945.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop"
                     alt="Wash and Iron"
                     className="w-12 h-12 object-contain"
                   />
@@ -174,7 +174,7 @@ export default function Index() {
               <div className="bg-white/95 border border-white/60 rounded-[24px] p-7 md:p-8 shadow-[0_8px_30px_rgba(17,24,39,0.1)] ring-1 ring-white/40">
                 <div className="w-20 h-20 bg-gray-100 rounded-2xl mb-5 flex items-center justify-center">
                   <img
-                    src="https://api.builder.io/api/v1/image/assets/TEMP/054342f0a30f3564e498e0898a4167eaae155932?width=160"
+                    src="https://images.pexels.com/photos/3965545/pexels-photo-3965545.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop"
                     alt="Repair"
                     className="w-12 h-12 object-contain"
                   />
@@ -248,7 +248,7 @@ export default function Index() {
             <div className="bg-gray-100 rounded-2xl md:rounded-3xl p-5 md:p-6 shadow-sm">
               <div className="w-16 h-16 mb-4">
                 <img
-                  src="https://api.builder.io/api/v1/image/assets/TEMP/8174fe185ec956090a9ec61d65499ee69dbb554d?width=112"
+                  src="https://images.pexels.com/photos/5699456/pexels-photo-5699456.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&fit=crop"
                   alt="Quality"
                   className="w-full h-full object-contain"
                 />
@@ -264,7 +264,7 @@ export default function Index() {
             <div className="bg-gray-100 rounded-2xl md:rounded-3xl p-5 md:p-6 shadow-sm">
               <div className="w-16 h-16 mb-4">
                 <img
-                  src="https://api.builder.io/api/v1/image/assets/TEMP/9ce1fc98e077dde3572ecff61f8e3d640bb8b73f?width=114"
+                  src="https://images.pexels.com/photos/590016/pexels-photo-590016.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&fit=crop"
                   alt="Tracking"
                   className="w-full h-full object-contain"
                 />
@@ -280,7 +280,7 @@ export default function Index() {
             <div className="bg-gray-100 rounded-2xl md:rounded-3xl p-5 md:p-6 shadow-sm">
               <div className="w-16 h-16 mb-4">
                 <img
-                  src="https://api.builder.io/api/v1/image/assets/TEMP/63e21f8daeff046717d237dffe553f902b396645?width=114"
+                  src="https://images.pexels.com/photos/1319854/pexels-photo-1319854.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&fit=crop"
                   alt="Speed"
                   className="w-full h-full object-contain"
                 />
@@ -296,7 +296,7 @@ export default function Index() {
             <div className="bg-gray-100 rounded-2xl md:rounded-3xl p-5 md:p-6 shadow-sm">
               <div className="w-16 h-16 mb-4">
                 <img
-                  src="https://api.builder.io/api/v1/image/assets/TEMP/805b4b74f2257b828c16a070418e5476be3e5789?width=114"
+                  src="https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=64&h=64&fit=crop"
                   alt="Trust"
                   className="w-full h-full object-contain"
                 />

@@ -15,28 +15,28 @@ export default function OrderStart() {
       name: 'eazzy Bag',
       service_identifier: 'eazzy-bag',
       short_description: 'Fill our sturdy bag with a week\'s worth of laundry. We\'ll wash, dry, fold, and return everything fresh.',
-      icon: 'https://api.builder.io/api/v1/image/assets/TEMP/8053aaf5482c5a1eaffc8f5b8f8d52642ee84791?width=160'
+      icon: 'https://images.pexels.com/photos/5591663/pexels-photo-5591663.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'
     },
     {
       id: 'dry-cleaning',
       name: 'Dry Cleaning',
       service_identifier: 'dry-cleaning',
       short_description: 'Professional dry cleaning for delicate fabrics. Stains vanish, colors stay vibrant.',
-      icon: 'https://api.builder.io/api/v1/image/assets/TEMP/fce4d46b116b276f657742c2e7a9594f49ddecfa?width=160'
+      icon: 'https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'
     },
     {
       id: 'wash-iron',
       name: 'Wash & Iron',
       service_identifier: 'wash-iron',
       short_description: 'Daily laundry expertly washed and ironed for a crisp finish.',
-      icon: 'https://api.builder.io/api/v1/image/assets/TEMP/323ee1d10112f83f8a173fa73990b7e744464d8d?width=160'
+      icon: 'https://images.pexels.com/photos/1040945/pexels-photo-1040945.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'
     },
     {
       id: 'repairs',
       name: 'Repairs & Alterations',
       service_identifier: 'repairs',
       short_description: 'Skilled tailors breathe new life into your garments.',
-      icon: 'https://api.builder.io/api/v1/image/assets/TEMP/054342f0a30f3564e498e0898a4167eaae155932?width=160'
+      icon: 'https://images.pexels.com/photos/3965545/pexels-photo-3965545.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'
     }
   ];
 
