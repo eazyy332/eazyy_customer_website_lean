@@ -240,7 +240,15 @@ export default function ItemSelection() {
   const formatEuro = (value: number) => value.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   
   const getItemImage = (item: any) => {
-    return item.icon || item.image_url || "";
+    // Use icon first, then image_url from Supabase
+    if (item.icon && item.icon !== 'NULL' && item.icon.trim() !== '') {
+      return item.icon;
+    }
+    if (item.image_url && item.image_url !== 'NULL' && item.image_url.trim() !== '') {
+      return item.image_url;
+    }
+    // Fallback to a default placeholder image
+    return "https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
   };
 
   // Category pill icon mapping per service
@@ -437,13 +445,9 @@ export default function ItemSelection() {
 
               return (
                 <div key={String(item.id)} className="group">
-                  {getItemImage(item) ? (
+                  <div className="w-36 h-36 md:w-40 md:h-40 mx-auto mb-2">
                     <img src={getItemImage(item)} alt="" className="w-36 h-36 md:w-40 md:h-40 object-contain mx-auto" />
-                  ) : (
-                    <div className="w-36 h-36 md:w-40 md:h-40 bg-gray-100 rounded-lg flex items-center justify-center mx-auto">
-                      <span className="text-2xl">📦</span>
-                    </div>
-                  )}
+                  </div>
                   <div className="mt-2 text-[13px] text-black">{displayName}</div>
 
                   {/* Price row */}
