@@ -156,9 +156,16 @@ export default function ItemSelection() {
   console.log('[ItemSelection] Items after subcategory filter:', filteredItems);
 
   // Filter out items without description
-  const itemsWithDescription = filteredItems.filter((item: any) => 
-    item.description && item.description.trim() !== ''
-  );
+  const itemsWithDescription = filteredItems.filter((item: any) => {
+    const hasDescription = item.description && typeof item.description === 'string' && item.description.trim() !== '';
+    console.log(`[ItemSelection] Item "${item.name}" description check:`, {
+      description: item.description,
+      hasDescription,
+      descriptionType: typeof item.description,
+      descriptionLength: item.description?.length || 0
+    });
+    return hasDescription;
+  });
 
   console.log('[ItemSelection] Items with description:', itemsWithDescription);
 
