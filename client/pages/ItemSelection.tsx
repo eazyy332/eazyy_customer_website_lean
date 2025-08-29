@@ -51,6 +51,7 @@ export default function ItemSelection() {
   const [cartOpen, setCartOpen] = useState(false);
   const [promptOpen, setPromptOpen] = useState(false);
   const [dynamicInputs, setDynamicInputs] = useState<Record<string, number>>({});
+  const [allServices, setAllServices] = useState<any[]>([]);
 
   // Service data organized by category
   const serviceData: Record<string, any> = {
@@ -171,6 +172,17 @@ export default function ItemSelection() {
       setLoading(true);
       console.debug('[ItemSelection] route', { rawCategory, normalized: category });
       
+      // Load all services for the selector buttons
+      const { data: allServicesData } = await supabase
+        .from('services')
+        .select('id, name, service_identifier, icon, image_url, icon_name')
+        .eq('status', true)
+        .order('sequence', { ascending: true });
+      
+      if (mounted && allServicesData) {
+        setAllServices(allServicesData);
+      }
+      
       // Try both the raw category and normalized category for service lookup
       const { data: svc } = await supabase
         .from('services')
@@ -256,6 +268,10 @@ export default function ItemSelection() {
     return cat?.icon || cat?.icon_name || "";
   };
 
+  const getServiceIcon = (serviceIdentifier: string) => {
+    const serviceData = allServices.find(s => s.service_identifier === serviceIdentifier);
+    return serviceData?.icon || serviceData?.image_url;
+  };
   const addToCart = (item: Item) => {
     const cartItem: CartItem = {
       ...item,
@@ -376,28 +392,60 @@ export default function ItemSelection() {
                   className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/95 backdrop-blur flex items-center justify-center shadow border border-gray-200 hover:border-primary transition-colors"
                   aria-label="eazyy bag"
                 >
-                  <span className="text-lg">🧺</span>
+                  {getServiceIcon('eazyy-bag') ? (
+                    <img 
+                      src={getServiceIcon('eazyy-bag')} 
+                      alt="eazyy bag" 
+                      className="w-6 h-6 md:w-8 md:h-8 object-contain rounded"
+                    />
+                  ) : (
+                    <span className="text-lg">🧺</span>
+                  )}
                 </button>
                 <button
                   onClick={() => navigate('/order/items/dry-cleaning')}
                   className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/95 backdrop-blur flex items-center justify-center shadow border border-gray-200 hover:border-primary transition-colors"
                   aria-label="dry cleaning"
                 >
-                  <span className="text-lg">🧼</span>
+                  {getServiceIcon('dry-cleaning') ? (
+                    <img 
+                      src={getServiceIcon('dry-cleaning')} 
+                      alt="dry cleaning" 
+                      className="w-6 h-6 md:w-8 md:h-8 object-contain rounded"
+                    />
+                  ) : (
+                    <span className="text-lg">🧼</span>
+                  )}
                 </button>
                 <button
                   onClick={() => navigate('/order/items/wash-iron')}
                   className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/95 backdrop-blur flex items-center justify-center shadow border border-gray-200 hover:border-primary transition-colors"
                   aria-label="wash & iron"
                 >
-                  <span className="text-lg">👔</span>
+                  {getServiceIcon('wash-iron') ? (
+                    <img 
+                      src={getServiceIcon('wash-iron')} 
+                      alt="wash & iron" 
+                      className="w-6 h-6 md:w-8 md:h-8 object-contain rounded"
+                    />
+                  ) : (
+                    <span className="text-lg">👔</span>
+                  )}
                 </button>
                 <button
                   onClick={() => navigate('/order/items/repairs')}
                   className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/95 backdrop-blur flex items-center justify-center shadow border border-gray-200 hover:border-primary transition-colors"
                   aria-label="repairs"
                 >
-                  <span className="text-lg">✂️</span>
+                  {getServiceIcon('repairs') ? (
+                    <img 
+                      src={getServiceIcon('repairs')} 
+                      alt="repairs" 
+                      className="w-6 h-6 md:w-8 md:h-8 object-contain rounded"
+                    />
+                  ) : (
+                    <span className="text-lg">✂️</span>
+                  )}
                 </button>
               </div>
             </div>
