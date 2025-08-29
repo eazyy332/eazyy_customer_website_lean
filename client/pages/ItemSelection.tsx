@@ -151,7 +151,10 @@ export default function ItemSelection() {
       description: 'Crisp care for delicate garments. Professional solvent cleaning and finishing, picked up and delivered.',
       hero: heroDry,
       accent: '#16A34A',
-      label: 'Dry clean'
+      label:
+    }
+  }
+} 'Dry clean'
     },
     'wash-iron': {
       title: 'Wash & Iron',
