@@ -65,7 +65,6 @@ export default function ItemSelection() {
       const { data: allServicesData } = await supabase
         .from('services')
         .select('id, name, service_identifier, icon, image_url, icon_name')
-        .eq('status', true)
         .order('sequence', { ascending: true });
       
       console.log('[ItemSelection] All services loaded:', allServicesData);
@@ -87,10 +86,41 @@ export default function ItemSelection() {
       setService(svc);
       if (svc?.id) {
         console.log('[ItemSelection] Loading categories and items for service:', svc.id);
-        const [{ data: cats }, { data: items }] = await Promise.all([
-          supabase.from('categories').select('*').eq('service_id', svc.id).order('sequence', { ascending: true }),
-          supabase.from('items').select('*').eq('service_id', svc.id).order('sequence', { ascending: true }),
-        ]);
+        
+        // Load categories for this service
+        const { data: cats, error: catsError } = await supabase
+          .from('categories')
+          .select('*')
+          .eq('service_id', svc.id)
+          .order('sequence', { ascending: true });
+        
+        console.log('[ItemSelection] Categories query result:', { data: cats, error: catsError });
+        
+        // Load items for this service
+        const { data: items, error: itemsError } = await supabase
+          .from('items')
+          .select('*')
+          .eq('service_id', svc.id)
+          .order('sequence', { ascending: true });
+        
+        console.log('[ItemSelection] Items query result:', { data: items, error: itemsError });
+        
+        // Also try loading ALL items to see what's in the database
+        const { data: allItems, error: allItemsError } = await supabase
+          .from('items')
+          .select('*')
+          .limit(10);
+        
+        console.log('[ItemSelection] ALL items in database (first 10):', { data: allItems, error: allItemsError });
+        
+        // Also try loading ALL categories to see what's in the database
+        const { data: allCategories, error: allCategoriesError } = await supabase
+          .from('categories')
+          .select('*')
+          .limit(10);
+        
+        console.log('[ItemSelection] ALL categories in database (first 10):', { data: allCategories, error: allCategoriesError });
+        
         console.log('[ItemSelection] Categories loaded:', cats);
         console.log('[ItemSelection] Items loaded (before filtering):', items);
         
@@ -101,8 +131,9 @@ export default function ItemSelection() {
           service: svc?.name, 
           categories: cats?.length || 0, 
           items: items?.length || 0,
-          itemsWithDescription: items?.filter(item => item.description && item.description.trim() !== '').length || 0,
-          itemsWithStatus: items?.filter(item => item.status === true).length || 0
+          itemsWithDescription: items?.filter(item => item.description && typeof item.description === 'string' && item.description.trim() !== '').length || 0,
+          itemsWithStatus: items?.filter(item => item.status === true).length || 0,
+          serviceId: svc.id
         });
       } else {
         console.log('[ItemSelection] No service found for identifier:', { rawCategory, normalized: category });
