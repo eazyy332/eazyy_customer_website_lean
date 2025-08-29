@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 // Item icons (same set as item selection)
-const tshirtIcon = "/images_devlopment/32e5a8a6-1220-49e7-aa82-3734440a5043.png";
-const poloIcon = "/images_devlopment/d65570c9-c43d-49e8-a750-31de4ade14a5.png";
-const henleyIcon = "/images_devlopment/958ab653-5129-45c7-a1a9-0b216c2cac0c.png";
-const teeGraphicIcon = "/images_devlopment/f000823d-5a30-4ba8-8d76-30dde432ce90.png";
-const foldedBagIcon = "/images_devlopment/d5eb7a60-2415-444e-9926-a21b54dfbea1.png";
+const tshirtIcon = "https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
+const poloIcon = "https://images.pexels.com/photos/1040945/pexels-photo-1040945.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
+const henleyIcon = "https://images.pexels.com/photos/1656684/pexels-photo-1656684.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
+const teeGraphicIcon = "https://images.pexels.com/photos/1656684/pexels-photo-1656684.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
+const foldedBagIcon = "https://images.pexels.com/photos/1656684/pexels-photo-1656684.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
 
 interface CartItem {
   id: string;

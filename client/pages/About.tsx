@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 
 // Assets provided by you (stored under public/images_devlopment)
-const aboutBanner = "/images_devlopment/0ab4f20e-60e3-482b-bcec-310d29be8063.png"; // blue gradient banner
-const aboutPhoto = "/images_devlopment/download (6).png"; // eazyy van photo (updated)
+const aboutBanner = "https://images.pexels.com/photos/1656684/pexels-photo-1656684.jpeg?auto=compress&cs=tinysrgb&w=1200&h=400&fit=crop"; // blue gradient banner
+const aboutPhoto = "https://images.pexels.com/photos/1656684/pexels-photo-1656684.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop"; // eazyy van photo (updated)
 
 export default function About() {
   return (

@@ -16,7 +16,7 @@ export default function FloatingCartButton() {
       return items.reduce((t, i) => t + Number(i?.quantity || 0), 0);
     } catch {
       return 0;
-    }
+    return cat?.icon || cat?.icon_name || "https://images.pexels.com/photos/1656684/pexels-photo-1656684.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop";
   };
 
   useEffect(() => {

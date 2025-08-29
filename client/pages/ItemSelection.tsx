@@ -5,24 +5,24 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { supabase } from "@/lib/supabase";
 
 // Item icons (served as static paths)
-const tshirtIcon = "/images_devlopment/32e5a8a6-1220-49e7-aa82-3734440a5043.png";
-const poloIcon = "/images_devlopment/d65570c9-c43d-49e8-a750-31de4ade14a5.png";
-const henleyIcon = "/images_devlopment/958ab653-5129-45c7-a1a9-0b216c2cac0c.png";
-const teeGraphicIcon = "/images_devlopment/f000823d-5a30-4ba8-8d76-30dde432ce90.png";
-const foldedBagIcon = "/images_devlopment/d5eb7a60-2415-444e-9926-a21b54dfbea1.png";
-const altIcon = "/images_devlopment/a9264dd0-4fa0-43eb-a418-143762649914.png";
+const tshirtIcon = "https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
+const poloIcon = "https://images.pexels.com/photos/1040945/pexels-photo-1040945.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
+const henleyIcon = "https://images.pexels.com/photos/1656684/pexels-photo-1656684.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
+const teeGraphicIcon = "https://images.pexels.com/photos/1656684/pexels-photo-1656684.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
+const foldedBagIcon = "https://images.pexels.com/photos/1656684/pexels-photo-1656684.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
+const altIcon = "https://images.pexels.com/photos/1656684/pexels-photo-1656684.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
 
 // Service selector icons (per your assets)
-const iconBag = "/images_devlopment/eazyy-bag-service-icon.png";
-const iconWashIron = "/images_devlopment/wash-andiron-service.png";
-const iconDry = "/images_devlopment/dry-clean-service-icon.png";
-const iconRepair = "/images_devlopment/repair-service-icon.png";
+const iconBag = "https://images.pexels.com/photos/1656684/pexels-photo-1656684.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop";
+const iconWashIron = "https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop";
+const iconDry = "https://images.pexels.com/photos/1040945/pexels-photo-1040945.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop";
+const iconRepair = "https://images.pexels.com/photos/1656684/pexels-photo-1656684.jpeg?auto=compress&cs=tinysrgb&w=80&h=80&fit=crop";
 
 // Hero images (fallback to service icons if dedicated assets are missing)
 const heroEazzy = iconBag;
 const heroDry = iconDry;
 const heroWash = iconWashIron;
-const heroRepair = iconRepair;
+const heroRepair = "https://images.pexels.com/photos/1656684/pexels-photo-1656684.jpeg?auto=compress&cs=tinysrgb&w=800&h=400&fit=crop";
 
 function normalizeCategorySlug(raw: string): string {
   const map: Record<string, string> = {
