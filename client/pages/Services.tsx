@@ -325,9 +325,6 @@ export default function Services() {
       <section className="px-4 lg:px-16 py-12">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {services.map((service) => (
-            )
-            )
-            }
             <div key={service.id} className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100">
               <div className="w-20 h-20 bg-gray-100 rounded-2xl mb-6 flex items-center justify-center">
                 <img
@@ -337,7 +334,42 @@ export default function Services() {
                 />
               </div>
               <div className="flex items-center mb-4">
-                <img
+                <h3 className="text-xl font-semibold text-black">{service.name}</h3>
+                {service.is_popular && (
+                  <span className="ml-2 bg-primary text-white text-xs px-2 py-1 rounded-full">
+                    Popular
+                  </span>
+                )}
+              </div>
+              <p className="text-gray-600 mb-6 leading-relaxed">
+                {service.short_description}
+              </p>
+              <div className="mb-6">
+                <div className="text-2xl font-bold text-black mb-2">
+                  ${service.price_starts_at}
+                  <span className="text-sm font-normal text-gray-600 ml-1">
+                    {service.price_unit}
+                  </span>
+                </div>
+              </div>
+              <ul className="space-y-2 mb-8">
+                {service.features.map((feature, index) => (
+                  <li key={index} className="flex items-center text-gray-600">
+                    <svg className="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                to={`/order/items/${service.service_identifier}`}
+                className="block w-full bg-primary text-white py-3 rounded-full font-medium hover:bg-blue-700 transition-colors text-center"
+              >
+                Select Items
+              </Link>
+            </div>
+          ))}
         </div>
       </section>
 
