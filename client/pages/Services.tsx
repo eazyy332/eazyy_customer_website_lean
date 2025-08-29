@@ -707,8 +707,5 @@ export default function Services() {
         </div>
       </footer>
     </div>
-  )
-  )
-  )
   );
 }
