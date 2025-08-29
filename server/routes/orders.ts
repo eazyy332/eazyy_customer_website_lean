@@ -64,12 +64,24 @@ export async function createOrder(req: Request, res: Response) {
       const authHeader = req.headers.authorization;
       if (authHeader && authHeader.startsWith('Bearer ')) {
         const token = authHeader.substring(7);
-        const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
-        if (!error && user) {
-          userId = user.id;
-          console.log('Found authenticated user:', user.id, user.email);
+        
+        // Create a client-side supabase instance to verify the token
+        const { createClient } = await import('@supabase/supabase-js');
+        const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || '';
+        const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || '';
+        
+        if (supabaseUrl && supabaseAnonKey) {
+          const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+          const { data: { user }, error } = await supabaseClient.auth.getUser(token);
+          
+          if (!error && user) {
+            userId = user.id;
+            console.log('Found authenticated user:', user.id, user.email);
+          } else {
+            console.log('Auth token validation failed:', error?.message);
+          }
         } else {
-          console.log('Auth token validation failed:', error?.message);
+          console.log('Missing Supabase client configuration for auth validation');
         }
       } else {
         console.log('No authorization header found');
