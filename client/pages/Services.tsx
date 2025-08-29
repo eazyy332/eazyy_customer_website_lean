@@ -259,7 +259,9 @@ export default function Services() {
                   <path
                     fillRule="evenodd"
                     clipRule="evenodd"
-                    d="M6 13C6 12.4477 6.44772 12 7 12H9C9.55228 12 10 12.4477 10 13C10 13.5523 9.55228 14 9 14H7C6.44772 14 6 13.5523 6 13Z"
+                    d="M6 13C6 12.4477 6.44772 12
+  )
+} 7 12H9C9.55228 12 10 12.4477 10 13C10 13.5523 9.55228 14 9 14H7C6.44772 14 6 13.5523 6 13Z"
                     fill="currentColor"
                     className="text-black group-hover:text-primary"
                   />
