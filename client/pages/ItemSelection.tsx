@@ -489,13 +489,9 @@ export default function ItemSelection() {
                 <div key={String(item.id)} className="group">
                   <div className="w-36 h-36 md:w-40 md:h-40 mx-auto mb-2">
                     <img 
-                      src={item.icon || "https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop"} 
-                      alt={item.name || "Item"} 
+                      src={item.icon}
+                      alt={item.name}
                       className="w-36 h-36 md:w-40 md:h-40 object-cover rounded-lg mx-auto"
-                      onError={(e) => {
-                        console.log('Image failed to load for item:', item.name, 'URL:', item.icon);
-                        e.currentTarget.src = "https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
-                      }}
                     />
                   </div>
                   <div className="mt-2 text-[13px] text-black">{displayName}</div>
