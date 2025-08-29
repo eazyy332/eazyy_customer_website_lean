@@ -219,6 +219,337 @@ export default function ItemSelection() {
   useEffect(() => {
     // Save cart to localStorage
     localStorage.setItem('eazzy-cart', JSON.stringify(cart));
+    // Dispatch cart updated event
+    try {
+      window.dispatchEvent(new CustomEvent('cart:updated'));
+    } catch {}
+  }, [cart]);
+
+  const addToCart = (item: any) => {
+    const cartItem: CartItem = {
+      ...item,
+      serviceCategory: category,
+      quantity: 1
+    };
+    
+    setCart(prev => {
+      const existingIndex = prev.findIndex(
+        i => i.id === item.id && i.serviceCategory === category
+      );
+      
+      if (existingIndex >= 0) {
+        const updated = [...prev];
+        updated[existingIndex].quantity += 1;
+        return updated;
+      } else {
+        return [...prev, cartItem];
+      }
+    });
+  };
+
+  const updateQuantity = (itemId: string, newQuantity: number) => {
+    if (newQuantity <= 0) {
+      setCart(prev => prev.filter(
+        i => !(i.id === itemId && i.serviceCategory === category)
+      ));
+    } else {
+      setCart(prev => prev.map(i => 
+        i.id === itemId && i.serviceCategory === category 
+          ? { ...i, quantity: newQuantity }
+          : i
+      ));
+    }
+  };
+
+  const getItemQuantity = (itemId: string) => {
+    const item = cart.find(i => i.id === itemId && i.serviceCategory === category);
+    return item?.quantity || 0;
+  };
+
+  const getItemImage = (item: any) => {
+    const name = (item.name || "").toLowerCase();
+    if (name.includes("bag")) return foldedBagIcon;
+    if (name.includes("polo")) return poloIcon;
+    if (name.includes("henley")) return henleyIcon;
+    if (name.includes("t-shirt") || name.includes("tee") || name.includes("shirt")) return tshirtIcon;
+    return teeGraphicIcon;
+  };
+
+  const totalCartItems = cart.reduce((total, item) => total + item.quantity, 0);
+  const totalCartPrice = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+
+  // Use fallback data if no service found or loading
+  const displayService = service || currentService;
+  const displayItems = itemsDb.length > 0 ? itemsDb : (currentService?.items || []);
+  const displayCategories = categoriesDb.length > 0 ? categoriesDb : (currentService?.subcategories || ['all']);
+
+  const filteredItems = selectedSubcategory === 'all' 
+    ? displayItems 
+    : displayItems.filter((item: any) => item.subcategory === selectedSubcategory);
+
+  if (!allowedSlugs.has(category)) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-6">
+          <div className="w-16 h-16 bg-red-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+            <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.072 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Service Category Not Found</h2>
+          <p className="text-gray-600 mb-6">The service category "{category}" is not available.</p>
+          <Link 
+            to="/order/start" 
+            className="bg-primary text-white px-6 py-2 rounded-full hover:bg-blue-700 transition-colors"
+          >
+            Back to Services
+          </Link>
+        </div>
+      </div>
+    );
   }
-  )
-}
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading items...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const meta = serviceMeta[category] || {
+    title: displayService?.name || 'Service',
+    description: displayService?.description || 'Select items for this service',
+    hero: altIcon,
+    accent: '#1D62DB',
+    label: 'Service'
+  };
+
+  return (
+    <div className="min-h-screen bg-white">
+      {/* Main Content */}
+      <main className="px-4 md:px-8 lg:px-12 pt-8 pb-24">
+        <div className="max-w-[960px] mx-auto">
+          {/* Breadcrumb */}
+          <div className="mb-6">
+            <nav className="flex items-center gap-2 text-sm text-gray-600">
+              <Link to="/order/start" className="hover:text-primary">Service Categories</Link>
+              <span>›</span>
+              <span className="text-black font-medium">{meta.title}</span>
+            </nav>
+          </div>
+
+          {/* Service Header */}
+          <div className="mb-8">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center">
+                <img src={meta.hero} alt={meta.title} className="w-10 h-10 object-contain" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-medium text-black">{meta.title}</h1>
+                <p className="text-gray-600">{meta.description}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Subcategory Filter */}
+          {displayCategories.length > 1 && (
+            <div className="mb-8">
+              <div className="flex gap-2 overflow-x-auto pb-2">
+                {displayCategories.map((subcat: string) => (
+                  <button
+                    key={subcat}
+                    onClick={() => setSelectedSubcategory(subcat)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                      selectedSubcategory === subcat
+                        ? 'bg-primary text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {subcat === 'all' ? 'All Items' : subcat.charAt(0).toUpperCase() + subcat.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Items Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {filteredItems.map((item: any) => {
+              const quantity = getItemQuantity(item.id);
+              const isCustomPricing = item.custom_pricing || item.is_custom_price;
+              const dynamicValue = dynamicInputs[item.id] || item.min_input_value || 1;
+              const displayPrice = isCustomPricing 
+                ? (item.unit_price || 0) * dynamicValue 
+                : item.price;
+
+              return (
+                <div key={item.id} className="rounded-2xl border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+                  <div className="flex items-center gap-4 mb-4">
+                    <img 
+                      src={getItemImage(item)} 
+                      alt={item.name} 
+                      className="w-12 h-12 object-contain" 
+                    />
+                    <div className="flex-1">
+                      <h3 className="font-medium text-black">{item.name}</h3>
+                      <p className="text-sm text-gray-600">{item.description}</p>
+                    </div>
+                  </div>
+
+                  {/* Custom Pricing Input */}
+                  {isCustomPricing && (
+                    <div className="mb-4">
+                      <label className="block text-sm text-gray-600 mb-2">
+                        {item.unit_label || 'Quantity'}
+                      </label>
+                      <input
+                        type="number"
+                        min={item.min_input_value || 1}
+                        max={item.max_input_value || 100}
+                        value={dynamicValue}
+                        onChange={(e) => setDynamicInputs(prev => ({
+                          ...prev,
+                          [item.id]: Number(e.target.value)
+                        }))}
+                        placeholder={item.input_placeholder || 'Enter amount'}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                      />
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between">
+                    <div className="text-lg font-semibold text-primary">
+                      €{displayPrice?.toFixed(2) || '0.00'}
+                      {isCustomPricing && item.unit_label && (
+                        <span className="text-sm text-gray-600 ml-1">
+                          per {item.unit_label}
+                        </span>
+                      )}
+                    </div>
+
+                    {quantity === 0 ? (
+                      <button
+                        onClick={() => addToCart({
+                          ...item,
+                          price: displayPrice,
+                          custom_input_value: isCustomPricing ? dynamicValue : null
+                        })}
+                        className="rounded-full bg-primary text-white px-4 py-2 text-sm font-medium hover:bg-blue-700 transition-colors"
+                      >
+                        Add to Cart
+                      </button>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => updateQuantity(item.id, quantity - 1)}
+                          className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50"
+                        >
+                          −
+                        </button>
+                        <span className="w-8 text-center font-medium">{quantity}</span>
+                        <button
+                          onClick={() => updateQuantity(item.id, quantity + 1)}
+                          className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-50"
+                        >
+                          +
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Empty State */}
+          {filteredItems.length === 0 && (
+            <div className="text-center py-12">
+              <div className="w-16 h-16 bg-gray-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-4.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 009.586 13H7" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-medium text-black mb-2">No Items Available</h3>
+              <p className="text-gray-600 mb-4">
+                {selectedSubcategory === 'all' 
+                  ? 'No items found for this service category.'
+                  : `No items found in the "${selectedSubcategory}" category.`
+                }
+              </p>
+              <Link 
+                to="/order/start" 
+                className="inline-block bg-primary text-white px-6 py-2 rounded-full hover:bg-blue-700 transition-colors"
+              >
+                Choose Different Service
+              </Link>
+            </div>
+          )}
+
+          {/* Cart Summary */}
+          {totalCartItems > 0 && (
+            <div className="fixed bottom-20 md:bottom-6 left-4 right-4 md:left-auto md:right-6 md:w-80 bg-white rounded-2xl border border-gray-200 p-4 shadow-lg z-40">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <div className="font-medium text-black">{totalCartItems} items</div>
+                  <div className="text-sm text-gray-600">€{totalCartPrice.toFixed(2)} total</div>
+                </div>
+                <Link 
+                  to="/cart"
+                  className="bg-primary text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-blue-700 transition-colors"
+                >
+                  View Cart
+                </Link>
+              </div>
+            </div>
+          )}
+        </div>
+      </main>
+
+      {/* Cart Drawer */}
+      <Drawer open={cartOpen} onOpenChange={setCartOpen}>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle>Your Cart</DrawerTitle>
+            <DrawerDescription>
+              {totalCartItems} items • €{totalCartPrice.toFixed(2)}
+            </DrawerDescription>
+          </DrawerHeader>
+          <div className="px-4 pb-6">
+            {cart.length === 0 ? (
+              <p className="text-gray-600 text-center py-8">Your cart is empty</p>
+            ) : (
+              <div className="space-y-4">
+                {cart.map(item => (
+                  <div key={`${item.serviceCategory}-${item.id}`} className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <img src={getItemImage(item)} alt="" className="w-8 h-8 object-contain" />
+                      <div>
+                        <div className="font-medium text-black">{item.name}</div>
+                        <div className="text-sm text-gray-600">€{item.price.toFixed(2)} each</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center"
+                      >
+                        −
+                      </button>
+                      <span className="w-8 text-center">{item.quantity}</span>
+                      <button
+                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                <div className="pt-4 border-t">
+                  <Link 
+                    to="/cart"
+                    className="block w-full bg-primary text-white py-3 rounded-full text-center font-medium"
