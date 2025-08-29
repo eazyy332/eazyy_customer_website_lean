@@ -325,9 +325,6 @@ export default function Services() {
       <section className="px-4 lg:px-16 py-12">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {services.map((service) => (
-            )
-            )
-            }
             <div key={service.id} className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100">
               <div className="w-20 h-20 bg-gray-100 rounded-2xl mb-6 flex items-center justify-center">
                 <img
@@ -337,7 +334,32 @@ export default function Services() {
                 />
               </div>
               <div className="flex items-center mb-4">
-                <img
+                <h3 className="text-xl font-semibold text-black">{service.name}</h3>
+                {service.is_popular && (
+                  <span className="ml-2 px-2 py-1 bg-primary text-white text-xs rounded-full">
+                    Popular
+                  </span>
+                )}
+              </div>
+              <p className="text-gray-600 mb-6 leading-relaxed">
+                {service.short_description}
+              </p>
+              <div className="mb-6">
+                <div className="text-2xl font-bold text-black mb-2">
+                  ${service.price_starts_at}
+                  <span className="text-sm font-normal text-gray-600 ml-1">
+                    {service.price_unit}
+                  </span>
+                </div>
+              </div>
+              <Link
+                to={`/order/items/${service.service_identifier}`}
+                className="block w-full bg-primary text-white py-3 rounded-full font-medium hover:bg-blue-700 transition-colors text-center"
+              >
+                Get Started
+              </Link>
+            </div>
+          ))}
         </div>
       </section>
 
