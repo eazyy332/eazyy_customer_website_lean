@@ -96,6 +96,21 @@ export default function ItemSelection() {
         { id: 'coat', name: 'Coat', description: 'Winter coat cleaning', price: 25.99, subcategory: 'outerwear', icon: '🧥' },
         { id: 'blazer', name: 'Blazer', description: 'Business blazer cleaning', price: 16.99, subcategory: 'suits', icon: '🤵' },
         { id: 'wool-sweater', name: 'Wool Sweater', description: 'Delicate wool care', price: 13.99, subcategory: 'knitwear', icon: '🧶' },
+          ]);
+          
+          if (catsError) console.error('Categories error:', catsError);
+          if (itemsError) console.error('Items error:', itemsError);
+          
+          if (!mounted) return;
+          setCategoriesDb(cats || []);
+          setItemsDb(items || []);
+        } else {
+          console.warn('[ItemSelection] No service found for identifier:', { rawCategory, normalized: category });
+          setCategoriesDb([]);
+          setItemsDb([]);
+        }
+      } catch (err) {
+        console.error('Service fetch error:', err);
         { id: 'cashmere', name: 'Cashmere Item', description: 'Luxury cashmere cleaning', price: 22.99, subcategory: 'knitwear', icon: '✨' },
         { id: 'leather-jacket', name: 'Leather Jacket', description: 'Specialized leather cleaning', price: 45.99, subcategory: 'specialty', icon: '🧥' },
         { id: 'fur-item', name: 'Fur Item', description: 'Expert fur care and storage', price: 89.99, subcategory: 'specialty', icon: '🦔' }
@@ -205,6 +220,7 @@ export default function ItemSelection() {
         setCategoriesDb([]);
         setItemsDb([]);
       }
+      
       setSelectedSubcategory('all');
       setLoading(false);
     }
@@ -269,14 +285,30 @@ export default function ItemSelection() {
   };
 
   const getServiceIcon = (serviceIdentifier: string) => {
-    // Handle different variations of eazyy-bag identifier
-    const normalizedIdentifier = serviceIdentifier === 'eazyy-bag' ? 'eazyy-bag' : serviceIdentifier;
-    const serviceData = allServices.find(s => 
-      s.service_identifier === normalizedIdentifier || 
-      s.service_identifier === serviceIdentifier ||
-      (serviceIdentifier === 'eazyy-bag' && (s.service_identifier === 'easy-bag' || s.service_identifier === 'eazzy-bag'))
-    );
-    return serviceData?.icon || serviceData?.image_url;
+    console.log('Looking for service icon:', serviceIdentifier, 'in services:', allServices);
+    
+    if (!allServices || allServices.length === 0) {
+      console.log('No services loaded yet');
+      return null;
+    }
+    
+    // Handle different variations of service identifiers
+    const serviceData = allServices.find(s => {
+      const matches = [
+        s.service_identifier === serviceIdentifier,
+        s.service_identifier === 'eazyy-bag' && serviceIdentifier === 'easy-bag',
+        s.service_identifier === 'easy-bag' && serviceIdentifier === 'eazyy-bag',
+        s.service_identifier === 'eazzy-bag' && serviceIdentifier === 'eazyy-bag',
+        s.service_identifier === 'eazzy-bag' && serviceIdentifier === 'easy-bag'
+      ];
+      return matches.some(Boolean);
+    });
+    
+    console.log('Found service:', serviceData);
+    const iconUrl = serviceData?.icon || serviceData?.image_url;
+    console.log('Icon URL:', iconUrl);
+    
+    return iconUrl;
   };
   const addToCart = (item: Item) => {
     const cartItem: CartItem = {
