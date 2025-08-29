@@ -265,14 +265,14 @@ export default function ItemSelection() {
   } as any;
   const formatEuro = (value: number) => value.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const getItemImage = (item: any) => {
-    return item.icon || item.image_url || null;
+    return item.icon || item.image_url || '';
   };
 
   // Category pill icon mapping per service
   const getSubcategoryIcon = (subcatId: string): string => {
-    if (subcatId === 'all') return service?.icon || service?.image_url || "";
+    if (subcatId === 'all') return service?.icon || service?.image_url || '';
     const cat = categoriesDb.find((c) => String(c.id) === subcatId);
-    return cat?.icon || cat?.icon_name || "";
+    return cat?.icon || cat?.icon_name || '';
   };
 
   const getServiceIcon = (serviceIdentifier: string) => {
@@ -299,7 +299,7 @@ export default function ItemSelection() {
     const iconUrl = serviceData?.icon || serviceData?.image_url;
     console.log('Icon URL:', iconUrl);
     
-    return iconUrl;
+    return iconUrl || '';
   };
   const addToCart = (item: Item) => {
     const cartItem: CartItem = {
