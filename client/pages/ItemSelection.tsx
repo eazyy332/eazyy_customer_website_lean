@@ -132,12 +132,12 @@ export default function ItemSelection() {
         }
         
         // Also try loading ALL items to see what's in the database
-        const { data: allItems, error: allItemsError } = await supabase
+        const { data: debugAllItems, error: allItemsError } = await supabase
           .from('items')
           .select('*')
           .limit(10);
         
-        console.log('[ItemSelection] ALL items in database (first 10):', { data: allItems, error: allItemsError });
+        console.log('[ItemSelection] ALL items in database (first 10):', { data: debugAllItems, error: allItemsError });
         
         // Also try loading ALL categories to see what's in the database
         const { data: allCategories, error: allCategoriesError } = await supabase
