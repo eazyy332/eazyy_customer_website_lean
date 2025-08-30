@@ -522,31 +522,45 @@ export default function ItemSelection() {
                       </button>
                     ) : hasDynamic ? (
                       <div className="w-full">
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="number"
-                            min={item.min_input_value ?? 0}
-                            max={item.max_input_value ?? undefined}
-                            step={0.1}
-                            value={dynamicValue || ''}
-                            onChange={(e) => setDynamicInputs(prev => ({ ...prev, [String(item.id)]: Number(e.target.value) }))}
-                            placeholder={item.input_placeholder || `Enter ${item.unit_label}`}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                          />
-                          <button
-                            onClick={() => addDynamicToCart(item)}
-                            className="rounded-full bg-primary text-white px-3 py-2 text-sm font-semibold"
-                          >
-                            Add
-                          </button>
-                          {quantityInCart > 0 && (
+                        <div className="space-y-3">
+                          <div className="px-2">
+                            <input
+                              type="range"
+                              min={item.min_input_value ?? 0}
+                              max={item.max_input_value ?? 100}
+                              step={0.1}
+                              value={dynamicValue || item.min_input_value || 0}
+                              onChange={(e) => setDynamicInputs(prev => ({ ...prev, [String(item.id)]: Number(e.target.value) }))}
+                              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                              style={{
+                                background: `linear-gradient(to right, #1D62DB 0%, #1D62DB ${((dynamicValue || item.min_input_value || 0) - (item.min_input_value || 0)) / ((item.max_input_value || 100) - (item.min_input_value || 0)) * 100}%, #e5e7eb ${((dynamicValue || item.min_input_value || 0) - (item.min_input_value || 0)) / ((item.max_input_value || 100) - (item.min_input_value || 0)) * 100}%, #e5e7eb 100%)`
+                              }}
+                            />
+                          </div>
+                          <div className="flex items-center justify-between text-xs text-gray-600">
+                            <span>{item.min_input_value || 0} {item.unit_label}</span>
+                            <span className="font-medium text-black">
+                              {dynamicValue || item.min_input_value || 0} {item.unit_label}
+                            </span>
+                            <span>{item.max_input_value || 100} {item.unit_label}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
                             <button
-                              onClick={() => removeFromCart(String(item.id))}
-                              className="rounded-full border border-gray-300 px-3 py-2 text-sm"
+                              onClick={() => addDynamicToCart(item)}
+                              disabled={!dynamicValue && !item.min_input_value}
+                              className="flex-1 rounded-full bg-primary text-white px-3 py-2 text-sm font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed"
                             >
-                              Remove
+                              Add
                             </button>
-                          )}
+                            {quantityInCart > 0 && (
+                              <button
+                                onClick={() => removeFromCart(String(item.id))}
+                                className="rounded-full border border-gray-300 px-3 py-2 text-sm"
+                              >
+                                Remove
+                              </button>
+                            )}
+                          </div>
                         </div>
                         <div className="mt-1 text-xs text-gray-600">
                           {dynamicValue ? `Est. €${dynamicPreview.toFixed(2)}` : (item.min_input_value ? `Min ${item.min_input_value} ${item.unit_label}` : '')}
