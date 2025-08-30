@@ -47,7 +47,7 @@ export default function Index() {
           <div className="space-y-6">
             {/* Badge */}
             <div className="inline-flex items-center gap-2 h-9 px-4 rounded-[10px] bg-[#E9F1FF]">
-              <EazyyIcon className="w-4 h-4 text-[#1D62DB]" />
+              <EazyyIcon className="w-5 h-6 text-[#1D62DB]" />
               <span className="text-[#1D62DB] font-medium">laundry service</span>
             </div>
 
@@ -101,7 +101,7 @@ export default function Index() {
             {/* Section Header */}
             <div className="mb-12">
               <div className="inline-flex items-center gap-3 h-10 px-4 rounded-full bg-[#2166DC] text-white mb-6 shadow-[0_8px_20px_rgba(29,98,219,0.35)]">
-                <EazyyIcon className="w-5 h-5 text-white" />
+                <EazyyIcon className="w-6 h-7 text-white" />
                 <span className="text-lg leading-none font-medium">The Services of eazyy</span>
               </div>
               <h2 className="text-5xl lg:text-6xl font-medium text-white mb-2 leading-tight">
@@ -130,7 +130,7 @@ export default function Index() {
                 </div>
                 <div className="mb-4">
                   <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 text-blue-700 text-sm font-medium">
-                    <EazyyIcon className="w-4 h-4" />
+                    <EazyyIcon className="w-5 h-6" />
                     eazyy bag
                   </span>
                 </div>
@@ -159,7 +159,7 @@ export default function Index() {
                 </div>
                 <div className="mb-4">
                   <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-50 text-green-700 text-sm font-medium">
-                    <EazyyIcon className="w-4 h-4" />
+                    <EazyyIcon className="w-5 h-6" />
                     Dry clean
                   </span>
                 </div>
@@ -188,7 +188,7 @@ export default function Index() {
                 </div>
                 <div className="mb-4">
                   <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-rose-50 text-rose-700 text-sm font-medium">
-                    <EazyyIcon className="w-4 h-4" />
+                    <EazyyIcon className="w-5 h-6" />
                     Wash & Iron
                   </span>
                 </div>
@@ -217,7 +217,7 @@ export default function Index() {
                 </div>
                 <div className="mb-4">
                   <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 text-amber-700 text-sm font-medium">
-                    <EazyyIcon className="w-4 h-4" />
+                    <EazyyIcon className="w-5 h-6" />
                     Repair
                   </span>
                 </div>
@@ -247,7 +247,7 @@ export default function Index() {
           <div className="space-y-6">
             {/* Badge */}
             <div className="inline-flex items-center px-4 py-2 bg-accent rounded-lg">
-              <EazyyIcon className="w-4 h-4 text-[#1D62DB]" />
+              <EazyyIcon className="w-5 h-6 text-[#1D62DB]" />
               <span className="text-primary font-medium">laundry service</span>
             </div>
 
