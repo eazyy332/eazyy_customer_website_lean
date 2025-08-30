@@ -478,18 +478,18 @@ export default function ItemSelection() {
               <button
                 key={subcat.id}
                 onClick={() => setSelectedSubcategory(subcat.id)}
-                className={`inline-flex items-center gap-2 h-10 px-4 rounded-[10px] border text-sm ${selectedSubcategory === subcat.id ? 'text-white' : 'text-black'} transition-colors`}
+                className={`inline-flex items-center gap-2 h-10 px-4 rounded-[10px] border text-sm whitespace-nowrap flex-shrink-0 ${selectedSubcategory === subcat.id ? 'text-white' : 'text-black'} transition-colors`}
                 style={{
                   backgroundColor: selectedSubcategory === subcat.id ? meta.accent : '#fff',
                   borderColor: selectedSubcategory === subcat.id ? meta.accent : '#E5E7EB'
                 }}
               >
                 {getSubcategoryIcon(subcat.id) ? (
-                  <img src={getSubcategoryIcon(subcat.id)} alt="" className={`w-5 h-5 object-contain rounded ${selectedSubcategory === subcat.id ? 'bg-white' : 'bg-transparent'}`} />
+                  <img src={getSubcategoryIcon(subcat.id)} alt="" className={`w-4 h-4 object-contain rounded flex-shrink-0 ${selectedSubcategory === subcat.id ? 'bg-white' : 'bg-transparent'}`} />
                 ) : (
-                  <span className="text-lg">📦</span>
+                  <span className="text-sm flex-shrink-0">📦</span>
                 )}
-                {subcat.name}
+                <span className="truncate">{subcat.name}</span>
               </button>
             ))}
           </div>
