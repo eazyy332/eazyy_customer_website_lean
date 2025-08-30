@@ -469,8 +469,8 @@ export default function ItemSelection() {
               const accent = meta.accent;
 
               // DB-driven attributes for quote/dynamic pricing
-              const requiresQuote = Boolean(item?.custom_pricing || item?.is_custom_price);
-              const hasDynamic = Boolean(!requiresQuote && item?.unit_price && item?.unit_label);
+              const requiresQuote = Boolean(item?.is_custom_price && !item?.unit_price);
+              const hasDynamic = Boolean(item?.custom_pricing || (item?.unit_price && item?.unit_label));
               const dynamicValue = Number(dynamicInputs[String(item.id)] || 0);
               const dynamicPreview = hasDynamic ? Number(item.unit_price) * (dynamicValue || Number(item.min_input_value || 0)) : 0;
 
