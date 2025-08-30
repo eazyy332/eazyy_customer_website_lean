@@ -51,6 +51,38 @@ export default function ItemSelection() {
     if (savedCart) {
       setCart(JSON.parse(savedCart));
     }
+
+    // Debug: Check what's in the database for dynamic pricing
+    const debugDynamicPricing = async () => {
+      try {
+        const { data: allItems, error } = await supabase
+          .from('items')
+          .select('id, name, custom_pricing, unit_price, unit_label, min_input_value, max_input_value, input_placeholder, is_custom_price')
+          .eq('status', true)
+          .limit(20);
+        
+        console.log('[DYNAMIC PRICING DEBUG] All items with pricing fields:', allItems);
+        
+        const dynamicItems = allItems?.filter(item => 
+          item.custom_pricing === true || 
+          (item.unit_price && item.unit_label)
+        );
+        
+        console.log('[DYNAMIC PRICING DEBUG] Items with dynamic pricing:', dynamicItems);
+        
+        // Check specifically for curtains
+        const curtainItems = allItems?.filter(item => 
+          item.name?.toLowerCase().includes('curtain')
+        );
+        
+        console.log('[DYNAMIC PRICING DEBUG] Curtain items:', curtainItems);
+        
+      } catch (error) {
+        console.error('[DYNAMIC PRICING DEBUG] Error:', error);
+      }
+    };
+    
+    debugDynamicPricing();
   }, []);
 
   // Load from DB when switching service slug
