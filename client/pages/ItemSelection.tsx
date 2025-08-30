@@ -469,8 +469,8 @@ export default function ItemSelection() {
               const accent = meta.accent;
 
               // DB-driven attributes for quote/dynamic pricing
-              const requiresQuote = Boolean(item?.is_custom_price && !item?.unit_price);
-              const hasDynamic = Boolean(item?.custom_pricing || (item?.unit_price && item?.unit_label));
+              const requiresQuote = Boolean(item?.is_custom_price);
+              const hasDynamic = Boolean(item?.custom_pricing && item?.unit_price && item?.unit_label);
               const dynamicValue = Number(dynamicInputs[String(item.id)] || 0);
               const dynamicPreview = hasDynamic ? Number(item.unit_price) * (dynamicValue || Number(item.min_input_value || 0)) : 0;
 
@@ -496,7 +496,7 @@ export default function ItemSelection() {
                   <div className="mt-2 text-[13px] text-black">{displayName}</div>
 
                   {/* Price row */}
-                  {!hasDynamic && (
+                  {!hasDynamic && !requiresQuote && (
                     <div className="flex items-baseline gap-1 text-[11px] text-gray-600">
                       <span className="align-super">€</span>
                       <span className="text-[15px] font-semibold text-black">{formatEuro(price)}</span>
@@ -513,7 +513,7 @@ export default function ItemSelection() {
 
                   {/* Actions */}
                   <div className="mt-2 flex items-center gap-2">
-                    {requiresQuote ? (
+                    {requiresQuote && !hasDynamic ? (
                       <button
                         onClick={() => navigate('/order/custom-quote', { state: { presetItem: { id: String(item.id), name: displayName, serviceCategory: category } } })}
                         className="w-full rounded-full border border-gray-300 px-4 py-2 text-sm font-medium hover:border-primary"
