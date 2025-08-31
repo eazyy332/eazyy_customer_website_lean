@@ -109,12 +109,13 @@ async function testCustomQuoteEmail() {
   const payload = {
     email: TEST_EMAIL,
     firstName: 'Test User',
-    quoteId: 'QT-TEST-001',
+    orderNumber: 'QT-TEST-001',
     itemName: 'Vintage Silk Evening Gown',
     quotedPrice: 89.99,
     estimatedDays: 5,
     facilityNotes: 'This delicate silk gown requires specialized cleaning with our gentle silk treatment process. The beading will be carefully protected during cleaning.',
-    cta_url: `https://eazyy.app/quote-approval/QT-TEST-001`
+    cta_url: `https://eazyy.app/quote-approval/QT-TEST-001`,
+    discrepancyItems: [] // Add empty array to satisfy validation
   };
 
   try {
