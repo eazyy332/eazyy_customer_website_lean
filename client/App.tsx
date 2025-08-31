@@ -41,6 +41,7 @@ const Messages = lazy(() => import("./pages/Messages"));
 const Login = lazy(() => import("./pages/Login"));
 const Cart = lazy(() => import("./pages/Cart"));
 const Account = lazy(() => import("./pages/Account"));
+const Business = lazy(() => import("./pages/Business"));
 
 const queryClient = new QueryClient();
 
@@ -104,10 +105,10 @@ function App() {
                   <Route path="/login" element={<Login />} />
                   <Route path="/account" element={<Account />} />
                   <Route path="/messages" element={<Messages />} />
+                  <Route path="/business" element={<Business />} />
 
                   {/* Legacy Routes */}
                   <Route path="/personal" element={<Services />} />
-                  <Route path="/business" element={<Services />} />
                   <Route path="/company" element={<About />} />
                   <Route path="/complaints" element={<Help />} />
                   <Route path="/cookie-policy" element={<Privacy />} />
