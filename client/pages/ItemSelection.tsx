@@ -1,8 +1,5 @@
 import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, DrawerFooter, DrawerClose, DrawerTrigger } from "@/components/ui/drawer";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose, DialogTrigger } from "@/components/ui/dialog";
 import { supabase } from "@/lib/supabase";
 
 function normalizeCategorySlug(raw: string): string {
@@ -657,102 +654,12 @@ export default function ItemSelection() {
                   {/* Actions */}
                   <div className="mt-2 flex items-center gap-2">
                     {requiresQuote && !hasDynamic ? (
-                      <Dialog open={customQuoteOpen} onOpenChange={setCustomQuoteOpen}>
-                        <DialogTrigger asChild>
-                          <button
-                            onClick={() => openCustomQuoteDialog(item)}
-                            className="w-full rounded-full border border-gray-300 px-4 py-2 text-sm font-medium hover:border-primary"
-                          >
-                            Get Quote
-                          </button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-md">
-                          <DialogHeader>
-                            <DialogTitle>Request Custom Quote</DialogTitle>
-                            <DialogDescription>
-                              Tell us about this item to get a personalized quote
-                            </DialogDescription>
-                          </DialogHeader>
-                          
-                          <div className="space-y-4">
-                            <div>
-                              <label className="block text-sm font-medium text-black mb-2">
-                                Item: {selectedQuoteItem?.name}
-                              </label>
-                              <p className="text-sm text-gray-600">{selectedQuoteItem?.description}</p>
-                            </div>
-                            
-                            <div>
-                              <label className="block text-sm font-medium text-black mb-2">
-                                Describe your item and any special requirements *
-                              </label>
-                              <textarea
-                                value={quoteDescription}
-                                onChange={(e) => setQuoteDescription(e.target.value)}
-                                rows={4}
-                                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none resize-none"
-                                placeholder="Describe the item, any stains, damage, special care needed, etc."
-                              />
-                            </div>
-                            
-                            <div>
-                              <label className="block text-sm font-medium text-black mb-2">
-                                Photos (optional, max 3)
-                              </label>
-                              <div className="space-y-2">
-                                {quoteImages.length > 0 && (
-                                  <div className="flex gap-2">
-                                    {quoteImages.map((file, index) => (
-                                      <div key={index} className="relative">
-                                        <img
-                                          src={URL.createObjectURL(file)}
-                                          alt={`Upload ${index + 1}`}
-                                          className="w-16 h-16 object-cover rounded border"
-                                        />
-                                        <button
-                                          onClick={() => removeQuoteImage(index)}
-                                          className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs"
-                                        >
-                                          ×
-                                        </button>
-                                      </div>
-                                    ))}
-                                  </div>
-                                )}
-                                {quoteImages.length < 3 && (
-                                  <label className="block">
-                                    <input
-                                      type="file"
-                                      accept="image/*"
-                                      multiple
-                                      onChange={handleQuoteImageUpload}
-                                      className="hidden"
-                                    />
-                                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-primary">
-                                      <span className="text-sm text-gray-600">+ Add Photos</span>
-                                    </div>
-                                  </label>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <DialogFooter>
-                            <DialogClose asChild>
-                              <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700">
-                                Cancel
-                              </button>
-                            </DialogClose>
-                            <button
-                              onClick={submitCustomQuote}
-                              disabled={!quoteDescription.trim() || isSubmittingQuote}
-                              className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
-                            >
-                              {isSubmittingQuote ? 'Submitting...' : 'Add to Cart'}
-                            </button>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
+                      <button
+                        onClick={() => openCustomQuoteDialog(item)}
+                        className="w-full rounded-full border border-gray-300 px-4 py-2 text-sm font-medium hover:border-primary"
+                      >
+                        Get Quote
+                      </button>
                     ) : hasDynamic ? (
                       <div className="w-full">
                         <div className="space-y-3">
@@ -878,95 +785,114 @@ export default function ItemSelection() {
         </div>
       )}
 
-      {/* Custom Quote Dialog */}
-      <Dialog open={customQuoteOpen} onOpenChange={setCustomQuoteOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Request Custom Quote</DialogTitle>
-            <DialogDescription>
-              Tell us about this item to get a personalized quote
-            </DialogDescription>
-          </DialogHeader>
+      {/* Custom Quote Popup */}
+      {customQuoteOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Backdrop with blur */}
+          <div 
+            className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+            onClick={() => setCustomQuoteOpen(false)}
+          ></div>
           
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-black mb-2">
-                Item: {selectedQuoteItem?.name}
-              </label>
-              <p className="text-sm text-gray-600">{selectedQuoteItem?.description}</p>
+          {/* Popup Content */}
+          <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-6">
+            {/* Close button */}
+            <button
+              onClick={() => setCustomQuoteOpen(false)}
+              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center"
+            >
+              ×
+            </button>
+            
+            {/* Header */}
+            <div className="mb-6">
+              <h3 className="text-xl font-semibold text-black mb-2">Request Custom Quote</h3>
+              <p className="text-gray-600">Tell us about this item to get a personalized quote</p>
             </div>
             
-            <div>
-              <label className="block text-sm font-medium text-black mb-2">
-                Describe your item and any special requirements *
-              </label>
-              <textarea
-                value={quoteDescription}
-                onChange={(e) => setQuoteDescription(e.target.value)}
-                rows={4}
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none resize-none"
-                placeholder="Describe the item, any stains, damage, special care needed, etc."
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-black mb-2">
-                Photos (optional, max 3)
-              </label>
-              <div className="space-y-2">
-                {quoteImages.length > 0 && (
-                  <div className="flex gap-2">
-                    {quoteImages.map((file, index) => (
-                      <div key={index} className="relative">
-                        <img
-                          src={URL.createObjectURL(file)}
-                          alt={`Upload ${index + 1}`}
-                          className="w-16 h-16 object-cover rounded border"
-                        />
-                        <button
-                          onClick={() => removeQuoteImage(index)}
-                          className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {quoteImages.length < 3 && (
-                  <label className="block">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      onChange={handleQuoteImageUpload}
-                      className="hidden"
-                    />
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-primary">
-                      <span className="text-sm text-gray-600">+ Add Photos</span>
+            {/* Content */}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-black mb-2">
+                  Item: {selectedQuoteItem?.name}
+                </label>
+                <p className="text-sm text-gray-600">{selectedQuoteItem?.description}</p>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-black mb-2">
+                  Describe your item and any special requirements *
+                </label>
+                <textarea
+                  value={quoteDescription}
+                  onChange={(e) => setQuoteDescription(e.target.value)}
+                  rows={4}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none resize-none"
+                  placeholder="Describe the item, any stains, damage, special care needed, etc."
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-black mb-2">
+                  Photos (optional, max 3)
+                </label>
+                <div className="space-y-2">
+                  {quoteImages.length > 0 && (
+                    <div className="flex gap-2">
+                      {quoteImages.map((file, index) => (
+                        <div key={index} className="relative">
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt={`Upload ${index + 1}`}
+                            className="w-16 h-16 object-cover rounded border"
+                          />
+                          <button
+                            onClick={() => removeQuoteImage(index)}
+                            className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
                     </div>
-                  </label>
-                )}
+                  )}
+                  {quoteImages.length < 3 && (
+                    <label className="block">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleQuoteImageUpload}
+                        className="hidden"
+                      />
+                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-primary">
+                        <span className="text-sm text-gray-600">+ Add Photos</span>
+                      </div>
+                    </label>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-          
-          <DialogFooter>
-            <DialogClose asChild>
-              <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700">
+            
+            {/* Footer */}
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setCustomQuoteOpen(false)}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+              >
                 Cancel
               </button>
-            </DialogClose>
-            <button
-              onClick={submitCustomQuote}
-              disabled={!quoteDescription.trim() || isSubmittingQuote}
-              className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
-            >
-              {isSubmittingQuote ? 'Submitting...' : 'Add to Cart'}
-            </button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+              <button
+                onClick={submitCustomQuote}
+                disabled={!quoteDescription.trim() || isSubmittingQuote}
+                className="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+              >
+                {isSubmittingQuote ? 'Submitting...' : 'Add to Cart'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
