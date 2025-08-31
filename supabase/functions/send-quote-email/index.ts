@@ -130,7 +130,7 @@ serve(async (req: Request) => {
     }
 
     console.log("Generating email HTML...")
-    const emailHTML = generateDiscrepancyEmailHTML(payload)
+    const emailHTML = generateQuoteEmailHTML(payload)
     
     console.log("Sending email via Resend...")
     const resendResponse = await fetch("https://api.resend.com/emails", {
