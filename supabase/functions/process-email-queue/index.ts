@@ -89,7 +89,7 @@ serve(async (req: Request) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            from: "eazyy <onboarding@resend.dev>",
+            from: "eazyy <admin@eazyy.app>",
             to: [email.recipient],
             subject: email.subject,
             html: email.content,
