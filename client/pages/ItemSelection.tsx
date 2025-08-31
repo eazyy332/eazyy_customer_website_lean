@@ -816,7 +816,16 @@ export default function ItemSelection() {
                 <label className="block text-sm font-medium text-black mb-2">
                   Item: {selectedQuoteItem?.name}
                 </label>
-                <p className="text-sm text-gray-600">{selectedQuoteItem?.description}</p>
+                <div className="flex items-start gap-4">
+                  {selectedQuoteItem?.icon && (
+                    <img 
+                      src={selectedQuoteItem.icon} 
+                      alt={selectedQuoteItem.name}
+                      className="w-16 h-16 object-cover rounded-lg flex-shrink-0"
+                    />
+                  )}
+                  <p className="text-sm text-gray-600">{selectedQuoteItem?.description}</p>
+                </div>
               </div>
               
               <div>
