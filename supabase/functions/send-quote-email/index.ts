@@ -140,7 +140,7 @@ serve(async (req: Request) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "eazyy <onboarding@resend.dev>",
+        from: "eazyy <admin@eazyy.app>",
         to: [payload.email],
         subject: `Order Update Required - eazyy Order #${payload.orderNumber}`,
         html: emailHTML,
