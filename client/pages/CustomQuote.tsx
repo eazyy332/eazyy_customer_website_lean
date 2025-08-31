@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import { EmailService } from "@/lib/emailService";
 
 interface QuoteRequest {
   itemType: string;
@@ -148,6 +149,26 @@ export default function CustomQuote() {
         })
         .select('id')
         .single();
+
+      if (error) throw error;
+
+      // Send quote notification email
+      try {
+        await EmailService.sendQuoteNotification({
+          email: quoteRequest.contactInfo.email,
+          firstName: quoteRequest.contactInfo.email.split('@')[0], // Use email prefix as fallback
+          quoteId: data.id,
+          itemName: quoteRequest.itemType || 'Custom Item',
+          quotedPrice: 0, // Will be updated when facility provides quote
+          estimatedDays: urgencyLevels.find(l => l.id === quoteRequest.urgency)?.label.includes('1-2') ? 2 : 3,
+          facilityNotes: 'Your custom quote request has been received and is being reviewed by our experts.',
+          cta_url: `${window.location.origin}/quote-approval/${data.id}`
+        });
+        console.log('Quote notification email sent successfully');
+      } catch (emailError) {
+        console.error('Failed to send quote notification email:', emailError);
+        // Don't fail the quote submission if email fails
+      }
 
       if (error || !data) {
         throw new Error(error?.message || 'Failed to submit custom quote');

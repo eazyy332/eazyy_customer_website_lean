@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/lib/supabase";
 import EazyyIcon from "@/components/EazyyIcon";
+import { EmailService } from "@/lib/emailService";
 
 export default function Business() {
   const [formData, setFormData] = useState({
@@ -43,6 +44,16 @@ export default function Business() {
       if (error) throw error;
 
       setSubmitStatus('success');
+      
+      // Send business inquiry confirmation email
+      try {
+        await EmailService.processEmailQueue(); // Process any queued emails
+        console.log('Business inquiry confirmation processed');
+      } catch (emailError) {
+        console.error('Failed to process business inquiry email:', emailError);
+        // Don't fail the form submission if email fails
+      }
+      
       setFormData({
         companyName: '',
         contactPerson: '',

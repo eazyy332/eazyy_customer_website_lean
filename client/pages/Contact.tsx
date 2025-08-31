@@ -189,6 +189,9 @@ export default function Contact() {
                     if (!res.ok || !data.ok) throw new Error(data.error || "Failed to send");
                     setSuccess("Message sent successfully! We will get back to you within 2 hours.");
                     form.reset();
+                    
+                    // Optional: Send confirmation email to customer
+                    // This could be implemented as an additional email function
                   } catch (err: any) {
                     setError(err?.message ?? "Something went wrong. Please try again.");
                   } finally {

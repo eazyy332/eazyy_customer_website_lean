@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { supabaseAdmin } from "../lib/supabase";
+import { sendContactConfirmationEmail } from "../lib/emailService";
 
 export async function handleContact(req: Request, res: Response) {
   try {
@@ -24,6 +25,21 @@ export async function handleContact(req: Request, res: Response) {
 
     if (dbError) {
       return res.status(500).json({ ok: false, error: dbError.message });
+    }
+
+    // Send confirmation email to customer
+    try {
+      await sendContactConfirmationEmail({
+        email,
+        firstName,
+        lastName,
+        subject,
+        message
+      });
+      console.log('Contact confirmation email sent successfully');
+    } catch (emailError) {
+      console.error('Failed to send contact confirmation email:', emailError);
+      // Don't fail the contact form if email fails
     }
 
     return res.json({ ok: true });

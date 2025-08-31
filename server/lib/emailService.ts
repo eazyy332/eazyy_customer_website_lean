@@ -39,6 +39,14 @@ interface QuoteEmailData {
   cta_url: string;
 }
 
+interface ContactEmailData {
+  email: string;
+  firstName: string;
+  lastName: string;
+  subject: string;
+  message: string;
+}
+
 async function callEmailFunction(functionName: string, payload: any) {
   try {
     const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
@@ -84,4 +92,8 @@ export async function sendQuoteNotificationEmail(data: QuoteEmailData) {
 
 export async function processEmailQueue() {
   return callEmailFunction('process-email-queue', {});
+}
+
+export async function sendContactConfirmationEmail(data: ContactEmailData) {
+  return callEmailFunction('send-contact-confirmation', data);
 }
