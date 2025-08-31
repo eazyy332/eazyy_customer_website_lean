@@ -878,5 +878,94 @@ export default function ItemSelection() {
         </div>
       )}
     </div>
+      {/* Custom Quote Dialog */}
+      <Dialog open={customQuoteOpen} onOpenChange={setCustomQuoteOpen}>
+        <DialogContent className="max-w-md backdrop-blur-sm bg-white/95 border border-gray-200 shadow-xl">
+          <DialogHeader>
+            <DialogTitle>Request Custom Quote</DialogTitle>
+            <DialogDescription>
+              Tell us about this item to get a personalized quote
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-black mb-2">
+                Item: {selectedQuoteItem?.name}
+              </label>
+              <p className="text-sm text-gray-600">{selectedQuoteItem?.description}</p>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-black mb-2">
+                Describe your item and any special requirements *
+              </label>
+              <textarea
+                value={quoteDescription}
+                onChange={(e) => setQuoteDescription(e.target.value)}
+                rows={4}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none resize-none"
+                placeholder="Describe the item, any stains, damage, special care needed, etc."
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-black mb-2">
+                Photos (optional, max 3)
+              </label>
+              <div className="space-y-2">
+                {quoteImages.length > 0 && (
+                  <div className="flex gap-2">
+                    {quoteImages.map((file, index) => (
+                      <div key={index} className="relative">
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt={`Upload ${index + 1}`}
+                          className="w-16 h-16 object-cover rounded border"
+                        />
+                        <button
+                          onClick={() => removeQuoteImage(index)}
+                          className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {quoteImages.length < 3 && (
+                  <label className="block">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleQuoteImageUpload}
+                      className="hidden"
+                    />
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-primary">
+                      <span className="text-sm text-gray-600">+ Add Photos</span>
+                    </div>
+                  </label>
+                )}
+              </div>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <DialogClose asChild>
+              <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700">
+                Cancel
+              </button>
+            </DialogClose>
+            <button
+              onClick={submitCustomQuote}
+              disabled={!quoteDescription.trim() || isSubmittingQuote}
+              className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
+              {isSubmittingQuote ? 'Submitting...' : 'Add to Cart'}
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
   );
 }
