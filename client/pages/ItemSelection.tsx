@@ -666,7 +666,6 @@ export default function ItemSelection() {
                             Get Quote
                           </button>
                         </DialogTrigger>
-                        <DialogContent className="max-w-md">
                         <DialogContent className="max-w-md backdrop-blur-sm bg-white/95 border border-gray-200 shadow-xl">
                           <DialogHeader>
                             <DialogTitle>Request Custom Quote</DialogTitle>
