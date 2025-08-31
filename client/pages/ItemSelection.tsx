@@ -819,12 +819,6 @@ export default function ItemSelection() {
                         </button>
                       </>
                     )}
-                  <div className="text-lg font-semibold text-black">
-                    {cart.some(item => item.isCustomQuote) ? (
-                      <span className="text-sm">€{getTotalPrice().toFixed(2)} + quotes</span>
-                    ) : (
-                      <span>€{getTotalPrice().toFixed(2)}</span>
-                    )}
                   </div>
                 </div>
               );
@@ -840,7 +834,13 @@ export default function ItemSelection() {
             <div className="rounded-2xl border border-gray-200 bg-white shadow-xl p-3 flex items-center justify-between">
               <div>
                 <div className="text-xs text-gray-600">{cart.reduce((total, item) => total + item.quantity, 0)} items</div>
-                <div className="text-lg font-semibold text-black">€{cart.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2)}</div>
+                <div className="text-lg font-semibold text-black">
+                  {cart.some(item => item.isCustomQuote) ? (
+                    <span className="text-sm">€{getTotalPrice().toFixed(2)} + quotes</span>
+                  ) : (
+                    <span>€{getTotalPrice().toFixed(2)}</span>
+                  )}
+                </div>
               </div>
               <div className="flex gap-2">
                 <button
