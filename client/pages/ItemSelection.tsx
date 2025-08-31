@@ -880,7 +880,7 @@ export default function ItemSelection() {
 
       {/* Custom Quote Dialog */}
       <Dialog open={customQuoteOpen} onOpenChange={setCustomQuoteOpen}>
-        <DialogContent className="max-w-md backdrop-blur-sm bg-white/95 border border-gray-200 shadow-xl">
+        <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Request Custom Quote</DialogTitle>
             <DialogDescription>
