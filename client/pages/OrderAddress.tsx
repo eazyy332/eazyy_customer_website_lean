@@ -65,6 +65,8 @@ export default function OrderAddress() {
   const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [saveThisAddress, setSaveThisAddress] = useState(false);
+  const [addressName, setAddressName] = useState('');
 
   // Initialize email with authenticated user's email
   useEffect(() => {
@@ -79,12 +81,21 @@ export default function OrderAddress() {
   useEffect(() => {
     let isMounted = true;
     async function loadAddresses() {
+      if (!user) {
+        if (isMounted) {
+          setSavedAddresses([]);
+          setLoading(false);
+        }
+        return;
+      }
+      
       try {
         setLoading(true);
         setError(null);
         const { data, error } = await supabase
           .from('user_addresses')
           .select('id, name, street, house_number, additional_info, city, postal_code, is_default')
+          .eq('user_id', user.id)
           .order('is_default', { ascending: false });
         if (error) throw error;
         const mapped: SavedAddress[] = (data || []).map((a: any) => ({
@@ -102,7 +113,7 @@ export default function OrderAddress() {
     }
     loadAddresses();
     return () => { isMounted = false; };
-  }, []);
+  }, [user]);
 
   const countries = [
     'Netherlands',
@@ -205,6 +216,67 @@ export default function OrderAddress() {
     "Apartment buzzer broken - call phone"
   ];
 
+  const saveNewAddress = async () => {
+    if (!user || !useNewAddress || !addressName.trim()) return;
+    
+    try {
+      const { error } = await supabase
+        .from('user_addresses')
+        .insert({
+          user_id: user.id,
+          name: addressName.trim(),
+          street: address.streetAddress,
+          house_number: '', // Could be extracted from streetAddress
+          additional_info: address.apartment,
+          city: address.city,
+          postal_code: address.postalCode,
+          is_default: savedAddresses.length === 0 // Make first address default
+        });
+      
+      if (error) throw error;
+      
+      // Reload addresses to show the new one
+      const { data } = await supabase
+        .from('user_addresses')
+        .select('id, name, street, house_number, additional_info, city, postal_code, is_default')
+        .eq('user_id', user.id)
+        .order('is_default', { ascending: false });
+      
+      if (data) {
+        const mapped: SavedAddress[] = data.map((a: any) => ({
+          id: a.id,
+          name: a.name || 'Saved Address',
+          fullAddress: `${a.house_number} ${a.street}, ${a.additional_info ? a.additional_info + ', ' : ''}${a.city} ${a.postal_code}`.trim(),
+          isDefault: !!a.is_default
+        }));
+        setSavedAddresses(mapped);
+      }
+    } catch (error) {
+      console.error('Failed to save address:', error);
+    }
+  };
+
+  const handleContinueToPayment = async () => {
+    // Save address if requested
+    if (saveThisAddress && useNewAddress && addressName.trim()) {
+      await saveNewAddress();
+    }
+    
+    // Continue to payment
+    const addressData = useNewAddress ? address : savedAddresses.find(a => a.id === selectedSavedAddress);
+    
+    // Navigate to payment with proper address data
+    const navigate = (await import('react-router-dom')).useNavigate();
+    navigate('/order/payment', {
+      state: {
+        selectedServices: services,
+        totalPrice: calculatedTotalPrice,
+        schedule,
+        address: addressData,
+        sourceQuoteId
+      }
+    });
+  };
   return (
     <AuthGuard redirectMessage="Please sign in to continue with your order">
       <div className="min-h-screen bg-white">
@@ -330,6 +402,36 @@ export default function OrderAddress() {
                 <h3 className="text-lg font-medium text-black mb-6">Enter New Address</h3>
                 
                 <div className="space-y-6">
+                  {/* Save Address Option */}
+                  {user && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <label className="flex items-start space-x-3">
+                        <input
+                          type="checkbox"
+                          checked={saveThisAddress}
+                          onChange={(e) => setSaveThisAddress(e.target.checked)}
+                          className="mt-1"
+                        />
+                        <div className="flex-1">
+                          <span className="text-sm font-medium text-blue-900">Save this address for future orders</span>
+                          <p className="text-xs text-blue-700 mt-1">Make ordering faster next time</p>
+                        </div>
+                      </label>
+                      
+                      {saveThisAddress && (
+                        <div className="mt-3">
+                          <input
+                            type="text"
+                            value={addressName}
+                            onChange={(e) => setAddressName(e.target.value)}
+                            placeholder="Address name (e.g., Home, Work, Apartment)"
+                            className="w-full px-3 py-2 bg-white border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {/* Name Fields */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -517,19 +619,12 @@ export default function OrderAddress() {
             </Link>
             
             {isFormValid() ? (
-              <Link
-                to="/order/payment"
-                state={{
-                  selectedServices: services,
-                  totalPrice: calculatedTotalPrice,
-                  schedule,
-                  address: useNewAddress ? address : savedAddresses.find(a => a.id === selectedSavedAddress),
-                  sourceQuoteId
-                }}
+              <button
+                onClick={handleContinueToPayment}
                 className="inline-block px-8 py-3 bg-primary text-white rounded-full font-medium hover:bg-blue-700 transition-colors"
               >
                 Continue to Payment →
-              </Link>
+              </button>
             ) : (
               <div className="text-gray-400 text-sm">Complete address information to continue</div>
             )}
