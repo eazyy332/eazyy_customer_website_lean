@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import { supabaseAdmin } from "../lib/supabase";
+import { sendOrderConfirmationEmail } from "../lib/emailService";
 
 type OrderItemInput = {
   id: string;
@@ -210,6 +211,30 @@ export async function createOrder(req: Request, res: Response) {
     }
 
     console.log('Order creation completed successfully');
+    
+    // Send order confirmation email
+    try {
+      await sendOrderConfirmationEmail({
+        email: contact?.email || '',
+        firstName: contact?.firstName || contact?.name?.split(' ')[0] || '',
+        orderNumber: order.order_number,
+        customerName: customerName,
+        totalAmount: total,
+        pickupDate: pickupDate || undefined,
+        deliveryDate: deliveryDate || undefined,
+        address: shippingAddress,
+        items: items.map(item => ({
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price
+        }))
+      });
+      console.log('Order confirmation email sent successfully');
+    } catch (emailError) {
+      console.error('Failed to send order confirmation email:', emailError);
+      // Don't fail the order if email fails
+    }
+    
     return res.json({ 
       ok: true, 
       orderId: order.id,

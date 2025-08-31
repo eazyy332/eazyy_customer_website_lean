@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import AuthGuard from "@/components/AuthGuard";
+import { EmailService } from "@/lib/emailService";
 
 type OrderStatus = 'confirmed' | 'pickup_scheduled' | 'picked_up' | 'in_processing' | 'ready_for_delivery' | 'out_for_delivery' | 'delivered';
 
@@ -19,6 +20,7 @@ export default function OrderConfirmation() {
   
   const [currentStatus, setCurrentStatus] = useState<OrderStatus>('confirmed');
   const [showTracking, setShowTracking] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
   const trackingSteps: TrackingStep[] = [
     {
@@ -83,6 +85,38 @@ export default function OrderConfirmation() {
       return () => clearTimeout(timer);
     }
   }, [currentStatus]);
+
+  // Send order confirmation email on component mount
+  useEffect(() => {
+    const sendConfirmationEmail = async () => {
+      if (!orderId || !selectedServices || emailSent) return;
+      
+      try {
+        await EmailService.sendOrderConfirmation({
+          email: address?.email || '',
+          firstName: address?.firstName || address?.fullName?.split(' ')[0] || '',
+          orderNumber: orderId,
+          customerName: address?.fullName || `${address?.firstName || ''} ${address?.lastName || ''}`.trim() || 'Customer',
+          totalAmount: totalPrice || 0,
+          pickupDate: schedule?.pickupDate,
+          deliveryDate: schedule?.deliveryDate,
+          address: formatAddress(address),
+          items: selectedServices.map((service: any) => ({
+            name: service.name,
+            quantity: service.quantity,
+            price: service.price
+          }))
+        });
+        setEmailSent(true);
+        console.log('Order confirmation email sent successfully');
+      } catch (error) {
+        console.error('Failed to send order confirmation email:', error);
+        // Don't show error to user - email is not critical for order completion
+      }
+    };
+
+    sendConfirmationEmail();
+  }, [orderId, selectedServices, address, schedule, totalPrice, emailSent]);
 
   const formatAddress = (addr: any) => {
     if (typeof addr === 'string') return addr;
