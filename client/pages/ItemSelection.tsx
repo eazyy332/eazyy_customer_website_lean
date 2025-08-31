@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, DrawerFooter, DrawerClose, DrawerTrigger } from "@/components/ui/drawer";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose, DialogTrigger } from "@/components/ui/dialog";
 import { supabase } from "@/lib/supabase";
 
 function normalizeCategorySlug(raw: string): string {
@@ -27,6 +28,8 @@ interface Item {
 
 interface CartItem extends Item {
   serviceCategory: string;
+  isCustomQuote?: boolean;
+  quoteStatus?: 'pending' | 'quoted' | 'accepted';
 }
 
 export default function ItemSelection() {
@@ -44,6 +47,11 @@ export default function ItemSelection() {
   const [promptOpen, setPromptOpen] = useState(false);
   const [dynamicInputs, setDynamicInputs] = useState<Record<string, number>>({});
   const [allServices, setAllServices] = useState<any[]>([]);
+  const [customQuoteOpen, setCustomQuoteOpen] = useState(false);
+  const [selectedQuoteItem, setSelectedQuoteItem] = useState<any>(null);
+  const [quoteDescription, setQuoteDescription] = useState('');
+  const [quoteImages, setQuoteImages] = useState<File[]>([]);
+  const [isSubmittingQuote, setIsSubmittingQuote] = useState(false);
 
   useEffect(() => {
     // Load cart from localStorage
@@ -353,6 +361,106 @@ export default function ItemSelection() {
     });
   };
 
+  const addCustomQuoteToCart = (item: any) => {
+    const cartItem: CartItem = {
+      id: String(item.id),
+      name: String(item.name || ''),
+      description: String(item.description || ''),
+      price: 0, // No price for custom quotes
+      category: category,
+      subcategory: String(item.subcategory || item.category_id || ''),
+      quantity: 1,
+      serviceCategory: category || '',
+      isCustomQuote: true,
+      quoteStatus: 'pending'
+    };
+
+    setCart(prevCart => {
+      const existingIndex = prevCart.findIndex(cartItem => 
+        cartItem.id === item.id && cartItem.serviceCategory === category && cartItem.isCustomQuote
+      );
+
+      if (existingIndex >= 0) {
+        // Don't increase quantity for custom quotes, just replace
+        const updated = [...prevCart];
+        updated[existingIndex] = cartItem;
+        return updated;
+      } else {
+        return [...prevCart, cartItem];
+      }
+    });
+  };
+
+  const openCustomQuoteDialog = (item: any) => {
+    setSelectedQuoteItem(item);
+    setQuoteDescription('');
+    setQuoteImages([]);
+    setCustomQuoteOpen(true);
+  };
+
+  const handleQuoteImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    setQuoteImages(prev => [...prev, ...files].slice(0, 3)); // Max 3 images
+  };
+
+  const removeQuoteImage = (index: number) => {
+    setQuoteImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const submitCustomQuote = async () => {
+    if (!selectedQuoteItem || !quoteDescription.trim()) return;
+    
+    setIsSubmittingQuote(true);
+    try {
+      // Upload images to Supabase Storage (best-effort)
+      const imageUrls: string[] = [];
+      if (quoteImages.length > 0) {
+        const uploads = quoteImages.map(async (img, idx) => {
+          const file = img;
+          const ext = file.name.split('.').pop() || 'jpg';
+          const path = `custom-quotes/${Date.now()}_${idx}.${ext}`;
+          const { data: upData, error: upErr } = await supabase.storage
+            .from('public-assets')
+            .upload(path, file, { upsert: true, contentType: file.type });
+          if (!upErr && upData) {
+            const { data: pub } = supabase.storage.from('public-assets').getPublicUrl(upData.path);
+            if (pub?.publicUrl) imageUrls.push(pub.publicUrl);
+          }
+        });
+        await Promise.all(uploads);
+      }
+
+      // Insert custom quote row
+      const { data, error } = await supabase
+        .from('custom_price_quotes')
+        .insert({
+          item_name: selectedQuoteItem.name || 'Custom Item',
+          description: quoteDescription,
+          image_url: imageUrls.length ? imageUrls : null,
+          status: 'pending',
+          urgency: 'standard',
+        })
+        .select('id')
+        .single();
+
+      if (error) throw error;
+
+      // Add to cart with quote pending status
+      addCustomQuoteToCart(selectedQuoteItem);
+      
+      // Close dialog
+      setCustomQuoteOpen(false);
+      
+      // Show success message
+      alert('Custom quote request submitted! The item has been added to your cart.');
+      
+    } catch (error) {
+      console.error('Quote submission error:', error);
+      alert('Failed to submit quote request. Please try again.');
+    } finally {
+      setIsSubmittingQuote(false);
+    }
+  };
   const addDynamicToCart = (rawItem: any) => {
     const value = Number(dynamicInputs[String(rawItem.id)] || rawItem.min_input_value || 0);
     const unitPrice = Number(rawItem.unit_price || 0);
@@ -402,7 +510,10 @@ export default function ItemSelection() {
   };
 
   const getTotalPrice = () => {
-    return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+    return cart.reduce((total, item) => {
+      if (item.isCustomQuote) return total; // Don't include custom quotes in price calculation
+      return total + (item.price * item.quantity);
+    }, 0);
   };
 
   const getTotalItems = () => {
@@ -546,12 +657,102 @@ export default function ItemSelection() {
                   {/* Actions */}
                   <div className="mt-2 flex items-center gap-2">
                     {requiresQuote && !hasDynamic ? (
-                      <button
-                        onClick={() => navigate('/order/custom-quote', { state: { presetItem: { id: String(item.id), name: displayName, serviceCategory: category } } })}
-                        className="w-full rounded-full border border-gray-300 px-4 py-2 text-sm font-medium hover:border-primary"
-                      >
-                        Get Quote
-                      </button>
+                      <Dialog open={customQuoteOpen} onOpenChange={setCustomQuoteOpen}>
+                        <DialogTrigger asChild>
+                          <button
+                            onClick={() => openCustomQuoteDialog(item)}
+                            className="w-full rounded-full border border-gray-300 px-4 py-2 text-sm font-medium hover:border-primary"
+                          >
+                            Get Quote
+                          </button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-md">
+                          <DialogHeader>
+                            <DialogTitle>Request Custom Quote</DialogTitle>
+                            <DialogDescription>
+                              Tell us about this item to get a personalized quote
+                            </DialogDescription>
+                          </DialogHeader>
+                          
+                          <div className="space-y-4">
+                            <div>
+                              <label className="block text-sm font-medium text-black mb-2">
+                                Item: {selectedQuoteItem?.name}
+                              </label>
+                              <p className="text-sm text-gray-600">{selectedQuoteItem?.description}</p>
+                            </div>
+                            
+                            <div>
+                              <label className="block text-sm font-medium text-black mb-2">
+                                Describe your item and any special requirements *
+                              </label>
+                              <textarea
+                                value={quoteDescription}
+                                onChange={(e) => setQuoteDescription(e.target.value)}
+                                rows={4}
+                                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none resize-none"
+                                placeholder="Describe the item, any stains, damage, special care needed, etc."
+                              />
+                            </div>
+                            
+                            <div>
+                              <label className="block text-sm font-medium text-black mb-2">
+                                Photos (optional, max 3)
+                              </label>
+                              <div className="space-y-2">
+                                {quoteImages.length > 0 && (
+                                  <div className="flex gap-2">
+                                    {quoteImages.map((file, index) => (
+                                      <div key={index} className="relative">
+                                        <img
+                                          src={URL.createObjectURL(file)}
+                                          alt={`Upload ${index + 1}`}
+                                          className="w-16 h-16 object-cover rounded border"
+                                        />
+                                        <button
+                                          onClick={() => removeQuoteImage(index)}
+                                          className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs"
+                                        >
+                                          ×
+                                        </button>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                                {quoteImages.length < 3 && (
+                                  <label className="block">
+                                    <input
+                                      type="file"
+                                      accept="image/*"
+                                      multiple
+                                      onChange={handleQuoteImageUpload}
+                                      className="hidden"
+                                    />
+                                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-primary">
+                                      <span className="text-sm text-gray-600">+ Add Photos</span>
+                                    </div>
+                                  </label>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <DialogFooter>
+                            <DialogClose asChild>
+                              <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700">
+                                Cancel
+                              </button>
+                            </DialogClose>
+                            <button
+                              onClick={submitCustomQuote}
+                              disabled={!quoteDescription.trim() || isSubmittingQuote}
+                              className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                            >
+                              {isSubmittingQuote ? 'Submitting...' : 'Add to Cart'}
+                            </button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
                     ) : hasDynamic ? (
                       <div className="w-full">
                         <div className="space-y-3">
@@ -618,6 +819,12 @@ export default function ItemSelection() {
                         </button>
                       </>
                     )}
+                  <div className="text-lg font-semibold text-black">
+                    {cart.some(item => item.isCustomQuote) ? (
+                      <span className="text-sm">€{getTotalPrice().toFixed(2)} + quotes</span>
+                    ) : (
+                      <span>€{getTotalPrice().toFixed(2)}</span>
+                    )}
                   </div>
                 </div>
               );
@@ -653,8 +860,10 @@ export default function ItemSelection() {
                             price: item.price,
                             quantity: item.quantity,
                             serviceCategory: item.serviceCategory,
+                            isCustomQuote: item.isCustomQuote,
+                            quoteStatus: item.quoteStatus,
                           })),
-                          totalPrice: cart.reduce((t, i) => t + (i.price * i.quantity), 0)
+                          totalPrice: getTotalPrice()
                         }
                       });
                     }
