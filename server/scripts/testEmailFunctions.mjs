@@ -42,7 +42,9 @@ async function testOrderConfirmationEmail() {
       console.log(`   📨 Message ID: ${result.messageId}`);
     } else {
       console.log('   ❌ Failed to send order confirmation email');
-      console.log(`   Error: ${result.error}`);
+      console.log(`   Error: ${result.error || 'Unknown error'}`);
+      console.log(`   Response status: ${response.status}`);
+      console.log(`   Response body: ${JSON.stringify(result)}`);
     }
   } catch (error) {
     console.log('   ❌ Network error sending order confirmation email');
@@ -131,7 +133,9 @@ async function testCustomQuoteEmail() {
       console.log(`   📨 Message ID: ${result.messageId}`);
     } else {
       console.log('   ❌ Failed to send custom quote email');
-      console.log(`   Error: ${result.error}`);
+      console.log(`   Error: ${result.error || 'Unknown error'}`);
+      console.log(`   Response status: ${response.status}`);
+      console.log(`   Response body: ${JSON.stringify(result)}`);
     }
   } catch (error) {
     console.log('   ❌ Network error sending custom quote email');
@@ -157,11 +161,13 @@ async function testEmailQueueProcessor() {
     if (response.ok) {
       console.log('   ✅ Email queue processor executed successfully');
       console.log(`   📊 Processed: ${result.processed} emails`);
-      console.log(`   ❌ Failed: ${result.failed} emails`);
-      console.log(`   📈 Total: ${result.total} emails in queue`);
+      console.log(`   ❌ Failed: ${result.failed || 0} emails`);
+      console.log(`   📈 Total: ${result.total || 0} emails in queue`);
     } else {
       console.log('   ❌ Failed to process email queue');
-      console.log(`   Error: ${result.error}`);
+      console.log(`   Error: ${result.error || 'Unknown error'}`);
+      console.log(`   Response status: ${response.status}`);
+      console.log(`   Response body: ${JSON.stringify(result)}`);
     }
   } catch (error) {
     console.log('   ❌ Network error processing email queue');
