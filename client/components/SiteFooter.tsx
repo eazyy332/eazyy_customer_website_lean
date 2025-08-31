@@ -41,7 +41,6 @@ export default function SiteFooter() {
             <nav className="space-y-2">
               <FooterLink to="/website-terms" label="Website terms" />
               <FooterLink to="/legal-agreements" label="Legal Agreements" />
-              <FooterLink to="/modern-slavery-policy" label="Modern Slavery Policy" />
             </nav>
           </div>
         </div>

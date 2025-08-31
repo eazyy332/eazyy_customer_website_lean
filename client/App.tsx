@@ -114,7 +114,6 @@ function App() {
                   <Route path="/cookie-policy" element={<Privacy />} />
                   <Route path="/website-terms" element={<Privacy />} />
                   <Route path="/legal-agreements" element={<Privacy />} />
-                  <Route path="/modern-slavery-policy" element={<Privacy />} />
                   <Route path="/terms" element={<Privacy />} />
 
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
