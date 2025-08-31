@@ -877,7 +877,7 @@ export default function ItemSelection() {
           </div>
         </div>
       )}
-    </div>
+
       {/* Custom Quote Dialog */}
       <Dialog open={customQuoteOpen} onOpenChange={setCustomQuoteOpen}>
         <DialogContent className="max-w-md backdrop-blur-sm bg-white/95 border border-gray-200 shadow-xl">
@@ -967,5 +967,6 @@ export default function ItemSelection() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+    </div>
   );
 }
