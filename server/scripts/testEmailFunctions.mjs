@@ -4,6 +4,7 @@ dotenv.config();
 dotenv.config({ path: '.env.local', override: true });
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
+const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY;
 const TEST_EMAIL = 'frix779@gmail.com';
 
 async function testOrderConfirmationEmail() {
@@ -30,7 +31,7 @@ async function testOrderConfirmationEmail() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
       },
       body: JSON.stringify(payload)
     });
@@ -82,7 +83,7 @@ async function testDiscrepancyEmail() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
       },
       body: JSON.stringify(payload)
     });
@@ -121,7 +122,7 @@ async function testCustomQuoteEmail() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
       },
       body: JSON.stringify(payload)
     });
@@ -151,7 +152,7 @@ async function testEmailQueueProcessor() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
       },
       body: JSON.stringify({})
     });
@@ -188,7 +189,7 @@ async function main() {
   }
 
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    console.error('❌ SUPABASE_SERVICE_ROLE_KEY not configured');
+    console.error('❌ SUPABASE_ANON_KEY not configured');
     process.exit(1);
   }
 
