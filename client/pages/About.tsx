@@ -183,7 +183,7 @@ export default function About() {
       <section className="px-4 lg:px-16 py-10 lg:py-16">
         <div className="max-w-[1200px] mx-auto">
           <div className="relative rounded-[28px] overflow-hidden shadow-[0_20px_60px_rgba(17,24,39,0.15)]">
-            <img src={aboutBanner} alt="" className="absolute inset-0 w-full h-full object-cover" />
+            <img src="/image.png" alt="" className="absolute inset-0 w-full h-full object-cover" />
             <div className="relative z-10 px-6 md:px-10 lg:px-16 py-12 md:py-16 text-white text-center">
               <div className="inline-flex items-center gap-2 h-8 px-3 rounded-full bg-white/20 backdrop-blur-sm mb-4">
                 <span className="text-sm">Join us</span>
