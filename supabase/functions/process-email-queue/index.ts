@@ -18,6 +18,7 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey, {
 })
 
 serve(async (req: Request) => {
+  // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response(null, {
       status: 200,
@@ -38,15 +39,24 @@ serve(async (req: Request) => {
     
     if (fetchError) {
       console.error("Error fetching emails:", fetchError)
-      throw fetchError
+      return new Response(
+        JSON.stringify({ error: `Database error: ${fetchError.message}` }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      )
     }
 
     if (!pendingEmails || pendingEmails.length === 0) {
+      console.log("No pending emails found")
       return new Response(
         JSON.stringify({ 
           success: true, 
           message: "No pending emails to process",
-          processed: 0 
+          processed: 0,
+          failed: 0,
+          total: 0
         }),
         {
           status: 200,
@@ -63,6 +73,8 @@ serve(async (req: Request) => {
     // Process each email
     for (const email of pendingEmails) {
       try {
+        console.log(`Processing email ${email.id} to ${email.recipient}`)
+        
         // Mark as processing
         await supabase
           .from('email_queue')
@@ -134,6 +146,8 @@ serve(async (req: Request) => {
         failed++
       }
     }
+
+    console.log(`Email processing complete: ${processed} sent, ${failed} failed`)
 
     return new Response(
       JSON.stringify({ 
