@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import GooglePlacesAutocomplete from "../components/GooglePlacesAutocomplete";
 import AuthGuard from "@/components/AuthGuard";
+import { useAuth } from "../hooks/useAuth";
 
 interface AddressData {
   fullName: string;
@@ -27,6 +28,7 @@ interface SavedAddress {
 
 export default function OrderAddress() {
   const location = useLocation();
+  const { user } = useAuth();
   const { selectedServices, totalPrice, schedule, sourceQuoteId } = location.state || {
     selectedServices: [],
     totalPrice: 0,
@@ -63,6 +65,16 @@ export default function OrderAddress() {
   const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Initialize email with authenticated user's email
+  useEffect(() => {
+    if (user?.email) {
+      setAddress(prev => ({
+        ...prev,
+        email: user.email
+      }));
+    }
+  }, [user]);
 
   useEffect(() => {
     let isMounted = true;
@@ -163,23 +175,25 @@ export default function OrderAddress() {
         postalCode: '',
         country: 'Netherlands',
         phoneNumber: prev.phoneNumber || '',
-        email: prev.email || '',
+        email: user?.email || prev.email || '',
         specialInstructions: ''
       }));
     }
   };
 
   const isFormValid = () => {
+    // Always validate email and phone regardless of address type
+    const hasValidContact = address.email.trim() !== '' && address.phoneNumber.trim() !== '';
+    
     if (!useNewAddress && selectedSavedAddress) {
-      return true;
+      return hasValidContact;
     }
     
     return (address.firstName.trim() !== '' || address.fullName.trim() !== '') &&
            address.streetAddress.trim() !== '' &&
            address.city.trim() !== '' &&
            address.postalCode.trim() !== '' &&
-           address.email.trim() !== '' &&
-           address.phoneNumber.trim() !== '';
+           hasValidContact;
   };
 
   const suggestedInstructions = [
