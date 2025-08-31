@@ -624,7 +624,7 @@ export default function ItemSelection() {
                 <div key={String(item.id)} className="group">
                   <div className="w-36 h-36 md:w-40 md:h-40 mb-2">
                     <img 
-                      src={item.icon}
+                      src={getItemImage(item)}
                       onLoad={() => console.log(`[IMAGE] Successfully loaded: ${item.icon}`)}
                       onError={(e) => {
                         console.log(`[IMAGE] Failed to load: ${item.icon}`);
