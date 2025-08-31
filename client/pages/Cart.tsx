@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-// Item icons (same set as item selection)
-const tshirtIcon = "https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
-const poloIcon = "https://images.pexels.com/photos/1040945/pexels-photo-1040945.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
-const henleyIcon = "https://images.pexels.com/photos/1656684/pexels-photo-1656684.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
-const teeGraphicIcon = "https://images.pexels.com/photos/1656684/pexels-photo-1656684.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
-const foldedBagIcon = "https://images.pexels.com/photos/1656684/pexels-photo-1656684.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
+import { supabase } from "@/lib/supabase";
 
 interface CartItem {
   id: string;
@@ -16,17 +11,49 @@ interface CartItem {
   subcategory?: string;
   isCustomQuote?: boolean;
   quoteStatus?: 'pending' | 'quoted' | 'accepted';
+  icon?: string;
 }
 
 export default function Cart() {
   const navigate = useNavigate();
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [itemImages, setItemImages] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const saved = localStorage.getItem("eazzy-cart");
     setCart(saved ? JSON.parse(saved) : []);
   }, []);
 
+  // Load item images from Supabase when cart changes
+  useEffect(() => {
+    const loadItemImages = async () => {
+      if (cart.length === 0) return;
+      
+      const itemIds = cart.map(item => item.id).filter(Boolean);
+      if (itemIds.length === 0) return;
+      
+      try {
+        const { data, error } = await supabase
+          .from('items')
+          .select('id, icon')
+          .in('id', itemIds);
+        
+        if (!error && data) {
+          const imageMap: Record<string, string> = {};
+          data.forEach(item => {
+            if (item.icon) {
+              imageMap[item.id] = item.icon;
+            }
+          });
+          setItemImages(imageMap);
+        }
+      } catch (error) {
+        console.error('Error loading item images:', error);
+      }
+    };
+    
+    loadItemImages();
+  }, [cart]);
   useEffect(() => {
     localStorage.setItem("eazzy-cart", JSON.stringify(cart));
     try {
@@ -50,14 +77,14 @@ export default function Cart() {
   const hasCustomQuotes = cart.some(item => item.isCustomQuote);
 
   const getItemImage = (item: CartItem) => {
-    const name = (item.name || "").toLowerCase();
-    if (name.includes("bag")) return foldedBagIcon;
-    if (name.includes("polo")) return poloIcon;
-    if (name.includes("henley")) return henleyIcon;
-    if (name.includes("t-shirt") || name.includes("tee") || name.includes("shirt")) return tshirtIcon;
-    return teeGraphicIcon;
+    // Use dynamic image from Supabase if available
+    if (itemImages[item.id]) {
+      return itemImages[item.id];
+    }
+    
+    // Fallback to default image
+    return "https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
   };
-
   const proceed = () => {
     if (cart.length === 0) return;
     navigate("/order/scheduling", {
