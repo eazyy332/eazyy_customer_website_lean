@@ -67,6 +67,7 @@ export default function OrderAddress() {
   const [error, setError] = useState<string | null>(null);
   const [saveThisAddress, setSaveThisAddress] = useState(false);
   const [addressName, setAddressName] = useState('');
+  const [userProfile, setUserProfile] = useState<any>(null);
 
   // Initialize email with authenticated user's email
   useEffect(() => {
@@ -76,6 +77,35 @@ export default function OrderAddress() {
         email: user.email
       }));
     }
+  }, [user]);
+
+  // Load user profile for name information
+  useEffect(() => {
+    if (!user) return;
+    
+    const loadUserProfile = async () => {
+      try {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('first_name, last_name')
+          .eq('id', user.id)
+          .maybeSingle();
+        
+        if (profile) {
+          setUserProfile(profile);
+          setAddress(prev => ({
+            ...prev,
+            firstName: profile.first_name || '',
+            lastName: profile.last_name || '',
+            fullName: `${profile.first_name || ''} ${profile.last_name || ''}`.trim()
+          }));
+        }
+      } catch (error) {
+        console.error('Error loading user profile:', error);
+      }
+    };
+    
+    loadUserProfile();
   }, [user]);
 
   useEffect(() => {
@@ -200,8 +230,7 @@ export default function OrderAddress() {
       return hasValidContact;
     }
     
-    return (address.firstName.trim() !== '' || address.fullName.trim() !== '') &&
-           address.streetAddress.trim() !== '' &&
+    return address.streetAddress.trim() !== '' &&
            address.city.trim() !== '' &&
            address.postalCode.trim() !== '' &&
            hasValidContact;
@@ -226,7 +255,7 @@ export default function OrderAddress() {
           user_id: user.id,
           name: addressName.trim(),
           street: address.streetAddress,
-          house_number: '', // Could be extracted from streetAddress
+          house_number: '', 
           additional_info: address.apartment,
           city: address.city,
           postal_code: address.postalCode,
@@ -432,40 +461,24 @@ export default function OrderAddress() {
                     </div>
                   )}
 
-                  {/* Name Fields */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-black mb-2">First Name *</label>
-                      <input 
-                        type="text" 
-                        value={address.firstName}
-                        onChange={(e) => handleAddressChange('firstName', e.target.value)}
-                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors"
-                        placeholder="Enter your first name"
-                      />
+                  {/* User Info Display */}
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <div className="font-medium text-blue-900">
+                          {userProfile?.first_name && userProfile?.last_name 
+                            ? `${userProfile.first_name} ${userProfile.last_name}`
+                            : user?.email?.split('@')[0] || 'User'
+                          }
+                        </div>
+                        <div className="text-sm text-blue-700">{user?.email}</div>
+                      </div>
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-black mb-2">Last Name *</label>
-                      <input 
-                        type="text" 
-                        value={address.lastName}
-                        onChange={(e) => handleAddressChange('lastName', e.target.value)}
-                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors"
-                        placeholder="Enter your last name"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Email */}
-                  <div>
-                    <label className="block text-sm font-medium text-black mb-2">Email Address *</label>
-                    <input 
-                      type="email" 
-                      value={address.email}
-                      onChange={(e) => handleAddressChange('email', e.target.value)}
-                      className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors"
-                      placeholder="Enter your email address"
-                    />
                   </div>
 
                   {/* Street Address */}

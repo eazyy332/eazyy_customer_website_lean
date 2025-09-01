@@ -32,7 +32,7 @@ export default function GooglePlacesAutocomplete({
 
   useEffect(() => {
     // Load Google Places API script
-    const apiKey = import.meta.env.VITE_GOOGLE_PLACES_API_KEY;
+    const apiKey = 'AIzaSyAj7-3lx0Iww-R6RZF2bOr6Qt35qifB9Tg';
     
     if (!apiKey) {
       console.warn('Google Places API key not configured. Using fallback input.');
@@ -100,7 +100,7 @@ export default function GooglePlacesAutocomplete({
   };
 
   // Fallback to regular input if Google Places API is not available
-  if (!isLoaded || !import.meta.env.VITE_GOOGLE_PLACES_API_KEY) {
+  if (!isLoaded) {
     return (
       <div>
         {label && (
@@ -115,9 +115,6 @@ export default function GooglePlacesAutocomplete({
           placeholder={placeholder}
           className={`w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors ${className}`}
         />
-        <div className="mt-2 text-sm text-gray-500">
-          Address autocomplete not available. Please enter your address manually.
-        </div>
       </div>
     );
   }
