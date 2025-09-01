@@ -105,6 +105,8 @@ export default function OrderScheduling() {
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
+    
+    const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
     if (date.toDateString() === today.toDateString()) {
       return "Today";
@@ -112,7 +114,7 @@ export default function OrderScheduling() {
       return "Tmrw"; // compact for mobile
     } else {
       // Only short weekday for compact display inside the chip
-      return String(date.toLocaleDateString("en-US", { weekday: "short" }));
+      return weekdays[date.getDay()];
     }
   };
 
