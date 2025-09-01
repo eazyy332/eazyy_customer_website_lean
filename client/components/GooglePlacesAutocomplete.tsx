@@ -132,70 +132,6 @@ export default function GooglePlacesAutocomplete({
         }
       });
 
-      // Style the Google Places dropdown to match our design
-      setTimeout(() => {
-        const pacContainer = document.querySelector('.pac-container');
-        if (pacContainer) {
-          pacContainer.setAttribute('style', `
-            background: white !important;
-            border: 1px solid #E5E7EB !important;
-            border-radius: 12px !important;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
-            margin-top: 4px !important;
-            overflow: hidden !important;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
-          `);
-        }
-
-        const pacItems = document.querySelectorAll('.pac-item');
-        pacItems.forEach((item) => {
-          item.setAttribute('style', `
-            padding: 12px 16px !important;
-            border-bottom: 1px solid #F3F4F6 !important;
-            cursor: pointer !important;
-            transition: all 0.2s ease !important;
-            font-size: 14px !important;
-          `);
-          
-          item.addEventListener('mouseenter', () => {
-            item.setAttribute('style', `
-              padding: 12px 16px !important;
-              border-bottom: 1px solid #F3F4F6 !important;
-              cursor: pointer !important;
-              transition: all 0.2s ease !important;
-              font-size: 14px !important;
-              background-color: #F8FAFC !important;
-            `);
-          });
-          
-          item.addEventListener('mouseleave', () => {
-            item.setAttribute('style', `
-              padding: 12px 16px !important;
-              border-bottom: 1px solid #F3F4F6 !important;
-              cursor: pointer !important;
-              transition: all 0.2s ease !important;
-              font-size: 14px !important;
-              background-color: white !important;
-            `);
-          });
-        });
-
-        const pacItemTexts = document.querySelectorAll('.pac-item-query');
-        pacItemTexts.forEach((text) => {
-          text.setAttribute('style', `
-            color: #111827 !important;
-            font-weight: 500 !important;
-          `);
-        });
-
-        const pacItemDetails = document.querySelectorAll('.pac-item .pac-item:not(.pac-item-query)');
-        pacItemDetails.forEach((detail) => {
-          detail.setAttribute('style', `
-            color: #6B7280 !important;
-            font-size: 13px !important;
-          `);
-        });
-      }, 100);
     } catch (error) {
       console.error('Error initializing Google Places Autocomplete:', error);
     }
@@ -244,12 +180,27 @@ export default function GooglePlacesAutocomplete({
       <style jsx global>{`
         .pac-container {
           z-index: 9999 !important;
+          background: white !important;
+          border: 1px solid #E5E7EB !important;
+          border-radius: 12px !important;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+          margin-top: 4px !important;
+          overflow: hidden !important;
           font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
         }
         
         .pac-item {
+          padding: 12px 16px !important;
+          border-bottom: 1px solid #F3F4F6 !important;
+          cursor: pointer !important;
+          transition: all 0.2s ease !important;
+          font-size: 14px !important;
           font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
           line-height: 1.4 !important;
+        }
+        
+        .pac-item:hover {
+          background-color: #F8FAFC !important;
         }
         
         .pac-item:last-child {
