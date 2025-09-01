@@ -29,51 +29,85 @@ export default function GooglePlacesAutocomplete({
   const inputRef = useRef<HTMLInputElement>(null);
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [scriptLoaded, setScriptLoaded] = useState(false);
 
   useEffect(() => {
-    // Load Google Places API script
-    const apiKey = 'AIzaSyAj7-3lx0Iww-R6RZF2bOr6Qt35qifB9Tg';
-    
-    if (!apiKey) {
-      console.warn('Google Places API key not configured. Using fallback input.');
-      setIsLoaded(true);
-      return;
-    }
+    const loadGooglePlacesScript = () => {
+      // Check if script is already loaded
+      if (window.google?.maps?.places) {
+        setScriptLoaded(true);
+        setIsLoaded(true);
+        initializeAutocomplete();
+        return;
+      }
 
-    if (!window.google) {
+      // Check if script is already in DOM
+      const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
+      if (existingScript) {
+        existingScript.addEventListener('load', () => {
+          setScriptLoaded(true);
+          setIsLoaded(true);
+          initializeAutocomplete();
+        });
+        return;
+      }
+
+      // Load Google Places API script
+      const apiKey = 'AIzaSyAj7-3lx0Iww-R6RZF2bOr6Qt35qifB9Tg';
+    
+      if (!apiKey) {
+        console.warn('Google Places API key not configured. Using fallback input.');
+        setIsLoaded(true);
+        return;
+      }
+
       const script = document.createElement('script');
       script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&loading=async`;
       script.async = true;
       script.defer = true;
       script.onload = () => {
+        setScriptLoaded(true);
         setIsLoaded(true);
         initializeAutocomplete();
       };
       script.onerror = () => {
         console.error('Failed to load Google Places API');
+        setScriptLoaded(false);
         setIsLoaded(true);
       };
       document.head.appendChild(script);
-    } else {
-      setIsLoaded(true);
-      initializeAutocomplete();
-    }
+    };
+
+    loadGooglePlacesScript();
 
     return () => {
       if (autocompleteRef.current) {
-        google.maps.event.clearInstanceListeners(autocompleteRef.current);
+        try {
+          google.maps.event.clearInstanceListeners(autocompleteRef.current);
+        } catch (e) {
+          // Ignore cleanup errors
+        }
       }
     };
   }, []);
 
+  useEffect(() => {
+    if (scriptLoaded && isLoaded) {
+      initializeAutocomplete();
+    }
+  }, [scriptLoaded, isLoaded]);
   const initializeAutocomplete = () => {
-    if (!inputRef.current) {
+    if (!inputRef.current || !window.google?.maps?.places) {
       return;
     }
 
-    if (!window.google?.maps?.places) {
-      console.warn('Google Maps Places API not available');
-      return;
+    // Clear existing autocomplete if it exists
+    if (autocompleteRef.current) {
+      try {
+        google.maps.event.clearInstanceListeners(autocompleteRef.current);
+      } catch (e) {
+        // Ignore cleanup errors
+      }
     }
 
     try {
@@ -91,7 +125,9 @@ export default function GooglePlacesAutocomplete({
           onPlaceSelect(place);
           
           // Update the input with formatted address
-          onChange(place.formatted_address || value);
+          if (place.formatted_address) {
+            onChange(place.formatted_address);
+          }
         }
       });
     } catch (error) {
@@ -99,8 +135,8 @@ export default function GooglePlacesAutocomplete({
     }
   };
 
-  // Fallback to regular input if Google Places API is not available
-  if (!isLoaded) {
+  // Show loading state while script loads
+  if (!isLoaded || !scriptLoaded) {
     return (
       <div>
         {label && (
@@ -112,8 +148,9 @@ export default function GooglePlacesAutocomplete({
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
+          placeholder="Loading address autocomplete..."
           className={`w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors ${className}`}
+          disabled
         />
       </div>
     );

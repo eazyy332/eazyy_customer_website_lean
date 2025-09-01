@@ -223,8 +223,8 @@ export default function OrderAddress() {
   };
 
   const isFormValid = () => {
-    // Always validate email and phone regardless of address type
-    const hasValidContact = address.email.trim() !== '' && address.phoneNumber.trim() !== '';
+    // Email is automatically set from user account, no need to validate
+    const hasValidContact = true;
     
     if (!useNewAddress && selectedSavedAddress) {
       return hasValidContact;
@@ -233,7 +233,7 @@ export default function OrderAddress() {
     return address.streetAddress.trim() !== '' &&
            address.city.trim() !== '' &&
            address.postalCode.trim() !== '' &&
-           hasValidContact;
+           true;
   };
 
   const suggestedInstructions = [
@@ -554,16 +554,6 @@ export default function OrderAddress() {
                   </div>
 
                   {/* Phone Number */}
-                  <div>
-                    <label className="block text-sm font-medium text-black mb-2">Phone Number *</label>
-                    <input 
-                      type="tel" 
-                      value={address.phoneNumber}
-                      onChange={(e) => handleAddressChange('phoneNumber', e.target.value)}
-                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors"
-                      placeholder="+31 6 12345678"
-                    />
-                  </div>
                 </div>
               </div>
             )}
