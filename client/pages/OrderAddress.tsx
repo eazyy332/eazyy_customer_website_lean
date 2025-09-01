@@ -334,28 +334,38 @@ export default function OrderAddress() {
 
         {/* Main Content */}
         <main className="px-4 lg:px-16 py-12">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-[960px] mx-auto">
           {/* Progress Bar */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
-              <span>Services</span>
-              <span>Scheduling</span>
-              <span className="text-primary font-medium">Address</span>
+          <div className="mb-12">
+            <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
+              <span className="text-gray-400">Services</span>
+              <span className="text-gray-400">Scheduling</span>
+              <span className="text-primary font-semibold">Address</span>
               <span>Payment</span>
               <span>Confirmation</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-primary h-2 rounded-full transition-all duration-300" style={{ width: '60%' }}></div>
+            <div className="w-full bg-gray-100 rounded-full h-1.5">
+              <div className="bg-gradient-to-r from-primary to-blue-500 h-1.5 rounded-full transition-all duration-500" style={{ width: '60%' }}></div>
             </div>
           </div>
 
           {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl lg:text-5xl font-medium text-black mb-6 leading-tight">
-              Delivery Address & Notes
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 h-9 px-4 rounded-[10px] bg-[#E9F1FF] mb-6">
+              <svg className="w-5 h-6 text-[#1D62DB]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+              <span className="text-[#1D62DB] font-medium">delivery address</span>
+            </div>
+            <h1 className="text-3xl md:text-5xl font-medium text-black mb-4 leading-tight">
+              Where Should We
             </h1>
-            <p className="text-xl text-gray-600 leading-relaxed">
-              Where should we pick up and deliver your laundry?
+            <h1 className="text-3xl md:text-5xl font-medium text-black mb-6 leading-tight">
+              Pick Up & Deliver?
+            </h1>
+            <p className="text-black text-base md:text-lg leading-relaxed max-w-md mx-auto">
+              Enter your address details for pickup and delivery
             </p>
           </div>
 
@@ -363,7 +373,7 @@ export default function OrderAddress() {
           <div className="space-y-8">
             {/* Saved Addresses */}
             {savedAddresses.length > 0 && (
-              <div className="bg-gray-50 rounded-2xl p-6">
+              <div className="bg-white rounded-[28px] border border-gray-200 p-8 shadow-[0_8px_30px_rgba(17,24,39,0.08)]">
                 <h3 className="text-lg font-medium text-black mb-4">Saved Addresses</h3>
                 <div className="space-y-3">
                   {savedAddresses.map(addr => (
@@ -372,8 +382,8 @@ export default function OrderAddress() {
                       onClick={() => handleSavedAddressSelect(addr.id)}
                       className={`w-full p-4 rounded-lg text-left transition-colors ${
                         selectedSavedAddress === addr.id && !useNewAddress
-                          ? 'bg-primary text-white'
-                          : 'bg-white border border-gray-200 hover:border-primary text-black'
+                          ? 'bg-primary text-white shadow-lg'
+                          : 'bg-gray-50 border border-gray-200 hover:border-primary hover:shadow-md text-black'
                       }`}
                     >
                       <div className="flex items-center justify-between">
@@ -383,8 +393,8 @@ export default function OrderAddress() {
                             {addr.isDefault && (
                               <span className={`ml-2 text-xs px-2 py-1 rounded ${
                                 selectedSavedAddress === addr.id && !useNewAddress
-                                  ? 'bg-white/20 text-white'
-                                  : 'bg-gray-100 text-gray-600'
+                                  ? 'bg-white/25 text-white'
+                                  : 'bg-primary/10 text-primary'
                               }`}>
                                 Default
                               </span>
@@ -415,7 +425,7 @@ export default function OrderAddress() {
                 <div className="mt-4">
                   <button
                     onClick={() => { setUseNewAddress(true); setSelectedSavedAddress(''); }}
-                    className={`text-sm font-medium ${
+                    className={`text-sm font-semibold ${
                       useNewAddress ? 'text-primary' : 'text-gray-600 hover:text-primary'
                     } transition-colors`}
                   >
@@ -427,8 +437,8 @@ export default function OrderAddress() {
 
             {/* New Address Form */}
             {useNewAddress && (
-              <div className="bg-gray-50 rounded-2xl p-8">
-                <h3 className="text-lg font-medium text-black mb-6">Enter New Address</h3>
+              <div className="bg-white rounded-[28px] border border-gray-200 p-8 shadow-[0_8px_30px_rgba(17,24,39,0.08)]">
+                <h3 className="text-xl font-medium text-black mb-8">Enter New Address</h3>
                 
                 <div className="space-y-6">
                   {/* Save Address Option */}
@@ -454,7 +464,7 @@ export default function OrderAddress() {
                             value={addressName}
                             onChange={(e) => setAddressName(e.target.value)}
                             placeholder="Address name (e.g., Home, Work, Apartment)"
-                            className="w-full px-3 py-2 bg-white border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm"
+                            className="w-full px-4 py-3 bg-white border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm"
                           />
                         </div>
                       )}
@@ -464,7 +474,7 @@ export default function OrderAddress() {
                   {/* User Info Display */}
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+                      <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
                         <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
@@ -473,7 +483,7 @@ export default function OrderAddress() {
                         <div className="font-medium text-blue-900">
                           {userProfile?.first_name && userProfile?.last_name 
                             ? `${userProfile.first_name} ${userProfile.last_name}`
-                            : user?.email?.split('@')[0] || 'User'
+                            : user?.email?.split('@')[0]?.charAt(0).toUpperCase() + user?.email?.split('@')[0]?.slice(1) || 'User'
                           }
                         </div>
                         <div className="text-sm text-blue-700">{user?.email}</div>
@@ -500,7 +510,7 @@ export default function OrderAddress() {
                       type="text" 
                       value={address.apartment}
                       onChange={(e) => handleAddressChange('apartment', e.target.value)}
-                      className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors"
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors"
                       placeholder="Apt, suite, unit, etc."
                     />
                   </div>
@@ -513,7 +523,7 @@ export default function OrderAddress() {
                         type="text" 
                         value={address.city}
                         onChange={(e) => handleAddressChange('city', e.target.value)}
-                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors"
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors"
                         placeholder="Enter city"
                       />
                     </div>
@@ -523,7 +533,7 @@ export default function OrderAddress() {
                         type="text" 
                         value={address.postalCode}
                         onChange={(e) => handleAddressChange('postalCode', e.target.value)}
-                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors"
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors"
                         placeholder="Enter postal code"
                       />
                     </div>
@@ -535,7 +545,7 @@ export default function OrderAddress() {
                     <select 
                       value={address.country}
                       onChange={(e) => handleAddressChange('country', e.target.value)}
-                      className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors"
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors"
                     >
                       {countries.map(country => (
                         <option key={country} value={country}>{country}</option>
@@ -550,7 +560,7 @@ export default function OrderAddress() {
                       type="tel" 
                       value={address.phoneNumber}
                       onChange={(e) => handleAddressChange('phoneNumber', e.target.value)}
-                      className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors"
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors"
                       placeholder="+31 6 12345678"
                     />
                   </div>
@@ -559,8 +569,8 @@ export default function OrderAddress() {
             )}
 
             {/* Special Instructions */}
-            <div className="bg-gray-50 rounded-2xl p-8">
-              <h3 className="text-lg font-medium text-black mb-6">Special Instructions (Optional)</h3>
+            <div className="bg-white rounded-[28px] border border-gray-200 p-8 shadow-[0_8px_30px_rgba(17,24,39,0.08)]">
+              <h3 className="text-xl font-medium text-black mb-8">Delivery Notes (Optional)</h3>
               
               {/* Quick Suggestions */}
               <div className="mb-4">
@@ -570,7 +580,7 @@ export default function OrderAddress() {
                     <button
                       key={instruction}
                       onClick={() => handleAddressChange('specialInstructions', instruction)}
-                      className="px-3 py-2 bg-white border border-gray-200 rounded-full text-sm hover:border-primary text-black transition-colors"
+                      className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-full text-sm hover:border-primary hover:bg-primary hover:text-white text-black transition-all"
                     >
                       {instruction}
                     </button>
@@ -585,14 +595,14 @@ export default function OrderAddress() {
                   rows={4}
                   value={address.specialInstructions}
                   onChange={(e) => handleAddressChange('specialInstructions', e.target.value)}
-                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors resize-none"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors resize-none"
                   placeholder="Any special instructions for pickup or delivery (building codes, access instructions, etc.)"
                 />
               </div>
             </div>
 
             {/* Order Summary */}
-            <div className="bg-accent rounded-2xl p-6">
+            <div className="bg-[#E9F1FF] rounded-[28px] p-8 border border-blue-100">
               <h3 className="text-lg font-medium text-black mb-4">Order Summary</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
@@ -626,20 +636,23 @@ export default function OrderAddress() {
             <Link
               to="/order/scheduling"
               state={{ selectedServices: services, totalPrice: calculatedTotalPrice }}
-              className="px-6 py-3 border border-gray-300 rounded-full font-medium text-black hover:bg-gray-50 transition-colors"
+              className="inline-flex items-center px-6 py-3 text-gray-600 hover:text-gray-900 transition-colors"
             >
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
               ← Back to Scheduling
             </Link>
             
             {isFormValid() ? (
               <button
                 onClick={handleContinueToPayment}
-                className="inline-block px-8 py-3 bg-primary text-white rounded-full font-medium hover:bg-blue-700 transition-colors"
+                className="inline-flex items-center px-8 py-3 bg-primary text-white rounded-full font-semibold hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl"
               >
                 Continue to Payment →
               </button>
             ) : (
-              <div className="text-gray-400 text-sm">Complete address information to continue</div>
+              <div className="text-sm text-gray-500 text-center">Complete address information to continue</div>
             )}
           </div>
         </div>

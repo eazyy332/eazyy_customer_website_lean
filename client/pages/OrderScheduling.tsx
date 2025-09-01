@@ -168,9 +168,9 @@ export default function OrderScheduling() {
 
       {/* Main Content */}
       <main className="px-4 lg:px-16 py-8">
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-[960px] mx-auto">
           {/* Progress Bar */}
-          <div className="mb-8">
+          <div className="mb-12">
             <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
               <span className="text-gray-400">Services</span>
               <span className="text-primary font-semibold">Scheduling</span>
@@ -187,26 +187,40 @@ export default function OrderScheduling() {
           </div>
 
           {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl lg:text-4xl font-medium text-black mb-4 leading-tight">
-              Schedule Pickup & Delivery
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 h-9 px-4 rounded-[10px] bg-[#E9F1FF] mb-6">
+              <svg className="w-5 h-6 text-[#1D62DB]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+              <span className="text-[#1D62DB] font-medium">pickup & delivery</span>
+            </div>
+            <h1 className="text-3xl md:text-5xl font-medium text-black mb-4 leading-tight">
+              When Works Best
             </h1>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Choose convenient times for pickup and delivery
+            <h1 className="text-3xl md:text-5xl font-medium text-black mb-6 leading-tight">
+              For You?
+            </h1>
+            <p className="text-black text-base md:text-lg leading-relaxed max-w-md mx-auto">
+              Select your preferred pickup and delivery times
             </p>
           </div>
 
           {/* Simple Scheduling */}
           <div className="space-y-6">
             {/* Pickup Scheduling */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-              <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+            <div className="bg-white rounded-[28px] border border-gray-200 overflow-hidden shadow-[0_8px_30px_rgba(17,24,39,0.08)]">
+              <div className="bg-gray-50 px-8 py-6 border-b border-gray-200">
                 <div className="flex items-center space-x-3">
-                  <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                    <span className="text-lg">📦</span>
+                  <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+                    <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
                   </div>
                   <div>
-                    <h3 className="text-lg font-medium text-black">
+                    <h3 className="text-xl font-medium text-black">
                       Pickup Schedule
                     </h3>
                     <p className="text-gray-600 text-sm">
@@ -216,13 +230,13 @@ export default function OrderScheduling() {
                 </div>
               </div>
 
-              <div className="p-6 space-y-6">
+              <div className="p-8 space-y-8">
                 {/* Quick Date Selection */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-3">
                     Select pickup date
                   </label>
-                  <div className="grid grid-cols-7 gap-2">
+                  <div className="grid grid-cols-7 gap-3">
                     {quickDates.map((date, index) => {
                       const dateString = date.toISOString().split("T")[0];
                       const isSelected = schedule.pickupDate === dateString;
@@ -232,16 +246,16 @@ export default function OrderScheduling() {
                           onClick={() =>
                             handleScheduleChange("pickupDate", dateString)
                           }
-                          className={`p-3 rounded-lg text-center transition-all border ${
+                          className={`p-4 rounded-xl text-center transition-all border ${
                             isSelected
-                              ? "bg-primary text-white border-primary shadow-sm"
-                              : "bg-white hover:bg-gray-50 text-gray-900 border-gray-200"
+                              ? "bg-primary text-white border-primary shadow-lg"
+                              : "bg-gray-50 hover:bg-gray-100 text-gray-900 border-gray-200 hover:border-primary"
                           }`}
                         >
                           <div className="text-xs font-medium leading-tight">
                             {formatDateOption(date)}
                           </div>
-                          <div className="text-base font-semibold mt-0.5">
+                          <div className="text-lg font-semibold mt-1">
                             {date.toLocaleDateString('en-US',{ month: 'short', day: 'numeric' })}
                           </div>
                         </button>
@@ -256,17 +270,17 @@ export default function OrderScheduling() {
                     <label className="block text-sm font-medium text-gray-700 mb-3">
                       Select pickup time
                     </label>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                       {timeSlots.map((time) => (
                         <button
                           key={time}
                           onClick={() =>
                             handleScheduleChange("pickupTime", time)
                           }
-                          className={`p-3 rounded-lg text-sm font-medium transition-all border ${
+                          className={`p-4 rounded-xl text-sm font-medium transition-all border ${
                             schedule.pickupTime === time
-                              ? "bg-primary text-white border-primary shadow-sm"
-                              : "bg-white hover:bg-gray-50 text-gray-900 border-gray-200"
+                              ? "bg-primary text-white border-primary shadow-lg"
+                              : "bg-gray-50 hover:bg-gray-100 text-gray-900 border-gray-200 hover:border-primary"
                           }`}
                         >
                           {time}
@@ -280,14 +294,16 @@ export default function OrderScheduling() {
 
             {/* Delivery Scheduling */}
             {schedule.pickupDate && schedule.pickupTime && (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+              <div className="bg-white rounded-[28px] border border-gray-200 overflow-hidden shadow-[0_8px_30px_rgba(17,24,39,0.08)]">
+                <div className="bg-gray-50 px-8 py-6 border-b border-gray-200">
                   <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                      <span className="text-lg">🚚</span>
+                    <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+                      <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
                     </div>
                     <div>
-                      <h3 className="text-lg font-medium text-black">
+                      <h3 className="text-xl font-medium text-black">
                         Delivery Schedule
                       </h3>
                       <p className="text-gray-600 text-sm">
@@ -297,13 +313,13 @@ export default function OrderScheduling() {
                   </div>
                 </div>
 
-                <div className="p-6 space-y-6">
+                <div className="p-8 space-y-8">
                   {/* Delivery Date Selection */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-3">
                       Select delivery date
                     </label>
-                    <div className="grid grid-cols-7 gap-2">
+                    <div className="grid grid-cols-7 gap-3">
                       {quickDates.map((date, index) => {
                         const dateString = date.toISOString().split("T")[0];
                         const pickupDate = new Date(schedule.pickupDate);
@@ -318,18 +334,18 @@ export default function OrderScheduling() {
                               !isDisabled &&
                               handleScheduleChange("deliveryDate", dateString)
                             }
-                            className={`p-3 rounded-lg text-center transition-all border ${
+                            className={`p-4 rounded-xl text-center transition-all border ${
                               isDisabled
-                                ? "bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200"
+                                ? "bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200 opacity-50"
                                 : isSelected
-                                  ? "bg-primary text-white border-primary shadow-sm"
-                                  : "bg-white hover:bg-gray-50 text-gray-900 border-gray-200"
+                                  ? "bg-primary text-white border-primary shadow-lg"
+                                  : "bg-gray-50 hover:bg-gray-100 text-gray-900 border-gray-200 hover:border-primary"
                             }`}
                           >
                              <div className="text-xs font-medium leading-tight">
                                {formatDateOption(date)}
                              </div>
-                             <div className="text-base font-semibold mt-0.5">
+                             <div className="text-lg font-semibold mt-1">
                                {date.toLocaleDateString('en-US',{ month: 'short', day: 'numeric' })}
                              </div>
                           </button>
@@ -344,17 +360,17 @@ export default function OrderScheduling() {
                       <label className="block text-sm font-medium text-gray-700 mb-3">
                         Select delivery time
                       </label>
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                         {timeSlots.map((time) => (
                           <button
                             key={time}
                             onClick={() =>
                               handleScheduleChange("deliveryTime", time)
                             }
-                            className={`p-3 rounded-lg text-sm font-medium transition-all border ${
+                            className={`p-4 rounded-xl text-sm font-medium transition-all border ${
                               schedule.deliveryTime === time
-                                ? "bg-primary text-white border-primary shadow-sm"
-                                : "bg-white hover:bg-gray-50 text-gray-900 border-gray-200"
+                                ? "bg-primary text-white border-primary shadow-lg"
+                                : "bg-gray-50 hover:bg-gray-100 text-gray-900 border-gray-200 hover:border-primary"
                             }`}
                           >
                             {time}
@@ -369,14 +385,16 @@ export default function OrderScheduling() {
 
             {/* Summary Card */}
             {schedule.pickupDate && schedule.deliveryDate && (
-              <div className="bg-primary/5 rounded-xl p-6 border border-primary/20">
+              <div className="bg-[#E9F1FF] rounded-[28px] p-8 border border-blue-100 shadow-[0_8px_30px_rgba(17,24,39,0.08)]">
                 <h3 className="text-lg font-medium text-black mb-4">
                   Schedule Summary
                 </h3>
-                <div className="grid md:grid-cols-2 gap-6">
+                <div className="grid md:grid-cols-2 gap-8">
                   <div className="flex items-center space-x-4">
-                    <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center border border-gray-200">
-                      <span className="text-lg">📦</span>
+                    <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center border border-gray-200 shadow-sm">
+                      <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                      </svg>
                     </div>
                     <div>
                       <div className="text-sm text-gray-600">Pickup</div>
@@ -398,8 +416,11 @@ export default function OrderScheduling() {
                     </div>
                   </div>
                   <div className="flex items-center space-x-4">
-                    <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center border border-gray-200">
-                      <span className="text-lg">🚚</span>
+                    <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center border border-gray-200 shadow-sm">
+                      <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
                     </div>
                     <div>
                       <div className="text-sm text-gray-600">Delivery</div>
@@ -429,15 +450,17 @@ export default function OrderScheduling() {
               schedule.pickupTime &&
               schedule.deliveryDate &&
               schedule.deliveryTime && (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                  <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                <div className="bg-white rounded-[28px] border border-gray-200 overflow-hidden shadow-[0_8px_30px_rgba(17,24,39,0.08)]">
+                  <div className="bg-gray-50 px-8 py-6 border-b border-gray-200">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                          <span className="text-lg">📋</span>
+                        <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+                          <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
                         </div>
                         <div>
-                          <h3 className="text-lg font-medium text-black">
+                          <h3 className="text-xl font-medium text-black">
                             Delivery Preferences
                           </h3>
                           <p className="text-gray-600 text-sm">
@@ -445,14 +468,14 @@ export default function OrderScheduling() {
                           </p>
                         </div>
                       </div>
-                      <span className="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded-full">
+                      <span className="text-xs bg-gray-200 text-gray-600 px-3 py-1 rounded-full">
                         Optional
                       </span>
                     </div>
                   </div>
 
-                  <div className="p-6">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="p-8">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       {[
                         "Leave at door",
                         "Call first",
@@ -467,10 +490,10 @@ export default function OrderScheduling() {
                               schedule.deliveryPreferences === pref ? "" : pref,
                             )
                           }
-                          className={`p-3 rounded-lg text-sm font-medium transition-all border ${
+                          className={`p-4 rounded-xl text-sm font-medium transition-all border ${
                             schedule.deliveryPreferences === pref
-                              ? "bg-primary text-white border-primary shadow-sm"
-                              : "bg-white hover:bg-gray-50 text-gray-900 border-gray-200"
+                              ? "bg-primary text-white border-primary shadow-lg"
+                              : "bg-gray-50 hover:bg-gray-100 text-gray-900 border-gray-200 hover:border-primary"
                           }`}
                         >
                           {pref}
@@ -483,7 +506,7 @@ export default function OrderScheduling() {
           </div>
 
           {/* Navigation */}
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-8 pt-6 border-t border-gray-200">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-12 pt-8 border-t border-gray-200">
             <Link
               to="/order/start"
               className="inline-flex items-center px-6 py-3 text-gray-600 hover:text-gray-900 transition-colors"
@@ -507,7 +530,7 @@ export default function OrderScheduling() {
             {canProceed ? (
               <button
                 onClick={handleContinue}
-                className="inline-flex items-center px-8 py-3 bg-primary text-white rounded-xl font-medium hover:bg-blue-700 transition-all shadow-sm"
+                className="inline-flex items-center px-8 py-3 bg-primary text-white rounded-full font-semibold hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl"
               >
                 Continue to Address
                 <svg
@@ -525,7 +548,7 @@ export default function OrderScheduling() {
                 </svg>
               </button>
             ) : (
-              <div className="text-sm text-gray-500 text-center">
+              <div className="text-sm text-gray-500 text-center px-4">
                 Complete scheduling to continue
               </div>
             )}

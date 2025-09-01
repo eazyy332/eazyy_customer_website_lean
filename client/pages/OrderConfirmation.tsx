@@ -154,31 +154,31 @@ export default function OrderConfirmation() {
 
         {/* Main Content */}
         <main className="px-4 lg:px-16 py-12">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-[960px] mx-auto">
           {/* Success Message */}
-          <div className="text-center mb-12">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="text-center mb-16">
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-8">
+              <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h1 className="text-4xl lg:text-5xl font-medium text-black mb-4 leading-tight">
+            <h1 className="text-3xl md:text-5xl font-medium text-black mb-4 leading-tight">
               Order Confirmed!
             </h1>
-            <p className="text-xl text-gray-600 leading-relaxed mb-6">
-              Thank you for choosing eazzy. Your laundry order has been successfully placed.
+            <p className="text-black text-base md:text-lg leading-relaxed mb-8 max-w-2xl mx-auto">
+              Thank you for choosing eazyy. Your laundry order has been successfully placed and we'll take excellent care of your items.
             </p>
-            <div className="bg-accent rounded-2xl p-6 inline-block">
+            <div className="bg-[#E9F1FF] rounded-[20px] p-8 inline-block border border-blue-100">
               <div className="text-sm text-gray-600 mb-1">Order ID</div>
-              <div className="text-2xl font-bold text-primary">{orderId}</div>
+              <div className="text-3xl font-bold text-primary">#{orderId}</div>
             </div>
           </div>
 
           {/* Tracking Toggle */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-12">
             <button 
               onClick={() => setShowTracking(!showTracking)}
-              className="inline-flex items-center px-6 py-3 bg-primary text-white rounded-full font-medium hover:bg-blue-700 transition-colors"
+              className="inline-flex items-center px-8 py-4 bg-primary text-white rounded-full font-semibold hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl"
             >
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -190,8 +190,8 @@ export default function OrderConfirmation() {
 
           {/* Order Tracking */}
           {showTracking && (
-            <div className="bg-gray-50 rounded-2xl p-8 mb-8">
-              <h3 className="text-lg font-medium text-black mb-6">Order Progress</h3>
+            <div className="bg-white rounded-[28px] border border-gray-200 p-8 mb-12 shadow-[0_8px_30px_rgba(17,24,39,0.08)]">
+              <h3 className="text-xl font-medium text-black mb-8">Order Progress</h3>
               
               <div className="relative">
                 {trackingSteps.map((step, index) => (
@@ -208,7 +208,7 @@ export default function OrderConfirmation() {
                       step.completed 
                         ? 'bg-green-500 text-white' 
                         : step.current 
-                        ? 'bg-primary text-white animate-pulse' 
+                        ? 'bg-primary text-white animate-pulse shadow-lg' 
                         : 'bg-gray-300 text-gray-600'
                     }`}>
                       {step.completed ? (
@@ -237,7 +237,7 @@ export default function OrderConfirmation() {
               </div>
 
               {/* Live Updates */}
-              <div className="mt-6 p-4 bg-white rounded-lg border border-gray-200">
+              <div className="mt-8 p-6 bg-gray-50 rounded-xl border border-gray-200">
                 <div className="flex items-center text-sm text-gray-600">
                   <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
                   Live updates will be sent to your email and phone
@@ -247,9 +247,9 @@ export default function OrderConfirmation() {
           )}
 
           {/* Order Details */}
-          <div className="grid md:grid-cols-2 gap-8 mb-8">
+          <div className="grid md:grid-cols-2 gap-10 mb-12">
             {/* Order Summary */}
-            <div className="bg-gray-50 rounded-2xl p-6">
+            <div className="bg-white rounded-[28px] border border-gray-200 p-8 shadow-[0_8px_30px_rgba(17,24,39,0.08)]">
               <h3 className="text-lg font-medium text-black mb-4">Order Summary</h3>
               
               <div className="space-y-3">
@@ -262,7 +262,7 @@ export default function OrderConfirmation() {
                   </div>
                 ))}
                 
-                <div className="border-t border-gray-200 pt-3 mt-3">
+                <div className="border-t border-gray-200 pt-4 mt-4">
                   <div className="flex justify-between">
                     <span className="font-medium text-black">Total</span>
                     <span className="font-bold text-primary">${totalPrice?.toFixed(2)}</span>
@@ -270,7 +270,7 @@ export default function OrderConfirmation() {
                 </div>
               </div>
 
-              <div className="mt-4 p-3 bg-white rounded-lg">
+              <div className="mt-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
                 <div className="text-sm text-gray-600 mb-1">Payment Method</div>
                 <div className="font-medium text-black">{paymentMethod?.name}</div>
                 <div className="text-xs text-gray-500 mt-1">Authorization: Pending pickup</div>
@@ -278,7 +278,7 @@ export default function OrderConfirmation() {
             </div>
 
             {/* Schedule & Address */}
-            <div className="bg-gray-50 rounded-2xl p-6">
+            <div className="bg-white rounded-[28px] border border-gray-200 p-8 shadow-[0_8px_30px_rgba(17,24,39,0.08)]">
               <h3 className="text-lg font-medium text-black mb-4">Schedule & Address</h3>
               
               <div className="space-y-4">
@@ -320,38 +320,38 @@ export default function OrderConfirmation() {
           </div>
 
           {/* Actions */}
-          <div className="bg-gray-50 rounded-2xl p-6">
-            <h3 className="text-lg font-medium text-black mb-4">What's Next?</h3>
+          <div className="bg-white rounded-[28px] border border-gray-200 p-8 shadow-[0_8px_30px_rgba(17,24,39,0.08)]">
+            <h3 className="text-xl font-medium text-black mb-6">What's Next?</h3>
             
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid md:grid-cols-3 gap-6">
               <div className="text-center">
-                <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
+                <div className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4">
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <h4 className="font-medium text-black mb-2">Get Ready</h4>
+                <h4 className="font-semibold text-black mb-2">Get Ready</h4>
                 <p className="text-sm text-gray-600">Prepare your items for pickup on the scheduled date</p>
               </div>
               
               <div className="text-center">
-                <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
+                <div className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4">
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.05 11a8 8 0 1115.9 0" />
                   </svg>
                 </div>
-                <h4 className="font-medium text-black mb-2">Track Progress</h4>
+                <h4 className="font-semibold text-black mb-2">Track Progress</h4>
                 <p className="text-sm text-gray-600">Monitor your order status in real-time</p>
               </div>
               
               <div className="text-center">
-                <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mx-auto mb-3">
+                <div className="w-16 h-16 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4">
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
                 </div>
-                <h4 className="font-medium text-black mb-2">Stay Updated</h4>
+                <h4 className="font-semibold text-black mb-2">Stay Updated</h4>
                 <p className="text-sm text-gray-600">Receive notifications via email and SMS</p>
               </div>
             </div>
@@ -361,22 +361,31 @@ export default function OrderConfirmation() {
           <div className="flex justify-between items-center mt-12">
             <Link 
               to="/"
-              className="px-6 py-3 border border-gray-300 rounded-full font-medium text-black hover:bg-gray-50 transition-colors"
+              className="inline-flex items-center px-6 py-3 text-gray-600 hover:text-gray-900 transition-colors"
             >
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
               ← Back to Home
             </Link>
             
             <div className="flex space-x-4">
               <Link 
                 to="/orders"
-                className="px-6 py-3 bg-gray-800 text-white rounded-full font-medium hover:bg-gray-700 transition-colors"
+                className="inline-flex items-center px-6 py-3 bg-gray-800 text-white rounded-full font-semibold hover:bg-gray-700 transition-all shadow-lg hover:shadow-xl"
               >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
                 View All Orders
               </Link>
               <Link 
                 to="/order/start"
-                className="px-6 py-3 bg-primary text-white rounded-full font-medium hover:bg-blue-700 transition-colors"
+                className="inline-flex items-center px-6 py-3 bg-primary text-white rounded-full font-semibold hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl"
               >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
                 Place New Order
               </Link>
             </div>

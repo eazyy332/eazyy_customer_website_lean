@@ -251,51 +251,61 @@ export default function OrderPayment() {
 
         {/* Main Content */}
         <main className="px-4 lg:px-16 py-12">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-[960px] mx-auto">
           {/* Progress Bar */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
-              <span>Services</span>
-              <span>Scheduling</span>
-              <span>Address</span>
+          <div className="mb-12">
+            <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
+              <span className="text-gray-400">Services</span>
+              <span className="text-gray-400">Scheduling</span>
+              <span className="text-gray-400">Address</span>
               <span className="text-primary font-medium">Payment</span>
               <span>Confirmation</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-primary h-2 rounded-full transition-all duration-300" style={{ width: '80%' }}></div>
+            <div className="w-full bg-gray-100 rounded-full h-1.5">
+              <div className="bg-gradient-to-r from-primary to-blue-500 h-1.5 rounded-full transition-all duration-500" style={{ width: '80%' }}></div>
             </div>
           </div>
 
           {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl lg:text-5xl font-medium text-black mb-6 leading-tight">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 h-9 px-4 rounded-[10px] bg-[#E9F1FF] mb-6">
+              <svg className="w-5 h-6 text-[#1D62DB]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                <line x1="1" y1="10" x2="23" y2="10"/>
+              </svg>
+              <span className="text-[#1D62DB] font-medium">secure payment</span>
+            </div>
+            <h1 className="text-3xl md:text-5xl font-medium text-black mb-4 leading-tight">
+              Choose Your
+            </h1>
+            <h1 className="text-3xl md:text-5xl font-medium text-black mb-6 leading-tight">
               Payment Method
             </h1>
-            <p className="text-xl text-gray-600 leading-relaxed">
-              Choose how you'd like to pay for your order
+            <p className="text-black text-base md:text-lg leading-relaxed max-w-md mx-auto">
+              Secure payment processing with multiple options
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className="grid lg:grid-cols-3 gap-10">
             {/* Payment Methods */}
             <div className="lg:col-span-2 space-y-6">
               {/* Payment Method Selection */}
-              <div className="bg-gray-50 rounded-2xl p-8">
-                <h3 className="text-lg font-medium text-black mb-6">Select Payment Method</h3>
+              <div className="bg-white rounded-[28px] border border-gray-200 p-8 shadow-[0_8px_30px_rgba(17,24,39,0.08)]">
+                <h3 className="text-xl font-medium text-black mb-8">Select Payment Method</h3>
                 
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {paymentMethods.map(method => (
                     <button
                       key={method.id}
                       onClick={() => setSelectedPaymentMethod(method.id)}
-                      className={`w-full p-4 rounded-lg text-left transition-colors ${
+                      className={`w-full p-6 rounded-xl text-left transition-all ${
                         selectedPaymentMethod === method.id
-                          ? 'bg-primary text-white'
-                          : 'bg-white border border-gray-200 hover:border-primary text-black'
+                          ? 'bg-primary text-white shadow-lg'
+                          : 'bg-gray-50 border border-gray-200 hover:border-primary hover:shadow-md text-black'
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
+                        <div className="flex items-center space-x-4">
                           <span className="text-2xl">{method.icon}</span>
                           <div>
                             <div className="font-medium">{method.name}</div>
@@ -308,7 +318,7 @@ export default function OrderPayment() {
                         </div>
                         <div className={`w-4 h-4 rounded-full border-2 ${
                           selectedPaymentMethod === method.id
-                            ? 'bg-white border-white'
+                            ? 'bg-white border-white shadow-sm'
                             : 'border-gray-300'
                         }`}>
                           {selectedPaymentMethod === method.id && (
@@ -323,12 +333,12 @@ export default function OrderPayment() {
 
               {/* iDEAL Bank Selection */}
               {selectedPaymentMethod === 'ideal' && (
-                <div className="bg-gray-50 rounded-2xl p-8">
-                  <h3 className="text-lg font-medium text-black mb-6">Choose Your Bank</h3>
+                <div className="bg-white rounded-[28px] border border-gray-200 p-8 shadow-[0_8px_30px_rgba(17,24,39,0.08)]">
+                  <h3 className="text-xl font-medium text-black mb-6">Choose Your Bank</h3>
                   <select 
                     value={idealBank}
                     onChange={(e) => setIdealBank(e.target.value)}
-                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors"
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors"
                   >
                     <option value="">Select your bank</option>
                     {idealBanks.map(bank => (
@@ -340,8 +350,8 @@ export default function OrderPayment() {
 
               {/* Card Details */}
               {selectedPaymentMethod === 'card' && (
-                <div className="bg-gray-50 rounded-2xl p-8">
-                  <h3 className="text-lg font-medium text-black mb-6">Card Details</h3>
+                <div className="bg-white rounded-[28px] border border-gray-200 p-8 shadow-[0_8px_30px_rgba(17,24,39,0.08)]">
+                  <h3 className="text-xl font-medium text-black mb-6">Card Details</h3>
                   
                   <div className="space-y-4">
                     <div>
@@ -350,7 +360,7 @@ export default function OrderPayment() {
                         type="text" 
                         value={cardDetails.cardholderName}
                         onChange={(e) => handleCardDetailChange('cardholderName', e.target.value)}
-                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors"
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors"
                         placeholder="Name on card"
                       />
                     </div>
@@ -361,7 +371,7 @@ export default function OrderPayment() {
                         type="text" 
                         value={cardDetails.cardNumber}
                         onChange={(e) => handleCardDetailChange('cardNumber', formatCardNumber(e.target.value))}
-                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors"
+                        className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors"
                         placeholder="1234 5678 9012 3456"
                         maxLength={19}
                       />
@@ -374,7 +384,7 @@ export default function OrderPayment() {
                           type="text" 
                           value={cardDetails.expiryDate}
                           onChange={(e) => handleCardDetailChange('expiryDate', formatExpiryDate(e.target.value))}
-                          className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors"
+                          className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors"
                           placeholder="MM/YY"
                           maxLength={5}
                         />
@@ -385,7 +395,7 @@ export default function OrderPayment() {
                           type="text" 
                           value={cardDetails.cvv}
                           onChange={(e) => handleCardDetailChange('cvv', e.target.value.replace(/\D/g, ''))}
-                          className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors"
+                          className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors"
                           placeholder="123"
                           maxLength={4}
                         />
@@ -409,8 +419,8 @@ export default function OrderPayment() {
 
               {/* PayPal Info */}
               {selectedPaymentMethod === 'paypal' && (
-                <div className="bg-gray-50 rounded-2xl p-8">
-                  <div className="text-center">
+                <div className="bg-white rounded-[28px] border border-gray-200 p-8 shadow-[0_8px_30px_rgba(17,24,39,0.08)]">
+                  <div className="text-center py-4">
                     <div className="text-4xl mb-4">💰</div>
                     <h3 className="text-lg font-medium text-black mb-2">PayPal Payment</h3>
                     <p className="text-gray-600">You'll be redirected to PayPal to complete your payment securely.</p>
@@ -420,8 +430,8 @@ export default function OrderPayment() {
 
               {/* Wallet Info */}
               {selectedPaymentMethod === 'wallet' && (
-                <div className="bg-gray-50 rounded-2xl p-8">
-                  <div className="text-center">
+                <div className="bg-white rounded-[28px] border border-gray-200 p-8 shadow-[0_8px_30px_rgba(17,24,39,0.08)]">
+                  <div className="text-center py-4">
                     <div className="text-4xl mb-4">👛</div>
                     <h3 className="text-lg font-medium text-black mb-2">eazzy Wallet</h3>
                     <p className="text-gray-600">Current balance: <span className="font-medium text-black">€45.50</span></p>
@@ -436,7 +446,7 @@ export default function OrderPayment() {
               )}
 
               {/* Terms and Conditions */}
-              <div className="bg-gray-50 rounded-2xl p-6">
+              <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
                 <label className="flex items-start">
                   <input 
                     type="checkbox"
@@ -455,8 +465,8 @@ export default function OrderPayment() {
 
             {/* Order Summary */}
             <div className="lg:col-span-1">
-              <div className="bg-gray-50 rounded-2xl p-6 sticky top-8">
-                <h3 className="text-lg font-medium text-black mb-4">Order Summary</h3>
+              <div className="bg-white rounded-[28px] border border-gray-200 p-8 sticky top-8 shadow-[0_8px_30px_rgba(17,24,39,0.08)]">
+                <h3 className="text-xl font-medium text-black mb-6">Order Summary</h3>
                 
                 <div className="space-y-3 text-sm">
                   {selectedServices.map((service, index) => (
@@ -468,7 +478,7 @@ export default function OrderPayment() {
                     </div>
                   ))}
                   
-                  <div className="border-t border-gray-200 pt-3 mt-3">
+                  <div className="border-t border-gray-200 pt-4 mt-4">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Subtotal</span>
                       <span className="text-black">€{totalPrice.toFixed(2)}</span>
@@ -479,7 +489,7 @@ export default function OrderPayment() {
                     </div>
                   </div>
 
-                  <div className="border-t border-gray-200 pt-3 mt-3">
+                  <div className="border-t border-gray-200 pt-4 mt-4">
                     <div className="flex justify-between">
                       <span className="font-medium text-black">Total</span>
                       <span className="font-bold text-primary text-lg">€{totalPrice.toFixed(2)}</span>
@@ -487,7 +497,7 @@ export default function OrderPayment() {
                   </div>
                 </div>
 
-                <div className="mt-6 space-y-2 text-xs text-gray-500">
+                <div className="mt-8 space-y-2 text-xs text-gray-500">
                   <p>• Payment authorized on checkout</p>
                   <p>• Charged only after successful pickup</p>
                   <p>• 100% satisfaction guarantee</p>
@@ -501,15 +511,18 @@ export default function OrderPayment() {
             <Link 
               to="/order/address"
               state={{ selectedServices, totalPrice, schedule }}
-              className="px-6 py-3 border border-gray-300 rounded-full font-medium text-black hover:bg-gray-50 transition-colors"
+              className="inline-flex items-center px-6 py-3 text-gray-600 hover:text-gray-900 transition-colors"
             >
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
               ← Back to Address
             </Link>
             
             <button 
               onClick={handlePayment}
               disabled={!isFormValid() || isProcessing || (selectedPaymentMethod === 'wallet' && totalPrice > 45.50)}
-              className="px-8 py-3 bg-primary text-white rounded-full font-medium hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center"
+              className="inline-flex items-center px-8 py-3 bg-primary text-white rounded-full font-semibold hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl disabled:bg-gray-400 disabled:cursor-not-allowed disabled:shadow-none"
             >
               {isProcessing ? (
                 <>
@@ -520,7 +533,12 @@ export default function OrderPayment() {
                   Processing...
                 </>
               ) : (
-                `Complete Order → ${totalPrice.toFixed(2)}€`
+                <>
+                  Complete Order €{totalPrice.toFixed(2)}
+                  <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </>
               )}
             </button>
           </div>
