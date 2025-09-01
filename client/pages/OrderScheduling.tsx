@@ -112,7 +112,7 @@ export default function OrderScheduling() {
       return "Tmrw"; // compact for mobile
     } else {
       // Only short weekday for compact display inside the chip
-      return date.toLocaleDateString("en-US", { weekday: "short" });
+      return String(date.toLocaleDateString("en-US", { weekday: "short" }));
     }
   };
 
