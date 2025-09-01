@@ -42,6 +42,7 @@ const Login = lazy(() => import("./pages/Login"));
 const Cart = lazy(() => import("./pages/Cart"));
 const Account = lazy(() => import("./pages/Account"));
 const Business = lazy(() => import("./pages/Business"));
+const CustomQuoteSubmission = lazy(() => import("./pages/CustomQuoteSubmission"));
 
 const queryClient = new QueryClient();
 
@@ -94,6 +95,7 @@ function App() {
                   <Route path="/order/payment" element={<OrderPayment />} />
                   <Route path="/order/confirmation" element={<OrderConfirmation />} />
                   <Route path="/order/custom-quote" element={<CustomQuote />} />
+                  <Route path="/order/custom-quote-submission" element={<CustomQuoteSubmission />} />
                   <Route path="/quote/confirmation" element={<QuoteConfirmation />} />
                   <Route path="/quote-approval/:quoteId" element={<QuoteApproval />} />
                   <Route path="/discrepancy/:orderId" element={<DiscrepancyApproval />} />

@@ -96,6 +96,21 @@ export default function OrderScheduling() {
   };
 
   const handleContinue = () => {
+    // Check if cart contains only custom quotes
+    const hasOnlyCustomQuotes = services.length > 0 && services.every((service: any) => service.isCustomQuote);
+    
+    if (hasOnlyCustomQuotes) {
+      // Clear cart and redirect to custom quote submission page
+      localStorage.removeItem('eazzy-cart');
+      navigate('/order/custom-quote-submission', {
+        state: {
+          quoteItems: services,
+          totalItems: services.reduce((total: number, item: any) => total + item.quantity, 0)
+        }
+      });
+      return;
+    }
+    
     if (!isAuthenticated) {
       // Store order data in localStorage before redirecting to login
       localStorage.setItem('pendingOrder', JSON.stringify({
