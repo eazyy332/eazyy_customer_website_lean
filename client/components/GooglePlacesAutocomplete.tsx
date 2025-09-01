@@ -96,6 +96,7 @@ export default function GooglePlacesAutocomplete({
       initializeAutocomplete();
     }
   }, [scriptLoaded, isLoaded]);
+
   const initializeAutocomplete = () => {
     if (!inputRef.current || !window.google?.maps?.places) {
       return;
@@ -130,6 +131,71 @@ export default function GooglePlacesAutocomplete({
           }
         }
       });
+
+      // Style the Google Places dropdown to match our design
+      setTimeout(() => {
+        const pacContainer = document.querySelector('.pac-container');
+        if (pacContainer) {
+          pacContainer.setAttribute('style', `
+            background: white !important;
+            border: 1px solid #E5E7EB !important;
+            border-radius: 12px !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+            margin-top: 4px !important;
+            overflow: hidden !important;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+          `);
+        }
+
+        const pacItems = document.querySelectorAll('.pac-item');
+        pacItems.forEach((item) => {
+          item.setAttribute('style', `
+            padding: 12px 16px !important;
+            border-bottom: 1px solid #F3F4F6 !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+            font-size: 14px !important;
+          `);
+          
+          item.addEventListener('mouseenter', () => {
+            item.setAttribute('style', `
+              padding: 12px 16px !important;
+              border-bottom: 1px solid #F3F4F6 !important;
+              cursor: pointer !important;
+              transition: all 0.2s ease !important;
+              font-size: 14px !important;
+              background-color: #F8FAFC !important;
+            `);
+          });
+          
+          item.addEventListener('mouseleave', () => {
+            item.setAttribute('style', `
+              padding: 12px 16px !important;
+              border-bottom: 1px solid #F3F4F6 !important;
+              cursor: pointer !important;
+              transition: all 0.2s ease !important;
+              font-size: 14px !important;
+              background-color: white !important;
+            `);
+          });
+        });
+
+        const pacItemTexts = document.querySelectorAll('.pac-item-query');
+        pacItemTexts.forEach((text) => {
+          text.setAttribute('style', `
+            color: #111827 !important;
+            font-weight: 500 !important;
+          `);
+        });
+
+        const pacItemDetails = document.querySelectorAll('.pac-item .pac-item:not(.pac-item-query)');
+        pacItemDetails.forEach((detail) => {
+          detail.setAttribute('style', `
+            color: #6B7280 !important;
+            font-size: 13px !important;
+          `);
+        });
+      }, 100);
     } catch (error) {
       console.error('Error initializing Google Places Autocomplete:', error);
     }
@@ -169,8 +235,61 @@ export default function GooglePlacesAutocomplete({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className={`w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors ${className}`}
+        className={`w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-colors text-black placeholder-gray-500 ${className}`}
+        style={{
+          fontSize: '16px', // Prevents zoom on iOS
+          lineHeight: '1.5'
+        }}
       />
+      <style jsx global>{`
+        .pac-container {
+          z-index: 9999 !important;
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+        }
+        
+        .pac-item {
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+          line-height: 1.4 !important;
+        }
+        
+        .pac-item:last-child {
+          border-bottom: none !important;
+        }
+        
+        .pac-item-query {
+          font-size: 14px !important;
+          color: #111827 !important;
+          font-weight: 500 !important;
+        }
+        
+        .pac-matched {
+          font-weight: 600 !important;
+          color: #1D62DB !important;
+        }
+        
+        .pac-icon {
+          margin-right: 12px !important;
+          margin-top: 2px !important;
+        }
+        
+        .pac-icon-marker {
+          background-image: none !important;
+          width: 16px !important;
+          height: 16px !important;
+          background-color: #1D62DB !important;
+          border-radius: 50% !important;
+          position: relative !important;
+        }
+        
+        .pac-icon-marker::after {
+          content: '📍' !important;
+          position: absolute !important;
+          top: 50% !important;
+          left: 50% !important;
+          transform: translate(-50%, -50%) !important;
+          font-size: 10px !important;
+        }
+      `}</style>
     </div>
   );
 }
