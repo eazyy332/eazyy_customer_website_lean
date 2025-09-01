@@ -67,6 +67,24 @@ export default function OrderScheduling() {
     "5:00 - 7:00 PM",
   ];
 
+  // Helper function to generate button class names
+  const getButtonClassName = (isSelected: boolean, isDisabled: boolean = false) => {
+    if (isDisabled) {
+      return "p-4 rounded-xl text-center transition-all border bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200 opacity-50";
+    }
+    if (isSelected) {
+      return "p-4 rounded-xl text-center transition-all border bg-primary text-white border-primary shadow-lg";
+    }
+    return "p-4 rounded-xl text-center transition-all border bg-gray-50 hover:bg-gray-100 text-gray-900 border-gray-200 hover:border-primary";
+  };
+
+  const getTimeButtonClassName = (isSelected: boolean) => {
+    if (isSelected) {
+      return "p-4 rounded-xl text-sm font-medium transition-all border bg-primary text-white border-primary shadow-lg";
+    }
+    return "p-4 rounded-xl text-sm font-medium transition-all border bg-gray-50 hover:bg-gray-100 text-gray-900 border-gray-200 hover:border-primary";
+  };
+
   const canProceed =
     schedule.pickupDate &&
     schedule.pickupTime &&
@@ -248,11 +266,7 @@ export default function OrderScheduling() {
                           onClick={() =>
                             handleScheduleChange("pickupDate", dateString)
                           }
-                          className={`p-4 rounded-xl text-center transition-all border ${
-                            isSelected
-                              ? "bg-primary text-white border-primary shadow-lg"
-                              : "bg-gray-50 hover:bg-gray-100 text-gray-900 border-gray-200 hover:border-primary"
-                          }`}
+                          className={getButtonClassName(isSelected)}
                         >
                           <div className="text-xs font-medium leading-tight">
                             {formatDateOption(date)}
@@ -279,11 +293,7 @@ export default function OrderScheduling() {
                           onClick={() =>
                             handleScheduleChange("pickupTime", time)
                           }
-                          className={`p-4 rounded-xl text-sm font-medium transition-all border ${
-                            schedule.pickupTime === time
-                              ? "bg-primary text-white border-primary shadow-lg"
-                              : "bg-gray-50 hover:bg-gray-100 text-gray-900 border-gray-200 hover:border-primary"
-                          }`}
+                          className={getTimeButtonClassName(schedule.pickupTime === time)}
                         >
                           {time}
                         </button>
@@ -301,7 +311,7 @@ export default function OrderScheduling() {
                   <div className="flex items-center space-x-3">
                     <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
                       <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 002 2z" />
                       </svg>
                     </div>
                     <div>
@@ -336,13 +346,7 @@ export default function OrderScheduling() {
                               !isDisabled &&
                               handleScheduleChange("deliveryDate", dateString)
                             }
-                            className={`p-4 rounded-xl text-center transition-all border ${
-                              isDisabled
-                                ? "bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200 opacity-50"
-                                : isSelected
-                                  ? "bg-primary text-white border-primary shadow-lg"
-                                  : "bg-gray-50 hover:bg-gray-100 text-gray-900 border-gray-200 hover:border-primary"
-                            }`}
+                            className={getButtonClassName(isSelected, isDisabled)}
                           >
                              <div className="text-xs font-medium leading-tight">
                                {formatDateOption(date)}
@@ -369,11 +373,7 @@ export default function OrderScheduling() {
                             onClick={() =>
                               handleScheduleChange("deliveryTime", time)
                             }
-                            className={`p-4 rounded-xl text-sm font-medium transition-all border ${
-                              schedule.deliveryTime === time
-                                ? "bg-primary text-white border-primary shadow-lg"
-                                : "bg-gray-50 hover:bg-gray-100 text-gray-900 border-gray-200 hover:border-primary"
-                            }`}
+                            className={getTimeButtonClassName(schedule.deliveryTime === time)}
                           >
                             {time}
                           </button>
@@ -420,9 +420,8 @@ export default function OrderScheduling() {
                   <div className="flex items-center space-x-4">
                     <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center border border-gray-200 shadow-sm">
                       <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 002 2z" />
                       </svg>
-                    </div>
                     </div>
                     <div>
                       <div className="text-sm text-gray-600">Delivery</div>
