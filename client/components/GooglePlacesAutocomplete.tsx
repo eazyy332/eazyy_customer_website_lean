@@ -140,7 +140,7 @@ export default function GooglePlacesAutocomplete({
         )}
       </div>
       
-      <style jsx global>{`
+      <style jsx="true" global="true">{`
         .pac-container {
           z-index: 9999 !important;
           background: white !important;

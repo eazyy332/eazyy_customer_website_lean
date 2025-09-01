@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import GooglePlacesAutocomplete from "../components/GooglePlacesAutocomplete";
 import AuthGuard from "@/components/AuthGuard";
@@ -28,6 +28,7 @@ interface SavedAddress {
 
 export default function OrderAddress() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { selectedServices, totalPrice, schedule, sourceQuoteId } = location.state || {
     selectedServices: [],
@@ -295,7 +296,6 @@ export default function OrderAddress() {
     const addressData = useNewAddress ? address : savedAddresses.find(a => a.id === selectedSavedAddress);
     
     // Navigate to payment with proper address data
-    const navigate = (await import('react-router-dom')).useNavigate();
     navigate('/order/payment', {
       state: {
         selectedServices: services,
