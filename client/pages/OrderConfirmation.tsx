@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import AuthGuard from "@/components/AuthGuard";
 import { EmailService } from "@/lib/emailService";
+import { useAuth } from "@/hooks/useAuth";
 
 type OrderStatus = 'confirmed' | 'pickup_scheduled' | 'picked_up' | 'in_processing' | 'ready_for_delivery' | 'out_for_delivery' | 'delivered';
 
@@ -16,6 +17,7 @@ interface TrackingStep {
 
 export default function OrderConfirmation() {
   const location = useLocation();
+  const { user } = useAuth();
   const { orderId, selectedServices, totalPrice, schedule, address, paymentMethod } = location.state || {};
   
   const [currentStatus, setCurrentStatus] = useState<OrderStatus>('confirmed');
@@ -89,11 +91,20 @@ export default function OrderConfirmation() {
   // Send order confirmation email on component mount
   useEffect(() => {
     const sendConfirmationEmail = async () => {
-      if (!orderId || !selectedServices || emailSent) return;
+      // Determine email address with fallbacks
+      const emailAddress = address?.email || user?.email;
+      
+      // Ensure we have required fields
+      if (!orderId || !selectedServices || emailSent || !emailAddress) {
+        if (!emailAddress) {
+          console.warn('No email address available for order confirmation');
+        }
+        return;
+      }
       
       try {
         await EmailService.sendOrderConfirmation({
-          email: address?.email || '',
+          email: emailAddress,
           firstName: address?.firstName || address?.fullName?.split(' ')[0] || '',
           orderNumber: orderId,
           customerName: address?.fullName || `${address?.firstName || ''} ${address?.lastName || ''}`.trim() || 'Customer',
@@ -116,7 +127,7 @@ export default function OrderConfirmation() {
     };
 
     sendConfirmationEmail();
-  }, [orderId, selectedServices, address, schedule, totalPrice, emailSent]);
+  }, [orderId, selectedServices, address, schedule, totalPrice, emailSent, user?.email]);
 
   const formatAddress = (addr: any) => {
     if (typeof addr === 'string') return addr;

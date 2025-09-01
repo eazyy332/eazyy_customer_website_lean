@@ -60,6 +60,7 @@ export async function createOrder(req: Request, res: Response) {
 
     // Get current user ID from auth context
     let userId = null;
+    let userEmail = null;
     try {
       // Try to get user from auth header if present
       const authHeader = req.headers.authorization;
@@ -77,6 +78,7 @@ export async function createOrder(req: Request, res: Response) {
           
           if (!error && user) {
             userId = user.id;
+            userEmail = user.email;
             console.log('Found authenticated user:', user.id, user.email);
           } else {
             console.log('Auth token validation failed:', error?.message);
@@ -99,12 +101,21 @@ export async function createOrder(req: Request, res: Response) {
       });
     }
 
+    // Determine email for order and confirmation
+    const orderEmail = contact?.email || userEmail;
+    if (!orderEmail) {
+      return res.status(400).json({ 
+        ok: false, 
+        error: 'Email address is required for order confirmation.' 
+      });
+    }
+
     // Build customer name from contact info
     const customerName = contact?.name || 
       (contact?.firstName && contact?.lastName ? `${contact.firstName} ${contact.lastName}` : '') ||
       contact?.firstName || 
       contact?.lastName || 
-      (contact?.email ? contact.email.split('@')[0] : 'Customer');
+      (orderEmail ? orderEmail.split('@')[0] : 'Customer');
 
     // Build proper address string
     const shippingAddress = typeof address === 'string' ? address : 
@@ -116,7 +127,7 @@ export async function createOrder(req: Request, res: Response) {
       order_number: generateOrderNumber(),
       user_id: userId,
       customer_name: customerName,
-      email: contact?.email || contact?.firstName || contact?.lastName || "",
+      email: orderEmail,
       phone: contact?.phone || contact?.phoneNumber || address?.phoneNumber || address?.phone || null,
       shipping_address: shippingAddress,
       status: "pending",
@@ -215,7 +226,7 @@ export async function createOrder(req: Request, res: Response) {
     // Send order confirmation email
     try {
       await sendOrderConfirmationEmail({
-        email: contact?.email || '',
+        email: orderEmail,
         firstName: contact?.firstName || contact?.name?.split(' ')[0] || '',
         orderNumber: order.order_number,
         customerName: customerName,
