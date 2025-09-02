@@ -140,58 +140,13 @@ export async function createOrder(req: Request, res: Response) {
       total_amount: total,
       pickup_date: pickupDate ? new Date(pickupDate).toISOString() : new Date(Date.now() + 24*60*60*1000).toISOString(),
       delivery_date: deliveryDate ? new Date(deliveryDate).toISOString() : null,
+      service_id: serviceId || items[0]?.serviceId || null,
+      category_id: categoryId || items[0]?.categoryId || null,
       latitude: "52.3676", // Default Amsterdam coordinates
       longitude: "4.9041",
       promo_code: promoCode ?? null,
       discount_amount: discountAmount ?? null,
     };
-
-    // Get service and category information from the first item
-    const firstItem = items[0];
-    const resolvedServiceId = serviceId || firstItem?.serviceId;
-    const resolvedCategoryId = categoryId || firstItem?.categoryId;
-
-    // Fetch service and category names if IDs are provided
-    let serviceName = null;
-    let categoryName = null;
-
-    if (resolvedServiceId) {
-      try {
-        const { data: serviceData } = await supabaseAdmin
-          .from('services')
-          .select('name')
-          .eq('id', resolvedServiceId)
-          .single();
-        
-        if (serviceData) {
-          serviceName = serviceData.name;
-        }
-      } catch (e) {
-        console.log('Could not fetch service name:', e);
-      }
-    }
-
-    if (resolvedCategoryId) {
-      try {
-        const { data: categoryData } = await supabaseAdmin
-          .from('categories')
-          .select('name')
-          .eq('id', resolvedCategoryId)
-          .single();
-        
-        if (categoryData) {
-          categoryName = categoryData.name;
-        }
-      } catch (e) {
-        console.log('Could not fetch category name:', e);
-      }
-    }
-
-    // Add service and category information to order data
-    orderData.service_id = resolvedServiceId || null;
-    orderData.category_id = resolvedCategoryId || null;
-    orderData.service_name = serviceName;
-    orderData.category_name = categoryName;
 
     console.log('Creating order with data:', orderData);
 
@@ -247,6 +202,64 @@ export async function createOrder(req: Request, res: Response) {
       console.log("Order created but items failed to insert");
     } else {
       console.log('Order items created successfully');
+    }
+
+    // Update order with service and category information from the first item
+    if (items.length > 0) {
+      const firstItem = items[0];
+      const updateData: any = {};
+      
+      if (firstItem.serviceId || serviceId) {
+        updateData.service_id = firstItem.serviceId || serviceId;
+        
+        // Get service name for quick reference
+        try {
+          const { data: serviceData } = await supabaseAdmin
+            .from('services')
+            .select('name')
+            .eq('id', firstItem.serviceId || serviceId)
+            .single();
+          
+          if (serviceData) {
+            updateData.service_name = serviceData.name;
+          }
+        } catch (e) {
+          console.log('Could not fetch service name:', e);
+        }
+      }
+      
+      if (firstItem.categoryId || categoryId) {
+        updateData.category_id = firstItem.categoryId || categoryId;
+        
+        // Get category name for quick reference
+        try {
+          const { data: categoryData } = await supabaseAdmin
+            .from('categories')
+            .select('name')
+            .eq('id', firstItem.categoryId || categoryId)
+            .single();
+          
+          if (categoryData) {
+            updateData.category_name = categoryData.name;
+          }
+        } catch (e) {
+          console.log('Could not fetch category name:', e);
+        }
+      }
+      
+      // Update order with service and category information
+      if (Object.keys(updateData).length > 0) {
+        const { error: updateError } = await supabaseAdmin
+          .from("orders")
+          .update(updateData)
+          .eq("id", order.id);
+        
+        if (updateError) {
+          console.error("Failed to update order with service/category info:", updateError);
+        } else {
+          console.log('Order updated with service/category information');
+        }
+      }
     }
 
     // Link custom quote if provided
