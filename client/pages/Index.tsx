@@ -6,43 +6,35 @@ import EazyyIcon from "@/components/EazyyIcon";
 
 export default function Index() {
   const [services, setServices] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadServices = async () => {
       try {
-        // Use fallback services data since Supabase is not configured
-        setServices([
-          {
-            id: 'eazyy-bag',
-            name: 'eazyy Bag',
-            service_identifier: 'eazyy-bag',
-            short_description: 'Fill our sturdy bag with a week\'s worth of laundry',
-            icon: 'https://images.pexels.com/photos/5591663/pexels-photo-5591663.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'
-          },
-          {
-            id: 'dry-cleaning',
-            name: 'Dry Cleaning',
-            service_identifier: 'dry-cleaning',
-            short_description: 'Professional dry cleaning for delicate fabrics',
-            icon: 'https://images.pexels.com/photos/5591774/pexels-photo-5591774.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'
-          },
-          {
-            id: 'wash-iron',
-            name: 'Wash & Iron',
-            service_identifier: 'wash-iron',
-            short_description: 'Daily laundry expertly washed and ironed',
-            icon: 'https://images.pexels.com/photos/5591728/pexels-photo-5591728.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'
-          },
-          {
-            id: 'repairs',
-            name: 'Repairs & Alterations',
-            service_identifier: 'repairs',
-            short_description: 'Skilled tailors breathe new life into your garments',
-            icon: 'https://images.pexels.com/photos/6069112/pexels-photo-6069112.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'
-          }
-        ]);
+        console.log('Loading services from Supabase...');
+        const { data: servicesData, error: fetchError } = await supabase
+          .from("services")
+          .select("*")
+          .eq("status", true)
+          .order("sequence", { ascending: true })
+          .limit(10);
+
+        if (fetchError) {
+          console.error('Error fetching services:', fetchError.message);
+          throw fetchError;
+        }
+
+        if (servicesData && servicesData.length > 0) {
+          setServices(servicesData);
+          console.log('Services loaded from database:', servicesData.length);
+        } else {
+          console.log('No services found in database');
+          setServices([]);
+        }
       } catch (err) {
-        console.log('Using fallback services data');
+        console.error('Services loading error:', err);
+        setError('Failed to load services. Please check your connection.');
         setServices([
           {
             id: 'eazyy-bag',
@@ -73,11 +65,46 @@ export default function Index() {
             icon: 'https://images.pexels.com/photos/6069112/pexels-photo-6069112.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'
           }
         ]);
+      } finally {
+        setLoading(false);
       }
     };
 
     loadServices();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading services...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto p-6">
+          <div className="w-16 h-16 bg-red-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+            <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Connection Error</h2>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="bg-primary text-white px-6 py-2 rounded-full hover:bg-blue-700 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">

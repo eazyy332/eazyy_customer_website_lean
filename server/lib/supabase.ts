@@ -8,47 +8,25 @@ console.log('Server Supabase configuration:', {
   key: supabaseServiceKey ? 'configured' : 'missing'
 });
 
-// Create a mock client if environment variables are missing
-const createMockClient = () => ({
-  from: () => ({
-    select: () => Promise.resolve({ data: [], error: null, count: 0 }),
-    insert: () => ({
-      select: () => ({
-        single: () => Promise.resolve({ 
-          data: { 
-            id: `mock-order-${Date.now()}`, 
-            order_number: `EZ-${Date.now().toString(36).toUpperCase()}-MOCK` 
-          }, 
-          error: null 
-        })
-      })
-    }),
-    update: () => Promise.resolve({ data: null, error: null }),
-    delete: () => Promise.resolve({ data: null, error: null }),
-  }),
+if (!supabaseUrl || !supabaseServiceKey) {
+  console.error('Missing Supabase environment variables for server. Please configure SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY');
+  throw new Error('Supabase configuration missing. Please set up your environment variables.');
+}
+
+export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
   auth: {
-    getUser: () => Promise.resolve({ data: { user: null }, error: null }),
-  },
+    autoRefreshToken: false,
+    persistSession: false,
+  }
 });
 
-export const supabaseAdmin = (!supabaseUrl || !supabaseServiceKey) 
-  ? createMockClient() as any
-  : createClient(supabaseUrl, supabaseServiceKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      }
-    });
-
-// Test connection only if we have real credentials
-if (supabaseUrl && supabaseServiceKey) {
-  supabaseAdmin.from('orders').select('count', { count: 'exact', head: true }).then(({ error, count }) => {
-    if (error) {
-      console.error('Supabase admin connection test failed:', error.message);
-    } else {
-      console.log('Supabase admin connection successful. Orders count:', count);
-    }
-  });
-} else {
-  console.warn('Supabase not configured - using mock client for development');
-}
+// Test connection
+supabaseAdmin.from('orders').select('count', { count: 'exact', head: true }).then(({ error, count }) => {
+  if (error) {
+    console.error('Supabase admin connection test failed:', error.message);
+  } else {
+    console.log('Supabase admin connection successful. Orders count:', count);
+  }
+}).catch(err => {
+  console.error('Supabase admin connection test error:', err);
+});
