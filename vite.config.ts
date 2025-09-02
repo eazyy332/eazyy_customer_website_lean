@@ -5,18 +5,18 @@ import path from "path";
 import { createServer } from "./server";
 import { loadEnv } from "vite";
 
-// Load environment variables before importing server modules
-dotenv.config();
-
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
+  // Load environment variables
+  dotenv.config();
+  
   // Load env file based on `mode` in the current working directory.
   const env = loadEnv(mode, process.cwd(), '');
   
   // Explicitly set environment variables for server-side code
-  process.env.VITE_SUPABASE_URL = env.VITE_SUPABASE_URL;
-  process.env.SUPABASE_URL = env.VITE_SUPABASE_URL;
-  process.env.SUPABASE_SERVICE_ROLE_KEY = env.SUPABASE_SERVICE_ROLE_KEY;
+  process.env.VITE_SUPABASE_URL = env.VITE_SUPABASE_URL || process.env.VITE_SUPABASE_URL || '';
+  process.env.SUPABASE_URL = env.VITE_SUPABASE_URL || process.env.VITE_SUPABASE_URL || '';
+  process.env.SUPABASE_SERVICE_ROLE_KEY = env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || '';
   
   return {
     server: {
@@ -28,8 +28,8 @@ export default defineConfig(({ mode }) => {
     },
     define: {
       // Make env variables available to the client
-      'process.env.VITE_SUPABASE_URL': JSON.stringify(env.VITE_SUPABASE_URL),
-      'process.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(env.VITE_SUPABASE_ANON_KEY),
+      'process.env.VITE_SUPABASE_URL': JSON.stringify(env.VITE_SUPABASE_URL || ''),
+      'process.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(env.VITE_SUPABASE_ANON_KEY || ''),
     },
     build: {
       outDir: "dist/spa",
