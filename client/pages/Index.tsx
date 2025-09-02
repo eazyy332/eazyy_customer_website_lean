@@ -10,98 +10,39 @@ export default function Index() {
   useEffect(() => {
     const loadServices = async () => {
       try {
-        console.log('Loading services from database...');
-        
-        // Check if Supabase is properly configured
-        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-        if (!supabaseUrl || supabaseUrl === 'your_supabase_url_here') {
-          console.log('Supabase not configured, using fallback services');
-          setServices([
-            {
-              id: 'eazyy-bag',
-              name: 'eazyy Bag',
-              service_identifier: 'eazyy-bag',
-              short_description: 'Fill our sturdy bag with a week\'s worth of laundry',
-              icon: 'https://images.pexels.com/photos/5591663/pexels-photo-5591663.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'
-            },
-            {
-              id: 'dry-cleaning',
-              name: 'Dry Cleaning',
-              service_identifier: 'dry-cleaning',
-              short_description: 'Professional dry cleaning for delicate fabrics',
-              icon: 'https://images.pexels.com/photos/5591774/pexels-photo-5591774.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'
-            },
-            {
-              id: 'wash-iron',
-              name: 'Wash & Iron',
-              service_identifier: 'wash-iron',
-              short_description: 'Daily laundry expertly washed and ironed',
-              icon: 'https://images.pexels.com/photos/5591728/pexels-photo-5591728.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'
-            },
-            {
-              id: 'repairs',
-              name: 'Repairs & Alterations',
-              service_identifier: 'repairs',
-              short_description: 'Skilled tailors breathe new life into your garments',
-              icon: 'https://images.pexels.com/photos/6069112/pexels-photo-6069112.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'
-            }
-          ]);
-          return;
-        }
-
-        const { data, error } = await supabase
-          .from("services")
-          .select("*")
-          .eq("status", true)
-          .order("sequence", { ascending: true })
-          .limit(10);
-
-        if (error) {
-          console.error('Error loading services:', error.message);
-          // Use fallback services on error
-          setServices([
-            {
-              id: 'eazyy-bag',
-              name: 'eazyy Bag',
-              service_identifier: 'eazyy-bag',
-              short_description: 'Fill our sturdy bag with a week\'s worth of laundry',
-              icon: 'https://images.pexels.com/photos/5591663/pexels-photo-5591663.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'
-            },
-            {
-              id: 'dry-cleaning',
-              name: 'Dry Cleaning',
-              service_identifier: 'dry-cleaning',
-              short_description: 'Professional dry cleaning for delicate fabrics',
-              icon: 'https://images.pexels.com/photos/5591774/pexels-photo-5591774.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'
-            },
-            {
-              id: 'wash-iron',
-              name: 'Wash & Iron',
-              service_identifier: 'wash-iron',
-              short_description: 'Daily laundry expertly washed and ironed',
-              icon: 'https://images.pexels.com/photos/5591728/pexels-photo-5591728.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'
-            },
-            {
-              id: 'repairs',
-              name: 'Repairs & Alterations',
-              service_identifier: 'repairs',
-              short_description: 'Skilled tailors breathe new life into your garments',
-              icon: 'https://images.pexels.com/photos/6069112/pexels-photo-6069112.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'
-            }
-          ]);
-          return;
-        }
-        
-        if (data && data.length > 0) {
-          setServices(data);
-          console.log('Services loaded successfully:', data.length);
-        } else {
-          console.log('No services found in database, using fallback');
-          setServices([]);
-        }
+        // Use fallback services data since Supabase is not configured
+        setServices([
+          {
+            id: 'eazyy-bag',
+            name: 'eazyy Bag',
+            service_identifier: 'eazyy-bag',
+            short_description: 'Fill our sturdy bag with a week\'s worth of laundry',
+            icon: 'https://images.pexels.com/photos/5591663/pexels-photo-5591663.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'
+          },
+          {
+            id: 'dry-cleaning',
+            name: 'Dry Cleaning',
+            service_identifier: 'dry-cleaning',
+            short_description: 'Professional dry cleaning for delicate fabrics',
+            icon: 'https://images.pexels.com/photos/5591774/pexels-photo-5591774.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'
+          },
+          {
+            id: 'wash-iron',
+            name: 'Wash & Iron',
+            service_identifier: 'wash-iron',
+            short_description: 'Daily laundry expertly washed and ironed',
+            icon: 'https://images.pexels.com/photos/5591728/pexels-photo-5591728.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'
+          },
+          {
+            id: 'repairs',
+            name: 'Repairs & Alterations',
+            service_identifier: 'repairs',
+            short_description: 'Skilled tailors breathe new life into your garments',
+            icon: 'https://images.pexels.com/photos/6069112/pexels-photo-6069112.jpeg?auto=compress&cs=tinysrgb&w=160&h=160&fit=crop'
+          }
+        ]);
       } catch (err) {
-        console.error('Services connection error:', err);
-        // Use fallback services on connection error
+        console.log('Using fallback services data');
         setServices([
           {
             id: 'eazyy-bag',
