@@ -28,13 +28,8 @@ export default function OrderStart() {
         } else {
           console.log('No services found in database');
           setError('No services available. Please contact support.');
-        .select('*')
+          setServices([]);
         }
-        .order('sequence', { ascending: true })
-        .limit(10);
-        console.error('Connection error:', err);
-      console.log('OrderStart: All services loaded:', allServicesData?.length || 0, allServicesData);
-        setServices([]);
       } finally {
         setLoading(false);
       }
