@@ -204,6 +204,64 @@ export async function createOrder(req: Request, res: Response) {
       console.log('Order items created successfully');
     }
 
+    // Update order with service and category information from the first item
+    if (items.length > 0) {
+      const firstItem = items[0];
+      const updateData: any = {};
+      
+      if (firstItem.serviceId || serviceId) {
+        updateData.service_id = firstItem.serviceId || serviceId;
+        
+        // Get service name for quick reference
+        try {
+          const { data: serviceData } = await supabaseAdmin
+            .from('services')
+            .select('name')
+            .eq('id', firstItem.serviceId || serviceId)
+            .single();
+          
+          if (serviceData) {
+            updateData.service_name = serviceData.name;
+          }
+        } catch (e) {
+          console.log('Could not fetch service name:', e);
+        }
+      }
+      
+      if (firstItem.categoryId || categoryId) {
+        updateData.category_id = firstItem.categoryId || categoryId;
+        
+        // Get category name for quick reference
+        try {
+          const { data: categoryData } = await supabaseAdmin
+            .from('categories')
+            .select('name')
+            .eq('id', firstItem.categoryId || categoryId)
+            .single();
+          
+          if (categoryData) {
+            updateData.category_name = categoryData.name;
+          }
+        } catch (e) {
+          console.log('Could not fetch category name:', e);
+        }
+      }
+      
+      // Update order with service and category information
+      if (Object.keys(updateData).length > 0) {
+        const { error: updateError } = await supabaseAdmin
+          .from("orders")
+          .update(updateData)
+          .eq("id", order.id);
+        
+        if (updateError) {
+          console.error("Failed to update order with service/category info:", updateError);
+        } else {
+          console.log('Order updated with service/category information');
+        }
+      }
+    }
+
     // Link custom quote if provided
     if (sourceQuoteId) {
       try {

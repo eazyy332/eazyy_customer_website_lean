@@ -295,7 +295,9 @@ export default function ItemSelection() {
     const cartItem: CartItem = {
       ...item,
       serviceCategory: category || '',
-      quantity: 1
+      quantity: 1,
+      serviceId: service?.id || null,
+      categoryId: item.subcategory || null
     };
 
     setCart(prevCart => {
@@ -324,7 +326,9 @@ export default function ItemSelection() {
       quantity: 1,
       serviceCategory: category || '',
       isCustomQuote: true,
-      quoteStatus: 'pending'
+      quoteStatus: 'pending',
+      serviceId: service?.id || null,
+      categoryId: item.category_id || null
     };
 
     setCart(prevCart => {
@@ -433,10 +437,21 @@ export default function ItemSelection() {
       const idx = prevCart.findIndex(i => i.id === displayItem.id && i.serviceCategory === category);
       if (idx >= 0) {
         const copy = [...prevCart];
-        copy[idx] = { ...copy[idx], price: computedPrice, quantity: 1 };
+        copy[idx] = { 
+          ...copy[idx], 
+          price: computedPrice, 
+          quantity: 1,
+          serviceId: service?.id || null,
+          categoryId: rawItem.category_id || null
+        };
         return copy;
       }
-      return [...prevCart, { ...displayItem, serviceCategory: category } as CartItem];
+      return [...prevCart, { 
+        ...displayItem, 
+        serviceCategory: category,
+        serviceId: service?.id || null,
+        categoryId: rawItem.category_id || null
+      } as CartItem];
     });
   };
 
@@ -667,7 +682,7 @@ export default function ItemSelection() {
                         >
                           –
                         </button>
-                        <span className="text-sm w-4 text-center">{quantityInCart}</span>
+                            subcategory: String(item.category_id || ''), 
                         <button
                           onClick={() => (quantityInCart === 0 ? addToCart({ id: String(item.id), name: displayName, description: String(item.description || ''), price, category, subcategory: String(item.subcategory || item.category_id || ''), quantity: 1 }) : updateQuantity(String(item.id), quantityInCart + 1))}
                           className="w-7 h-7 rounded-full border border-gray-300 flex items-center justify-center text-sm"

@@ -12,6 +12,8 @@ interface CartItem {
   isCustomQuote?: boolean;
   quoteStatus?: 'pending' | 'quoted' | 'accepted';
   icon?: string;
+  serviceId?: string | null;
+  categoryId?: string | null;
 }
 
 export default function Cart() {
@@ -89,7 +91,15 @@ export default function Cart() {
     if (cart.length === 0) return;
     navigate("/order/scheduling", {
       state: {
-        selectedServices: cart.map(i => ({ id: i.id, name: i.name, price: i.price, quantity: i.quantity, serviceCategory: i.serviceCategory })),
+        selectedServices: cart.map(i => ({ 
+          id: i.id, 
+          name: i.name, 
+          price: i.price, 
+          quantity: i.quantity, 
+          serviceCategory: i.serviceCategory,
+          serviceId: i.serviceId,
+          categoryId: i.categoryId
+        })),
         totalPrice,
       },
     });
