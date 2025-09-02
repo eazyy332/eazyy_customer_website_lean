@@ -140,8 +140,8 @@ export async function createOrder(req: Request, res: Response) {
       total_amount: total,
       pickup_date: pickupDate ? new Date(pickupDate).toISOString() : new Date(Date.now() + 24*60*60*1000).toISOString(),
       delivery_date: deliveryDate ? new Date(deliveryDate).toISOString() : null,
-      service_id: serviceId ?? null,
-      category_id: categoryId ?? null,
+      service_id: serviceId || items[0]?.serviceId || null,
+      category_id: categoryId || items[0]?.categoryId || null,
       latitude: "52.3676", // Default Amsterdam coordinates
       longitude: "4.9041",
       promo_code: promoCode ?? null,

@@ -148,7 +148,9 @@ export default function OrderPayment() {
           id: service.id,
           name: service.name,
           price: service.price,
-          quantity: service.quantity
+          quantity: service.quantity,
+          serviceId: service.serviceId,
+          categoryId: service.categoryId
         })),
         totals: {
           subtotal: totalPrice,
@@ -170,6 +172,8 @@ export default function OrderPayment() {
           'Address not provided',
         pickupDate: schedule?.pickupDate || null,
         deliveryDate: schedule?.deliveryDate || null,
+        serviceId: selectedServices[0]?.serviceId || null,
+        categoryId: selectedServices[0]?.categoryId || null,
         sourceQuoteId
       };
 
