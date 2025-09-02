@@ -101,7 +101,8 @@ export default function ItemSelection() {
       // Load all services for the selector buttons
       const { data: allServicesData } = await supabase
         .from('services')
-        .select('id, name, service_identifier, icon, icon_name')
+        .select('id, name, service_identifier, icon, image_url, icon_name, status')
+        .eq('status', true)
         .order('sequence', { ascending: true });
       
       console.log('[ItemSelection] All services loaded:', allServicesData);
@@ -114,6 +115,7 @@ export default function ItemSelection() {
       const { data: svc } = await supabase
         .from('services')
         .select('*')
+        .eq('status', true)
         .or(`service_identifier.eq.${rawCategory},service_identifier.eq.${category}`)
         .maybeSingle();
       
@@ -127,8 +129,9 @@ export default function ItemSelection() {
         // Load categories for this service
         const { data: cats, error: catsError } = await supabase
           .from('categories')
-          .select('*')
+          .select('id, name, description, icon, icon_name, sequence, status, service_id')
           .eq('service_id', svc.id)
+          .eq('status', true)
           .order('sequence', { ascending: true });
         
         console.log('[ItemSelection] Categories query result:', { data: cats, error: catsError });
@@ -147,12 +150,8 @@ export default function ItemSelection() {
           console.log('[ItemSelection] Items query result:', { 
             data: items, 
             error: itemsError,
-            itemsWithIcons: items?.filter(item => item.icon || item.icon_name).length || 0,
-            sampleItemIcons: items?.slice(0, 3).map(item => ({
-              name: item.name,
-              icon: item.icon,
-              icon_name: item.icon_name
-            })) || []
+            totalItems: items?.length || 0,
+            itemsWithDescription: items?.filter(item => item.description && item.description.trim() !== '').length || 0
           });
           combinedItems = items || [];
         } else {
@@ -170,12 +169,7 @@ export default function ItemSelection() {
         console.log('[ItemSelection] Direct items query result:', { 
           data: directItems, 
           error: directItemsError,
-          itemsWithIcons: directItems?.filter(item => item.icon || item.icon_name).length || 0,
-          sampleItemIcons: directItems?.slice(0, 3).map(item => ({
-            name: item.name,
-            icon: item.icon,
-            icon_name: item.icon_name
-          })) || []
+          totalItems: directItems?.length || 0
         });
         
         // Combine items from both queries (remove duplicates by id)
@@ -187,35 +181,6 @@ export default function ItemSelection() {
           });
         }
         
-        // Also try loading ALL items to see what's in the database
-        const { data: debugAllItems, error: allItemsError } = await supabase
-          .from('items')
-          .select('id, name, description, price, category_id, service_id, icon, icon_name, status')
-          .eq('status', true)
-          .limit(10);
-        
-        console.log('[ItemSelection] ALL items in database (first 10):', { 
-          data: debugAllItems, 
-          error: allItemsError,
-          itemsWithIcons: debugAllItems?.filter(item => item.icon || item.icon_name).length || 0,
-          iconSamples: debugAllItems?.map(item => ({
-            name: item.name,
-            icon: item.icon,
-            icon_name: item.icon_name,
-            hasIcon: !!(item.icon || item.icon_name),
-            iconValue: item.icon,
-            iconType: typeof item.icon
-          })) || []
-        });
-        
-        // Also try loading ALL categories to see what's in the database
-        const { data: allCategories, error: allCategoriesError } = await supabase
-          .from('categories')
-          .select('*')
-          .limit(10);
-        
-        console.log('[ItemSelection] ALL categories in database (first 10):', { data: allCategories, error: allCategoriesError });
-        
         console.log('[ItemSelection] Categories loaded:', cats);
         console.log('[ItemSelection] Items loaded (before filtering):', combinedItems);
         
@@ -226,8 +191,6 @@ export default function ItemSelection() {
           service: svc?.name, 
           categories: cats?.length || 0, 
           items: combinedItems?.length || 0,
-          itemsWithDescription: combinedItems?.filter(item => item.description && typeof item.description === 'string' && item.description.trim() !== '' && item.description !== 'NULL').length || 0,
-          itemsWithStatus: combinedItems?.filter(item => item.status === true).length || 0,
           serviceId: svc.id
         });
       } else {
@@ -283,20 +246,11 @@ export default function ItemSelection() {
 
   // Filter out items without description
   const itemsWithDescription = filteredItems.filter((item: any) => {
-    const hasDescription = item.description && 
+    return item.description && 
       typeof item.description === 'string' && 
       item.description.trim() !== '' && 
       item.description !== 'NULL';
-    console.log(`[ItemSelection] Item "${item.name}" description check:`, {
-      description: item.description,
-      hasDescription,
-      descriptionType: typeof item.description,
-      descriptionLength: item.description?.length || 0
-    });
-    return hasDescription;
   });
-
-  console.log('[ItemSelection] Items with description:', itemsWithDescription);
 
   const meta = {
     title: service?.name ?? '',
@@ -310,15 +264,7 @@ export default function ItemSelection() {
   const formatEuro = (value: number) => value.toLocaleString('nl-NL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   
   const getItemImage = (item: any) => {
-    // Debug what's in the icon field
-    console.log(`[DEBUG] Item "${item.name}" icon field:`, {
-      icon: item.icon,
-      iconType: typeof item.icon,
-      iconValue: JSON.stringify(item.icon),
-      isValidUrl: item.icon && (item.icon.startsWith('http://') || item.icon.startsWith('https://'))
-    });
-    
-    // Return the icon directly from database
+    // Return the icon from database or fallback
     return item.icon || "https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
   };
 
@@ -622,11 +568,7 @@ export default function ItemSelection() {
                   <div className="w-36 h-36 md:w-40 md:h-40 mb-2">
                     <img 
                       src={item.icon}
-                      onLoad={() => console.log(`[IMAGE] Successfully loaded: ${item.icon}`)}
                       onError={(e) => {
-                        console.log(`[IMAGE] Failed to load: ${item.icon}`);
-                        console.log('[IMAGE] Error details:', e);
-                        // Set fallback image on error
                         e.currentTarget.src = "https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
                       }}
                       alt={item.name}

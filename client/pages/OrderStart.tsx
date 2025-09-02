@@ -12,33 +12,27 @@ export default function OrderStart() {
   useEffect(() => {
     const loadServices = async () => {
       try {
-        // Check if Supabase is properly configured
-        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-        if (!supabaseUrl || supabaseUrl.includes('your_supabase_url_here') || !supabaseUrl.startsWith('https://')) {
-          // No fallback - require database configuration
+        const { data, error: fetchError } = await supabase
+          .from("services")
+          .select("id, name, service_identifier, description, short_description, icon, image_url, icon_name, status, sequence")
+          .eq("status", true)
+          .order("sequence", { ascending: true });
+
+        if (fetchError) {
+          console.error('Error fetching services:', fetchError);
+          setError(`Failed to load services: ${fetchError.message}`);
           setServices([]);
-          setLoading(false);
-          return;
-        }
-
-        try {
-          const { data, error: fetchError } = await supabase
-            .from("services")
-            .select("id, name, service_identifier, description, short_description, icon, image_url, icon_name")
-            .order("sequence", { ascending: true });
-
-          if (fetchError) {
-            console.error('Error fetching services:', fetchError);
-            setServices([]);
-          } else {
-            setServices(data || []);
-          }
-        } catch (fetchErr) {
-          console.error('Fetch error:', fetchErr);
+        } else if (data && data.length > 0) {
+          setServices(data);
+          console.log('Services loaded successfully:', data.length);
+        } else {
+          console.log('No services found in database');
+          setError('No services available. Please contact support.');
           setServices([]);
         }
       } catch (err) {
         console.error('Connection error:', err);
+        setError(`Connection error: ${err instanceof Error ? err.message : 'Unknown error'}`);
         setServices([]);
       } finally {
         setLoading(false);

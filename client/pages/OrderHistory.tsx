@@ -69,7 +69,7 @@ export default function OrderHistory() {
             customer_name,
             email,
             phone,
-            order_items (product_name, quantity, unit_price)
+            order_items!inner (product_name, quantity, unit_price)
           `)
           .eq('user_id', user.id)
           .order('created_at', { ascending: false });

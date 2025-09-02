@@ -96,38 +96,28 @@ export default function Services() {
   useEffect(() => {
     const loadServices = async () => {
       try {
-        // Check if Supabase is properly configured
-        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-        if (!supabaseUrl || supabaseUrl.includes('your_supabase_url_here') || !supabaseUrl.startsWith('https://')) {
-          // Use fallback data when Supabase is not configured
+        const { data: servicesData, error: fetchError } = await supabase
+          .from("services")
+          .select("id, name, service_identifier, description, short_description, icon, image_url, icon_name, price_starts_at, price_unit, features, benefits, color_hex, is_popular, status, sequence")
+          .eq("status", true)
+          .order("sequence", { ascending: true });
+
+        if (fetchError) {
+          console.error('Error fetching services:', fetchError);
+          // Use fallback data on fetch error
           setServices(fallbackServices);
-          setLoading(false);
-          return;
-        }
-
-        try {
-          const { data: servicesData, error: fetchError } = await supabase
-            .from("services")
-            .select("id, name, service_identifier, description, short_description, icon, image_url, icon_name, price_starts_at, price_unit, features, benefits, color_hex, is_popular, status")
-            .eq("status", true)
-            .order("sequence", { ascending: true });
-
-          if (fetchError) {
-            console.error('Error fetching services:', fetchError);
-            // Use fallback data on fetch error
-            setServices(fallbackServices);
-          } else {
-            // Use database services as-is without fallback URLs
-            setServices(servicesData || []);
-          }
-        } catch (fetchErr) {
-          console.error('Fetch error:', fetchErr);
-          // Use fallback data on network error
+        } else if (servicesData && servicesData.length > 0) {
+          // Use database services
+          setServices(servicesData);
+          console.log('Services loaded from database:', servicesData.length);
+        } else {
+          // Use fallback if no data returned
+          console.log('No services found in database, using fallback');
           setServices(fallbackServices);
         }
       } catch (err) {
         console.error('Connection error:', err);
-        // Use fallback data on any error
+        // Use fallback data on connection error
         setServices(fallbackServices);
       } finally {
         setLoading(false);

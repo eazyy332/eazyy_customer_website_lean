@@ -10,19 +10,20 @@ export default function Index() {
   useEffect(() => {
     const loadServices = async () => {
       try {
-        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-        if (!supabaseUrl || supabaseUrl.includes('your_supabase_url_here') || !supabaseUrl.startsWith('https://')) {
-          return;
-        }
-
         const { data, error } = await supabase
           .from("services")
-          .select("id, name, service_identifier, icon, image_url, icon_name")
+          .select("id, name, service_identifier, icon, image_url, icon_name, status, sequence")
           .eq("status", true)
           .order("sequence", { ascending: true });
 
-        if (!error && data) {
+        if (error) {
+          console.error('Error loading services:', error);
+          return;
+        }
+        
+        if (data) {
           setServices(data);
+          console.log('Services loaded successfully:', data.length);
         }
       } catch (err) {
         console.error('Error loading services:', err);

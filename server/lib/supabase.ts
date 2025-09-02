@@ -13,18 +13,21 @@ function createSupabaseAdmin() {
     hasUrl: !!supabaseUrl,
     hasKey: !!supabaseServiceKey,
     urlValid: supabaseUrl.startsWith('https://'),
-    urlPreview: supabaseUrl ? supabaseUrl.substring(0, 30) + '...' : 'missing'
+    urlPreview: supabaseUrl ? supabaseUrl.substring(0, 50) + '...' : 'missing'
   });
 
   if (!supabaseUrl || !supabaseServiceKey) {
-    throw new Error('Missing Supabase environment variables. Please check VITE_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in your .env file.');
+    console.error('Missing Supabase environment variables. Please check VITE_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in your .env file.');
+    // Return a mock client instead of throwing
+    return createMockSupabaseAdmin();
   }
 
   if (!supabaseUrl.startsWith('https://')) {
-    throw new Error('Invalid Supabase URL. Must start with https://');
+    console.error('Invalid Supabase URL. Must start with https://');
+    return createMockSupabaseAdmin();
   }
 
-  console.log('Creating Supabase client with URL:', supabaseUrl.substring(0, 30) + '...');
+  console.log('Creating Supabase admin client...');
 
   _supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
     auth: {
@@ -34,6 +37,22 @@ function createSupabaseAdmin() {
   });
 
   return _supabaseAdmin;
+}
+
+function createMockSupabaseAdmin() {
+  return {
+    from: (table: string) => ({
+      select: () => ({ data: [], error: { message: 'Supabase not configured' } }),
+      insert: () => ({ data: null, error: { message: 'Supabase not configured' } }),
+      update: () => ({ data: null, error: { message: 'Supabase not configured' } }),
+      delete: () => ({ data: null, error: { message: 'Supabase not configured' } }),
+      eq: function() { return this; },
+      order: function() { return this; },
+      limit: function() { return this; },
+      single: function() { return Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }); },
+      maybeSingle: function() { return Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }); },
+    }),
+  };
 }
 
 export const supabaseAdmin = new Proxy({}, {
