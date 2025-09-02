@@ -14,7 +14,13 @@ const createMockClient = () => ({
     select: () => Promise.resolve({ data: [], error: null, count: 0 }),
     insert: () => ({
       select: () => ({
-        single: () => Promise.resolve({ data: null, error: null })
+        single: () => Promise.resolve({ 
+          data: { 
+            id: `mock-order-${Date.now()}`, 
+            order_number: `EZ-${Date.now().toString(36).toUpperCase()}-MOCK` 
+          }, 
+          error: null 
+        })
       })
     }),
     update: () => Promise.resolve({ data: null, error: null }),
