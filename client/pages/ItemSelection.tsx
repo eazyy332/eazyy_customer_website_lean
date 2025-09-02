@@ -96,7 +96,11 @@ export default function ItemSelection() {
     async function load() {
       if (!rawCategory) return;
       setLoading(true);
-      console.log('[ItemSelection] Starting load for category:', { rawCategory, normalized: category });
+      console.log('[WASH-IRON DEBUG] Starting load for category:', { 
+        rawCategory, 
+        normalized: category,
+        pathname: window.location.pathname 
+      });
       
       // Load all services for the selector buttons
       const { data: allServicesData } = await supabase
@@ -118,16 +122,31 @@ export default function ItemSelection() {
         .from('services')
         .select('*')
         .eq('status', true)
-        .eq('status', true)
-        .or(`service_identifier.eq.${rawCategory},service_identifier.eq.${category}`)
+        .or(`service_identifier.eq.${rawCategory},service_identifier.eq.${category},service_identifier.eq.wash-iron,service_identifier.eq.wash-and-iron`)
         .maybeSingle();
       
-      console.log('ItemSelection: Service lookup result for', { rawCategory, category }, ':', svc);
+      console.log('[WASH-IRON DEBUG] Service lookup query:', {
+        rawCategory, 
+        category,
+        query: `service_identifier.eq.${rawCategory},service_identifier.eq.${category},service_identifier.eq.wash-iron,service_identifier.eq.wash-and-iron`
+      });
+      console.log('[WASH-IRON DEBUG] Service lookup result:', svc);
+      
+      // Debug: Check all services in database
+      const { data: allServices } = await supabase
+        .from('services')
+        .select('id, name, service_identifier, status')
+        .eq('status', true);
+      console.log('[WASH-IRON DEBUG] All active services in database:', allServices);
       
       if (!mounted) return;
       setService(svc);
       if (svc?.id) {
-        console.log('ItemSelection: Loading categories and items for service:', svc.id, svc.name);
+        console.log('[WASH-IRON DEBUG] Loading categories and items for service:', {
+          serviceId: svc.id, 
+          serviceName: svc.name,
+          serviceIdentifier: svc.service_identifier
+        });
         
         // Load categories for this service
         const { data: cats, error: catsError } = await supabase
@@ -135,21 +154,21 @@ export default function ItemSelection() {
           .select('id, name, description, icon, icon_name, sequence, status, service_id')
           .eq('service_id', svc.id)
           .eq('status', true)
-          .eq('status', true)
           .order('sequence', { ascending: true })
           .limit(20);
         
-        console.log('ItemSelection: Categories query result:', { 
+        console.log('[WASH-IRON DEBUG] Categories query result:', { 
           serviceId: svc.id, 
           categoriesCount: cats?.length || 0, 
-          error: catsError?.message 
+          error: catsError?.message,
+          categories: cats
         });
         
         // Load items for this service through categories
         let combinedItems: any[] = [];
         if (cats && cats.length > 0) {
           const categoryIds = cats.map(c => c.id);
-          console.log('ItemSelection: Loading items for category IDs:', categoryIds);
+          console.log('[WASH-IRON DEBUG] Loading items for category IDs:', categoryIds);
           
           const { data: directItems } = await supabase
             .from('items')
@@ -159,21 +178,28 @@ export default function ItemSelection() {
           
           combinedItems = directItems || [];
           
-          console.log('ItemSelection: Direct items loaded:', {
-            totalItems: directItems?.length || 0
+          console.log('[WASH-IRON DEBUG] Direct items loaded:', {
+            totalItems: directItems?.length || 0,
+            items: directItems
           });
         }
         
-        console.log('ItemSelection: Final data loaded:', { 
+        console.log('[WASH-IRON DEBUG] Final data loaded:', { 
           service: svc?.name, 
           categories: cats?.length || 0, 
           items: combinedItems?.length || 0,
-          serviceId: svc.id
+          serviceId: svc.id,
+          finalCategories: cats,
+          finalItems: combinedItems
         });
         setCategoriesDb(cats || []);
         setItemsDb(combinedItems);
       } else {
-        console.log('ItemSelection: No service found for identifier:', { rawCategory, normalized: category });
+        console.log('[WASH-IRON DEBUG] No service found for identifier:', { 
+          rawCategory, 
+          normalized: category,
+          allServicesChecked: allServices
+        });
         setCategoriesDb([]);
         setItemsDb([]);
       }
@@ -210,7 +236,11 @@ export default function ItemSelection() {
   // Use only database data
   const itemsSource: any[] = itemsDb;
 
-  console.log('ItemSelection: Items source before filtering:', itemsSource?.length || 0);
+  console.log('[WASH-IRON DEBUG] Items source before filtering:', {
+    count: itemsSource?.length || 0,
+    selectedSubcategory,
+    items: itemsSource
+  });
 
   const subcategoryOptions: Array<{ id: string; name: string }> = [
     { id: 'all', name: 'All' }, 
@@ -221,7 +251,10 @@ export default function ItemSelection() {
     ? itemsSource 
     : itemsSource.filter((i: any) => (i.category_id ?? '') === selectedSubcategory);
 
-  console.log('ItemSelection: Items after subcategory filter:', filteredItems?.length || 0);
+  console.log('[WASH-IRON DEBUG] Items after subcategory filter:', {
+    count: filteredItems?.length || 0,
+    items: filteredItems
+  });
 
   // Filter out items without description
   const itemsWithDescription = filteredItems.filter((item: any) => {
@@ -231,7 +264,10 @@ export default function ItemSelection() {
       item.description !== 'NULL';
   });
 
-  console.log('ItemSelection: Items with valid descriptions:', itemsWithDescription?.length || 0);
+  console.log('[WASH-IRON DEBUG] Items with valid descriptions:', {
+    count: itemsWithDescription?.length || 0,
+    items: itemsWithDescription
+  });
 
   const meta = {
     title: service?.name ?? '',
