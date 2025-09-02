@@ -12,7 +12,11 @@ console.log('Server Supabase configuration:', {
 const createMockClient = () => ({
   from: () => ({
     select: () => Promise.resolve({ data: [], error: null, count: 0 }),
-    insert: () => Promise.resolve({ data: null, error: null }),
+    insert: () => ({
+      select: () => ({
+        single: () => Promise.resolve({ data: null, error: null })
+      })
+    }),
     update: () => Promise.resolve({ data: null, error: null }),
     delete: () => Promise.resolve({ data: null, error: null }),
   }),
