@@ -6,6 +6,8 @@ function normalizeCategorySlug(raw: string): string {
   const map: Record<string, string> = {
     "easy-bag": "eazyy-bag",
     "wash-and-iron": "wash-iron",
+    "wash-iron": "wash-iron",
+    "washandiron": "wash-iron",
     "dry-clean": "dry-cleaning",
     "drycleaning": "dry-cleaning",
     "repair": "repairs",
@@ -117,7 +119,7 @@ export default function ItemSelection() {
         .from('services')
         .select('*')
         .eq('status', true)
-        .or(`service_identifier.eq.${rawCategory},service_identifier.eq.${category}`)
+        .or(`service_identifier.eq.${rawCategory},service_identifier.eq.${category},service_identifier.eq.wash-iron,service_identifier.eq.wash-and-iron`)
         .maybeSingle();
       
       console.log('ItemSelection: Service lookup result for', { rawCategory, category }, ':', svc);
