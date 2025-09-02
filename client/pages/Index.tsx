@@ -10,20 +10,22 @@ export default function Index() {
   useEffect(() => {
     const loadServices = async () => {
       try {
+        console.log('Loading services from database...');
         const { data, error } = await supabase
           .from("services")
-          .select("id, name, service_identifier, icon, image_url, icon_name, status, sequence")
+          .select("*")
           .eq("status", true)
-          .order("sequence", { ascending: true });
+          .order("sequence", { ascending: true })
+          .limit(10);
 
         if (error) {
-          console.error('Error loading services:', error);
+          console.error('Error loading services:', error.message);
           return;
         }
         
         if (data) {
           setServices(data);
-          console.log('Services loaded successfully:', data.length);
+          console.log('Services loaded successfully:', data.length, data);
         }
       } catch (err) {
         console.error('Error loading services:', err);

@@ -64,7 +64,13 @@ export default function OrderDetail() {
           .from('orders')
           .select(`
             *,
-            order_items (*)
+            order_items (
+              id,
+              product_name,
+              quantity,
+              unit_price,
+              description
+            )
           `)
           .eq('order_number', id)
           .single();

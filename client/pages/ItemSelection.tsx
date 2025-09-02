@@ -101,11 +101,12 @@ export default function ItemSelection() {
       // Load all services for the selector buttons
       const { data: allServicesData } = await supabase
         .from('services')
-        .select('id, name, service_identifier, icon, image_url, icon_name, status')
+        .select('*')
         .eq('status', true)
-        .order('sequence', { ascending: true });
+        .order('sequence', { ascending: true })
+        .limit(10);
       
-      console.log('[ItemSelection] All services loaded:', allServicesData);
+      console.log('ItemSelection: All services loaded:', allServicesData?.length || 0);
       
       if (mounted && allServicesData) {
         setAllServices(allServicesData);
@@ -119,57 +120,65 @@ export default function ItemSelection() {
         .or(`service_identifier.eq.${rawCategory},service_identifier.eq.${category}`)
         .maybeSingle();
       
-      console.log('[ItemSelection] Service lookup result:', svc);
+      console.log('ItemSelection: Service lookup result for', { rawCategory, category }, ':', svc);
       
       if (!mounted) return;
       setService(svc);
       if (svc?.id) {
-        console.log('[ItemSelection] Loading categories and items for service:', svc.id);
+        console.log('ItemSelection: Loading categories and items for service:', svc.id, svc.name);
         
         // Load categories for this service
         const { data: cats, error: catsError } = await supabase
           .from('categories')
-          .select('id, name, description, icon, icon_name, sequence, status, service_id')
+          .select('*')
           .eq('service_id', svc.id)
           .eq('status', true)
-          .order('sequence', { ascending: true });
+          .order('sequence', { ascending: true })
+          .limit(20);
         
-        console.log('[ItemSelection] Categories query result:', { data: cats, error: catsError });
+        console.log('ItemSelection: Categories query result:', { 
+          serviceId: svc.id, 
+          categoriesCount: cats?.length || 0, 
+          error: catsError?.message 
+        });
         
         // Load items for this service through categories
         let combinedItems: any[] = [];
         if (cats && cats.length > 0) {
           const categoryIds = cats.map(c => c.id);
+          console.log('ItemSelection: Loading items for category IDs:', categoryIds);
+          
           const { data: items, error: itemsError } = await supabase
             .from('items')
-            .select('id, name, description, price, category_id, service_id, icon, icon_name, status, sequence, is_custom_price, custom_pricing, unit_price, unit_label, min_input_value, max_input_value, input_placeholder')
+            .select('*')
             .in('category_id', categoryIds)
             .eq('status', true)
-            .order('sequence', { ascending: true });
+            .order('sequence', { ascending: true })
+            .limit(50);
           
-          console.log('[ItemSelection] Items query result:', { 
-            data: items, 
-            error: itemsError,
+          console.log('ItemSelection: Items via categories query result:', { 
             totalItems: items?.length || 0,
-            itemsWithDescription: items?.filter(item => item.description && item.description.trim() !== '').length || 0
+            error: itemsError?.message,
+            sampleItem: items?.[0]
           });
           combinedItems = items || [];
         } else {
-          console.log('[ItemSelection] No categories found, skipping items query');
+          console.log('ItemSelection: No categories found, skipping category-based items query');
         }
         
         // Also try loading items directly by service_id if the field exists
         const { data: directItems, error: directItemsError } = await supabase
           .from('items')
-          .select('id, name, description, price, category_id, service_id, icon, icon_name, status, sequence, is_custom_price, custom_pricing, unit_price, unit_label, min_input_value, max_input_value, input_placeholder')
+          .select('*')
           .eq('service_id', svc.id)
           .eq('status', true)
-          .order('sequence', { ascending: true });
+          .order('sequence', { ascending: true })
+          .limit(50);
         
-        console.log('[ItemSelection] Direct items query result:', { 
-          data: directItems, 
-          error: directItemsError,
-          totalItems: directItems?.length || 0
+        console.log('ItemSelection: Direct items query result:', { 
+          totalItems: directItems?.length || 0,
+          error: directItemsError?.message,
+          sampleItem: directItems?.[0]
         });
         
         // Combine items from both queries (remove duplicates by id)
@@ -181,20 +190,18 @@ export default function ItemSelection() {
           });
         }
         
-        console.log('[ItemSelection] Categories loaded:', cats);
-        console.log('[ItemSelection] Items loaded (before filtering):', combinedItems);
-        
-        if (!mounted) return;
-        setCategoriesDb(cats || []);
-        setItemsDb(combinedItems);
-        console.log('[ItemSelection] Final loaded data:', { 
+        console.log('ItemSelection: Final data loaded:', { 
           service: svc?.name, 
           categories: cats?.length || 0, 
           items: combinedItems?.length || 0,
           serviceId: svc.id
         });
+        
+        if (!mounted) return;
+        setCategoriesDb(cats || []);
+        setItemsDb(combinedItems);
       } else {
-        console.log('[ItemSelection] No service found for identifier:', { rawCategory, normalized: category });
+        console.log('ItemSelection: No service found for identifier:', { rawCategory, normalized: category });
         setCategoriesDb([]);
         setItemsDb([]);
       }
@@ -231,7 +238,7 @@ export default function ItemSelection() {
   // Use only database data
   const itemsSource: any[] = itemsDb;
 
-  console.log('[ItemSelection] Items source before filtering:', itemsSource);
+  console.log('ItemSelection: Items source before filtering:', itemsSource?.length || 0);
 
   const subcategoryOptions: Array<{ id: string; name: string }> = [
     { id: 'all', name: 'All' }, 
@@ -242,7 +249,7 @@ export default function ItemSelection() {
     ? itemsSource 
     : itemsSource.filter((i: any) => (i.category_id ?? '') === selectedSubcategory);
 
-  console.log('[ItemSelection] Items after subcategory filter:', filteredItems);
+  console.log('ItemSelection: Items after subcategory filter:', filteredItems?.length || 0);
 
   // Filter out items without description
   const itemsWithDescription = filteredItems.filter((item: any) => {
@@ -251,6 +258,8 @@ export default function ItemSelection() {
       item.description.trim() !== '' && 
       item.description !== 'NULL';
   });
+
+  console.log('ItemSelection: Items with valid descriptions:', itemsWithDescription?.length || 0);
 
   const meta = {
     title: service?.name ?? '',
@@ -265,7 +274,7 @@ export default function ItemSelection() {
   
   const getItemImage = (item: any) => {
     // Return the icon from database or fallback
-    return item.icon || "https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
+    return item.icon || item.image_url || "https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop";
   };
 
   // Category pill icon mapping per service

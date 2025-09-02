@@ -28,11 +28,12 @@ export default function OrderStart() {
         } else {
           console.log('No services found in database');
           setError('No services available. Please contact support.');
-          setServices([]);
+        .select('*')
         }
-      } catch (err) {
+        .order('sequence', { ascending: true })
+        .limit(10);
         console.error('Connection error:', err);
-        setError(`Connection error: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      console.log('OrderStart: All services loaded:', allServicesData?.length || 0, allServicesData);
         setServices([]);
       } finally {
         setLoading(false);

@@ -75,7 +75,7 @@ export default function Account() {
         // Load recent orders
         const { data: orderData } = await supabase
           .from('orders')
-          .select('id, order_number, status, total_amount, created_at, pickup_date, delivery_date')
+          .select('*')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false })
           .limit(5);

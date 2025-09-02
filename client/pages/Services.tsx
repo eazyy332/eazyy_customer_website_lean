@@ -96,27 +96,29 @@ export default function Services() {
   useEffect(() => {
     const loadServices = async () => {
       try {
+        console.log('Loading services for Services page...');
         const { data: servicesData, error: fetchError } = await supabase
           .from("services")
-          .select("id, name, service_identifier, description, short_description, icon, image_url, icon_name, price_starts_at, price_unit, features, benefits, color_hex, is_popular, status, sequence")
+          .select("*")
           .eq("status", true)
-          .order("sequence", { ascending: true });
+          .order("sequence", { ascending: true })
+          .limit(10);
 
         if (fetchError) {
-          console.error('Error fetching services:', fetchError);
+          console.error('Error fetching services:', fetchError.message);
           // Use fallback data on fetch error
           setServices(fallbackServices);
         } else if (servicesData && servicesData.length > 0) {
           // Use database services
           setServices(servicesData);
-          console.log('Services loaded from database:', servicesData.length);
+          console.log('Services loaded from database:', servicesData.length, servicesData);
         } else {
           // Use fallback if no data returned
           console.log('No services found in database, using fallback');
           setServices(fallbackServices);
         }
       } catch (err) {
-        console.error('Connection error:', err);
+        console.error('Services connection error:', err);
         // Use fallback data on connection error
         setServices(fallbackServices);
       } finally {

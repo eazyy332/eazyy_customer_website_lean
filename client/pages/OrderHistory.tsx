@@ -58,21 +58,23 @@ export default function OrderHistory() {
         const { data, error } = await supabase
           .from('orders')
           .select(`
-            id,
             order_number,
+            id,
             status,
             total_amount,
             created_at,
             pickup_date,
             delivery_date,
             shipping_address,
-            customer_name,
-            email,
-            phone,
-            order_items!inner (product_name, quantity, unit_price)
+            order_items (
+              product_name,
+              quantity,
+              unit_price
+            )
           `)
           .eq('user_id', user.id)
-          .order('created_at', { ascending: false });
+          .order('created_at', { ascending: false })
+          .limit(50);
         
         console.log('Orders query result:', { data, error });
         
