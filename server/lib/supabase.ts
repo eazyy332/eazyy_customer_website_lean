@@ -9,6 +9,9 @@ console.log('Server Supabase configuration:', {
   key: supabaseServiceKey ? 'configured' : 'missing'
 });
 
+// Declare supabaseAdmin at top level
+let supabaseAdmin: any;
+
 // Only throw error if we're in production or if explicitly required
 const isProduction = process.env.NODE_ENV === 'production';
 const requireSupabase = process.env.REQUIRE_SUPABASE === 'true';
@@ -37,6 +40,10 @@ if (!supabaseUrl || !supabaseServiceKey) {
             data: { 
               id: `mock-${Date.now()}`, 
               order_number: `EZ-${Date.now().toString(36).toUpperCase()}-MOCK`,
+              service_id: data.service_id || `mock-service-${Date.now()}`,
+              service_name: data.service_name || 'Mock Service',
+              category_id: data.category_id || `mock-category-${Date.now()}`,
+              category_name: data.category_name || 'Mock Category',
               ...data 
             }, 
             error: null 
@@ -47,9 +54,9 @@ if (!supabaseUrl || !supabaseServiceKey) {
     }),
   };
   
-  export const supabaseAdmin = mockClient as any;
+  supabaseAdmin = mockClient;
 } else {
-  export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
+  supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
     auth: {
       autoRefreshToken: false,
       persistSession: false,
@@ -67,3 +74,5 @@ if (!supabaseUrl || !supabaseServiceKey) {
     console.error('Supabase admin connection test error:', err);
   });
 }
+
+export { supabaseAdmin };
