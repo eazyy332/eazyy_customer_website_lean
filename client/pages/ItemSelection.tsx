@@ -6,8 +6,6 @@ function normalizeCategorySlug(raw: string): string {
   const map: Record<string, string> = {
     "easy-bag": "eazyy-bag",
     "wash-and-iron": "wash-iron",
-    "wash-iron": "wash-iron",
-    "washandiron": "wash-iron",
     "dry-clean": "dry-cleaning",
     "drycleaning": "dry-cleaning",
     "repair": "repairs",
@@ -103,7 +101,8 @@ export default function ItemSelection() {
       // Load all services for the selector buttons
       const { data: allServicesData } = await supabase
         .from('services')
-        .select('*')
+        .select('id, name, service_identifier, icon, image_url, icon_name, status')
+        .eq('status', true)
         .eq('status', true)
         .order('sequence', { ascending: true })
         .limit(10);
@@ -119,7 +118,8 @@ export default function ItemSelection() {
         .from('services')
         .select('*')
         .eq('status', true)
-        .or(`service_identifier.eq.${rawCategory},service_identifier.eq.${category},service_identifier.eq.wash-iron,service_identifier.eq.wash-and-iron`)
+        .eq('status', true)
+        .or(`service_identifier.eq.${rawCategory},service_identifier.eq.${category}`)
         .maybeSingle();
       
       console.log('ItemSelection: Service lookup result for', { rawCategory, category }, ':', svc);
@@ -132,8 +132,9 @@ export default function ItemSelection() {
         // Load categories for this service
         const { data: cats, error: catsError } = await supabase
           .from('categories')
-          .select('*')
+          .select('id, name, description, icon, icon_name, sequence, status, service_id')
           .eq('service_id', svc.id)
+          .eq('status', true)
           .eq('status', true)
           .order('sequence', { ascending: true })
           .limit(20);
@@ -150,45 +151,16 @@ export default function ItemSelection() {
           const categoryIds = cats.map(c => c.id);
           console.log('ItemSelection: Loading items for category IDs:', categoryIds);
           
-          const { data: items, error: itemsError } = await supabase
+          const { data: directItems } = await supabase
             .from('items')
-            .select('*')
+            .select('id, name, description, price, category_id, service_id, icon, icon_name, status, sequence, is_custom_price, custom_pricing, unit_price, unit_label, min_input_value, max_input_value, input_placeholder')
             .in('category_id', categoryIds)
-            .eq('status', true)
-            .order('sequence', { ascending: true })
-            .limit(50);
+            .eq('status', true);
           
-          console.log('ItemSelection: Items via categories query result:', { 
-            totalItems: items?.length || 0,
-            error: itemsError?.message,
-            sampleItem: items?.[0]
-          });
-          combinedItems = items || [];
-        } else {
-          console.log('ItemSelection: No categories found, skipping category-based items query');
-        }
-        
-        // Also try loading items directly by service_id if the field exists
-        const { data: directItems, error: directItemsError } = await supabase
-          .from('items')
-          .select('*')
-          .eq('service_id', svc.id)
-          .eq('status', true)
-          .order('sequence', { ascending: true })
-          .limit(50);
-        
-        console.log('ItemSelection: Direct items query result:', { 
-          totalItems: directItems?.length || 0,
-          error: directItemsError?.message,
-          sampleItem: directItems?.[0]
-        });
-        
-        // Combine items from both queries (remove duplicates by id)
-        if (directItems) {
-          directItems.forEach(item => {
-            if (!combinedItems.find(existing => existing.id === item.id)) {
-              combinedItems.push(item);
-            }
+          combinedItems = directItems || [];
+          
+          console.log('ItemSelection: Direct items loaded:', {
+            totalItems: directItems?.length || 0
           });
         }
         
@@ -198,8 +170,6 @@ export default function ItemSelection() {
           items: combinedItems?.length || 0,
           serviceId: svc.id
         });
-        
-        if (!mounted) return;
         setCategoriesDb(cats || []);
         setItemsDb(combinedItems);
       } else {
@@ -378,11 +348,13 @@ export default function ItemSelection() {
           const ext = file.name.split('.').pop() || 'jpg';
           const path = `custom-quotes/${Date.now()}_${idx}.${ext}`;
           const { data: upData, error: upErr } = await supabase.storage
-            .from('public-assets')
-            .upload(path, file, { upsert: true, contentType: file.type });
+            .from('custom-quotes')
+            .upload(path, file);
           if (!upErr && upData) {
-            const { data: pub } = supabase.storage.from('public-assets').getPublicUrl(upData.path);
-            if (pub?.publicUrl) imageUrls.push(pub.publicUrl);
+            const { data: urlData } = supabase.storage
+              .from('custom-quotes')
+              .getPublicUrl(path);
+            imageUrls.push(urlData.publicUrl);
           }
         });
         await Promise.all(uploads);
@@ -684,7 +656,7 @@ export default function ItemSelection() {
                         >
                           –
                         </button>
-                            subcategory: String(item.category_id || ''), 
+                        <span className="text-sm font-medium min-w-[20px] text-center">{quantityInCart}</span>
                         <button
                           onClick={() => (quantityInCart === 0 ? addToCart({ id: String(item.id), name: displayName, description: String(item.description || ''), price, category, subcategory: String(item.subcategory || item.category_id || ''), quantity: 1 }) : updateQuantity(String(item.id), quantityInCart + 1))}
                           className="w-7 h-7 rounded-full border border-gray-300 flex items-center justify-center text-sm"
